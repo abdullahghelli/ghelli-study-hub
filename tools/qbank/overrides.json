@@ -1,9 +1,3267 @@
 {
-  "_about": "Hand-checked corrections from the exhaustive question bank check. Keyed by item id; each entry can set topic, spec and partTopics, or drop an item. Applied after automatic tagging.",
-  "9ma0-p2-qp-jun2019-q10": {
-    "topic": "vectors",
-    "spec": ["10.3", "10.4", "10.5"],
-    "partTopics": {"a": "vectors", "b": "vectors", "c": "vectors"},
-    "note": "MS: (a) CM from CA + AM (10.3); (b) ON = OC + λCM, position vectors (10.4); (c) compare coefficients of a and b to deduce ON:NB = 2:1, vectors solving a geometric problem (10.5). The 'prove' in (c) is vector reasoning, not the Proof topic."
+ "_about": "Hand-checked corrections from the exhaustive question bank check (each question read against its mark scheme). Keyed by item id: topic and spec for the whole question; parts lists the parts that also appear under an earlier topic. Applied after automatic tagging.",
+ "9ma0-p1-qp-jun2018-q1": {
+  "topic": "trig",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q2": {
+  "topic": "diff",
+  "spec": [
+   "7.1",
+   "7.2",
+   "7.3"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q3": {
+  "topic": "trig",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q4": {
+  "topic": "numerical",
+  "spec": [
+   "9.1",
+   "9.2"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q5": {
+  "topic": "diff",
+  "spec": [
+   "5.6",
+   "7.4"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q6": {
+  "topic": "coord",
+  "spec": [
+   "3.1",
+   "3.2"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q7": {
+  "topic": "integ",
+  "spec": [
+   "6.4",
+   "8.2",
+   "8.3"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q8": {
+  "topic": "trig",
+  "spec": [
+   "5.7",
+   "5.9"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q9": {
+  "topic": "diff",
+  "spec": [
+   "7.3",
+   "7.5"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q10": {
+  "topic": "integ",
+  "spec": [
+   "8.7",
+   "8.8"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q11": {
+  "topic": "sequences",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q12": {
+  "topic": "explog",
+  "spec": [
+   "6.5",
+   "6.7"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q13": {
+  "topic": "integ",
+  "spec": [
+   "8.3",
+   "8.5"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q14": {
+  "topic": "coord",
+  "spec": [
+   "2.3",
+   "2.5",
+   "3.3"
+  ],
+  "parts": {
+   "c": {
+    "topic": "algebra",
+    "spec": [
+     "2.3",
+     "2.5"
+    ]
+   }
   }
+ },
+ "9ma0-p1-qp-jun2019-q1": {
+  "topic": "algebra",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q2": {
+  "topic": "trig",
+  "spec": [
+   "2.7",
+   "5.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2019-q3": {
+  "topic": "diff",
+  "spec": [
+   "7.1",
+   "7.4"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q4": {
+  "topic": "sequences",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q5": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.7",
+   "2.8",
+   "2.9"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q6": {
+  "topic": "trig",
+  "spec": [
+   "5.6",
+   "5.7"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q7": {
+  "topic": "explog",
+  "spec": [
+   "6.7"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q8": {
+  "topic": "integ",
+  "spec": [
+   "8.3"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q9": {
+  "topic": "explog",
+  "spec": [
+   "6.4"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q10": {
+  "topic": "proof",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q11": {
+  "topic": "sequences",
+  "spec": [
+   "4.5",
+   "4.6"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q12": {
+  "topic": "diff",
+  "spec": [
+   "2.7",
+   "7.3",
+   "7.4"
+  ],
+  "parts": {
+   "b": {
+    "topic": "algebra",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2019-q13": {
+  "topic": "integ",
+  "spec": [
+   "2.7",
+   "8.3",
+   "8.6"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2019-q14": {
+  "topic": "diff",
+  "spec": [
+   "5.2",
+   "5.5",
+   "7.4"
+  ],
+  "parts": {
+   "b": {
+    "topic": "trig",
+    "spec": [
+     "5.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2022-q1": {
+  "topic": "algebra",
+  "spec": [
+   "2.7",
+   "2.9"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q2": {
+  "topic": "algebra",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q3": {
+  "topic": "coord",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q4": {
+  "topic": "integ",
+  "spec": [
+   "8.2",
+   "8.4"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q5": {
+  "topic": "algebra",
+  "spec": [
+   "2.4",
+   "2.11"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q6": {
+  "topic": "diff",
+  "spec": [
+   "2.5",
+   "2.7",
+   "7.1"
+  ],
+  "parts": {
+   "b": {
+    "topic": "algebra",
+    "spec": [
+     "2.5",
+     "2.7"
+    ]
+   },
+   "c": {
+    "topic": "algebra",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2022-q7": {
+  "topic": "proof",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q8": {
+  "topic": "numerical",
+  "spec": [
+   "7.3",
+   "7.4",
+   "9.2"
+  ],
+  "parts": {
+   "b": {
+    "topic": "diff",
+    "spec": [
+     "7.3",
+     "7.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2022-q9": {
+  "topic": "vectors",
+  "spec": [
+   "10.1",
+   "10.2",
+   "10.5"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q10": {
+  "topic": "explog",
+  "spec": [
+   "6.2",
+   "6.5",
+   "6.7"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q11": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.4",
+   "2.6"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q12": {
+  "topic": "integ",
+  "spec": [
+   "8.3",
+   "8.5"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q13": {
+  "topic": "sequences",
+  "spec": [
+   "4.4",
+   "4.6"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q14": {
+  "topic": "trig",
+  "spec": [
+   "5.6",
+   "5.7"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q15": {
+  "topic": "diff",
+  "spec": [
+   "5.1",
+   "7.1",
+   "7.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "trig",
+    "spec": [
+     "5.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2022-q16": {
+  "topic": "integ",
+  "spec": [
+   "3.3",
+   "5.6",
+   "8.3"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q1": {
+  "topic": "integ",
+  "spec": [
+   "8.2"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q2": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.6"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q3": {
+  "topic": "vectors",
+  "spec": [
+   "10.1",
+   "10.2"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q4": {
+  "topic": "diff",
+  "spec": [
+   "5.2",
+   "7.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "trig",
+    "spec": [
+     "5.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2023-q5": {
+  "topic": "numerical",
+  "spec": [
+   "9.4"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q6": {
+  "topic": "explog",
+  "spec": [
+   "6.4"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q7": {
+  "topic": "algebra",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q8": {
+  "topic": "trig",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q9": {
+  "topic": "sequences",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q10": {
+  "topic": "coord",
+  "spec": [
+   "2.3",
+   "2.5",
+   "3.2"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q11": {
+  "topic": "explog",
+  "spec": [
+   "6.6",
+   "6.7"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q12": {
+  "topic": "diff",
+  "spec": [
+   "5.6",
+   "7.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q13": {
+  "topic": "trig",
+  "spec": [
+   "2.11",
+   "5.9"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.11"
+    ]
+   },
+   "b": {
+    "topic": "algebra",
+    "spec": [
+     "2.11"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2023-q14": {
+  "topic": "proof",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q15": {
+  "topic": "numerical",
+  "spec": [
+   "7.3",
+   "7.4",
+   "9.1",
+   "9.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.4"
+    ]
+   },
+   "b": {
+    "topic": "diff",
+    "spec": [
+     "7.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2024-q1": {
+  "topic": "algebra",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q2": {
+  "topic": "sequences",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q3": {
+  "topic": "numerical",
+  "spec": [
+   "7.2",
+   "9.1",
+   "9.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "diff",
+    "spec": [
+     "7.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2024-q4": {
+  "topic": "diff",
+  "spec": [
+   "7.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q5": {
+  "topic": "diff",
+  "spec": [
+   "2.5",
+   "7.1",
+   "7.4"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q6": {
+  "topic": "algebra",
+  "spec": [
+   "2.7"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q7": {
+  "topic": "integ",
+  "spec": [
+   "6.5",
+   "8.2",
+   "8.8"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q8": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.8"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q9": {
+  "topic": "sequences",
+  "spec": [
+   "2.1",
+   "4.5"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q10": {
+  "topic": "integ",
+  "spec": [
+   "7.3",
+   "8.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "diff",
+    "spec": [
+     "7.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2024-q11": {
+  "topic": "trig",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q12": {
+  "topic": "trig",
+  "spec": [
+   "5.6",
+   "5.7",
+   "5.9"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q13": {
+  "topic": "integ",
+  "spec": [
+   "5.6",
+   "8.3",
+   "8.5"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q14": {
+  "topic": "integ",
+  "spec": [
+   "7.6",
+   "8.7",
+   "8.8"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.6"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2024-q15": {
+  "topic": "proof",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q1": {
+  "topic": "algebra",
+  "spec": [
+   "2.7",
+   "2.8",
+   "2.9"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q2": {
+  "topic": "coord",
+  "spec": [
+   "2.2",
+   "3.2"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q3": {
+  "topic": "sequences",
+  "spec": [
+   "4.4"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q4": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.6"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q5": {
+  "topic": "integ",
+  "spec": [
+   "8.2",
+   "8.4"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q6": {
+  "topic": "algebra",
+  "spec": [
+   "2.4",
+   "2.11"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q7": {
+  "topic": "diff",
+  "spec": [
+   "2.5",
+   "2.7",
+   "2.9",
+   "7.1"
+  ],
+  "parts": {
+   "b": {
+    "topic": "algebra",
+    "spec": [
+     "2.7"
+    ]
+   },
+   "c": {
+    "topic": "algebra",
+    "spec": [
+     "2.7",
+     "2.9"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2025-q8": {
+  "topic": "proof",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q9": {
+  "topic": "numerical",
+  "spec": [
+   "6.5",
+   "7.3",
+   "7.4",
+   "9.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "explog",
+    "spec": [
+     "6.5"
+    ]
+   },
+   "b": {
+    "topic": "diff",
+    "spec": [
+     "7.3",
+     "7.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2025-q10": {
+  "topic": "vectors",
+  "spec": [
+   "10.2",
+   "10.3",
+   "10.5"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q11": {
+  "topic": "explog",
+  "spec": [
+   "6.2",
+   "6.5",
+   "6.7"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q12": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.4",
+   "2.6"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q13": {
+  "topic": "integ",
+  "spec": [
+   "8.3",
+   "8.5"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q14": {
+  "topic": "trig",
+  "spec": [
+   "5.6",
+   "5.7"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q15": {
+  "topic": "diff",
+  "spec": [
+   "5.1",
+   "7.1",
+   "7.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "trig",
+    "spec": [
+     "5.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-jun2025-q16": {
+  "topic": "integ",
+  "spec": [
+   "5.5",
+   "8.3",
+   "8.5"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q1": {
+  "topic": "sequences",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q2": {
+  "topic": "explog",
+  "spec": [
+   "6.4",
+   "6.5"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q3": {
+  "topic": "vectors",
+  "spec": [
+   "10.3",
+   "10.4"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q4": {
+  "topic": "algebra",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q5": {
+  "topic": "sequences",
+  "spec": [
+   "4.4",
+   "4.5",
+   "4.6"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q6": {
+  "topic": "trig",
+  "spec": [
+   "5.6",
+   "5.9"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q7": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.5",
+   "3.1"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q8": {
+  "topic": "explog",
+  "spec": [
+   "6.7"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q9": {
+  "topic": "diff",
+  "spec": [
+   "2.8",
+   "7.3",
+   "7.4"
+  ],
+  "parts": {
+   "c": {
+    "topic": "algebra",
+    "spec": [
+     "2.8"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-nov2020-q10": {
+  "topic": "integ",
+  "spec": [
+   "8.5",
+   "8.6"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q11": {
+  "topic": "trig",
+  "spec": [
+   "3.2",
+   "5.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "coord",
+    "spec": [
+     "3.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-nov2020-q12": {
+  "topic": "trig",
+  "spec": [
+   "5.4",
+   "5.7",
+   "5.8"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q13": {
+  "topic": "sequences",
+  "spec": [
+   "4.2",
+   "4.3"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q14": {
+  "topic": "integ",
+  "spec": [
+   "7.4",
+   "8.7",
+   "8.8"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-nov2020-q15": {
+  "topic": "diff",
+  "spec": [
+   "5.5",
+   "7.1",
+   "7.5"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q16": {
+  "topic": "proof",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q1": {
+  "topic": "algebra",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q2": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.7"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q3": {
+  "topic": "sequences",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q4": {
+  "topic": "numerical",
+  "spec": [
+   "7.3",
+   "7.4",
+   "9.1",
+   "9.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.3",
+     "7.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-nov2021-q5": {
+  "topic": "sequences",
+  "spec": [
+   "4.5",
+   "4.6"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q6": {
+  "topic": "vectors",
+  "spec": [
+   "5.1",
+   "10.2",
+   "10.3"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q7": {
+  "topic": "coord",
+  "spec": [
+   "2.3",
+   "3.2"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q8": {
+  "topic": "explog",
+  "spec": [
+   "6.2",
+   "6.5",
+   "6.7"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q9": {
+  "topic": "sequences",
+  "spec": [
+   "2.10",
+   "4.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.10"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-nov2021-q10": {
+  "topic": "trig",
+  "spec": [
+   "5.6",
+   "5.7",
+   "5.8"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q11": {
+  "topic": "numerical",
+  "spec": [
+   "8.3",
+   "8.5",
+   "9.4"
+  ],
+  "parts": {
+   "b": {
+    "topic": "integ",
+    "spec": [
+     "8.3",
+     "8.5"
+    ]
+   }
+  }
+ },
+ "9ma0-p1-qp-nov2021-q12": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.11"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q13": {
+  "topic": "coord",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q14": {
+  "topic": "diff",
+  "spec": [
+   "7.4"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q15": {
+  "topic": "proof",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q1": {
+  "topic": "algebra",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q2": {
+  "topic": "vectors",
+  "spec": [
+   "10.2",
+   "10.4"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q3": {
+  "topic": "algebra",
+  "spec": [
+   "1.1",
+   "2.7"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q4": {
+  "topic": "sequences",
+  "spec": [
+   "4.2",
+   "4.3"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q5": {
+  "topic": "numerical",
+  "spec": [
+   "9.3"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q6": {
+  "topic": "trig",
+  "spec": [
+   "2.3",
+   "2.6",
+   "5.7"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.6"
+    ]
+   },
+   "b": {
+    "topic": "algebra",
+    "spec": [
+     "2.3",
+     "2.6"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2018-q7": {
+  "topic": "trig",
+  "spec": [
+   "5.4",
+   "5.6",
+   "5.7"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q8": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.11"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q9": {
+  "topic": "diff",
+  "spec": [
+   "5.6",
+   "7.1"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q10": {
+  "topic": "integ",
+  "spec": [
+   "7.6",
+   "8.7",
+   "8.8"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q11": {
+  "topic": "diff",
+  "spec": [
+   "2.10",
+   "7.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.10"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2018-q12": {
+  "topic": "trig",
+  "spec": [
+   "5.5",
+   "5.6",
+   "5.7",
+   "5.8"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q13": {
+  "topic": "integ",
+  "spec": [
+   "7.3",
+   "8.3",
+   "8.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q14": {
+  "topic": "diff",
+  "spec": [
+   "6.5",
+   "6.7",
+   "7.4"
+  ],
+  "parts": {
+   "c": {
+    "topic": "explog",
+    "spec": [
+     "6.5",
+     "6.7"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2019-q1": {
+  "topic": "algebra",
+  "spec": [
+   "2.1"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q2": {
+  "topic": "numerical",
+  "spec": [
+   "9.4",
+   "9.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q3": {
+  "topic": "trig",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q4": {
+  "topic": "coord",
+  "spec": [
+   "3.2",
+   "3.3"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q5": {
+  "topic": "integ",
+  "spec": [
+   "8.2",
+   "8.4"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q6": {
+  "topic": "algebra",
+  "spec": [
+   "2.5",
+   "2.8"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q7": {
+  "topic": "algebra",
+  "spec": [
+   "2.11"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q8": {
+  "topic": "explog",
+  "spec": [
+   "4.3",
+   "4.5",
+   "6.4"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q9": {
+  "topic": "explog",
+  "spec": [
+   "6.6",
+   "6.7"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q10": {
+  "topic": "vectors",
+  "spec": [
+   "10.3",
+   "10.4",
+   "10.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q11": {
+  "topic": "numerical",
+  "spec": [
+   "7.3",
+   "7.5",
+   "9.1",
+   "9.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.3",
+     "7.5"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2019-q12": {
+  "topic": "trig",
+  "spec": [
+   "5.4",
+   "5.6",
+   "5.7",
+   "5.8"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q13": {
+  "topic": "diff",
+  "spec": [
+   "7.3"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q14": {
+  "topic": "integ",
+  "spec": [
+   "8.5",
+   "8.7",
+   "8.8"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q1": {
+  "topic": "algebra",
+  "spec": [
+   "2.7"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q2": {
+  "topic": "explog",
+  "spec": [
+   "6.1",
+   "6.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q3": {
+  "topic": "sequences",
+  "spec": [
+   "4.2",
+   "4.3"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q4": {
+  "topic": "diff",
+  "spec": [
+   "7.1"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q5": {
+  "topic": "numerical",
+  "spec": [
+   "6.4",
+   "9.4"
+  ],
+  "parts": {
+   "b": {
+    "topic": "explog",
+    "spec": [
+     "6.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2022-q6": {
+  "topic": "numerical",
+  "spec": [
+   "7.3",
+   "9.1",
+   "9.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.2",
+     "7.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2022-q7": {
+  "topic": "sequences",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q8": {
+  "topic": "integ",
+  "spec": [
+   "8.3"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q9": {
+  "topic": "trig",
+  "spec": [
+   "5.3",
+   "5.9"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q10": {
+  "topic": "algebra",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q11": {
+  "topic": "proof",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q12": {
+  "topic": "diff",
+  "spec": [
+   "2.3",
+   "7.3",
+   "7.4"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q13": {
+  "topic": "vectors",
+  "spec": [
+   "10.2",
+   "10.3",
+   "10.4"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q14": {
+  "topic": "integ",
+  "spec": [
+   "2.10",
+   "8.7",
+   "8.8"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.10"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2022-q15": {
+  "topic": "trig",
+  "spec": [
+   "4.5",
+   "5.7"
+  ],
+  "parts": {
+   "a": {
+    "topic": "sequences",
+    "spec": [
+     "4.5"
+    ]
+   },
+   "c": {
+    "topic": "sequences",
+    "spec": [
+     "4.5"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2022-q16": {
+  "topic": "diff",
+  "spec": [
+   "2.3",
+   "3.3",
+   "7.3",
+   "7.5"
+  ],
+  "parts": {
+   "b": {
+    "topic": "coord",
+    "spec": [
+     "3.3"
+    ]
+   },
+   "c": {
+    "topic": "algebra",
+    "spec": [
+     "2.3",
+     "2.5"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2023-q1": {
+  "topic": "diff",
+  "spec": [
+   "7.1",
+   "7.2"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q2": {
+  "topic": "sequences",
+  "spec": [
+   "4.2",
+   "4.3"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q3": {
+  "topic": "explog",
+  "spec": [
+   "6.4",
+   "6.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q4": {
+  "topic": "explog",
+  "spec": [
+   "6.2",
+   "6.7"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q5": {
+  "topic": "integ",
+  "spec": [
+   "7.3",
+   "8.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2023-q6": {
+  "topic": "vectors",
+  "spec": [
+   "10.2",
+   "10.3",
+   "10.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q7": {
+  "topic": "diff",
+  "spec": [
+   "7.3",
+   "7.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q8": {
+  "topic": "trig",
+  "spec": [
+   "4.4",
+   "5.6"
+  ],
+  "parts": {
+   "b": {
+    "topic": "sequences",
+    "spec": [
+     "4.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2023-q9": {
+  "topic": "diff",
+  "spec": [
+   "3.3",
+   "7.3",
+   "7.5"
+  ],
+  "parts": {
+   "a": {
+    "topic": "coord",
+    "spec": [
+     "3.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2023-q10": {
+  "topic": "integ",
+  "spec": [
+   "2.10",
+   "8.3",
+   "8.6"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.10"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2023-q11": {
+  "topic": "integ",
+  "spec": [
+   "7.4",
+   "7.6",
+   "8.7",
+   "8.8"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.4",
+     "7.6"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2023-q12": {
+  "topic": "algebra",
+  "spec": [
+   "2.5",
+   "2.7",
+   "2.11"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q13": {
+  "topic": "integ",
+  "spec": [
+   "4.1",
+   "8.3",
+   "8.5"
+  ],
+  "parts": {
+   "a": {
+    "topic": "sequences",
+    "spec": [
+     "4.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2023-q14": {
+  "topic": "trig",
+  "spec": [
+   "5.5",
+   "5.6",
+   "5.7"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q15": {
+  "topic": "proof",
+  "spec": [
+   "1.1",
+   "5.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q1": {
+  "topic": "diff",
+  "spec": [
+   "7.1",
+   "7.2"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q2": {
+  "topic": "sequences",
+  "spec": [
+   "4.4",
+   "4.6"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q3": {
+  "topic": "algebra",
+  "spec": [
+   "2.9"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q4": {
+  "topic": "sequences",
+  "spec": [
+   "4.2",
+   "4.3"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q5": {
+  "topic": "trig",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q6": {
+  "topic": "numerical",
+  "spec": [
+   "7.2",
+   "7.4",
+   "9.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.2",
+     "7.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2024-q7": {
+  "topic": "vectors",
+  "spec": [
+   "10.2",
+   "10.4"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q8": {
+  "topic": "trig",
+  "spec": [
+   "5.4",
+   "5.5",
+   "5.7",
+   "5.8"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q9": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.5",
+   "2.11"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q10": {
+  "topic": "diff",
+  "spec": [
+   "3.4",
+   "7.3",
+   "7.5"
+  ],
+  "parts": {
+   "b": {
+    "topic": "coord",
+    "spec": [
+     "3.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2024-q11": {
+  "topic": "integ",
+  "spec": [
+   "8.3",
+   "8.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q12": {
+  "topic": "integ",
+  "spec": [
+   "2.10",
+   "8.7",
+   "8.8"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.10"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2024-q13": {
+  "topic": "explog",
+  "spec": [
+   "6.6",
+   "6.7"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q14": {
+  "topic": "coord",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q15": {
+  "topic": "diff",
+  "spec": [
+   "2.3",
+   "2.6",
+   "7.3",
+   "7.5"
+  ],
+  "parts": {
+   "c": {
+    "topic": "algebra",
+    "spec": [
+     "2.3",
+     "2.6"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2025-q1": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.6"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q2": {
+  "topic": "integ",
+  "spec": [
+   "8.2"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q3": {
+  "topic": "explog",
+  "spec": [
+   "6.4",
+   "6.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q4": {
+  "topic": "trig",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q5": {
+  "topic": "diff",
+  "spec": [
+   "3.3",
+   "7.4"
+  ],
+  "parts": {
+   "a": {
+    "topic": "coord",
+    "spec": [
+     "3.3"
+    ]
+   },
+   "b": {
+    "topic": "coord",
+    "spec": [
+     "3.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2025-q6": {
+  "topic": "trig",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q7": {
+  "topic": "algebra",
+  "spec": [
+   "2.6",
+   "2.10"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q8": {
+  "topic": "diff",
+  "spec": [
+   "2.5",
+   "2.7",
+   "7.3"
+  ],
+  "parts": {
+   "c": {
+    "topic": "algebra",
+    "spec": [
+     "2.5",
+     "2.7"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2025-q9": {
+  "topic": "explog",
+  "spec": [
+   "6.2",
+   "6.5",
+   "6.7"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q10": {
+  "topic": "integ",
+  "spec": [
+   "7.6",
+   "8.7",
+   "8.8"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.6"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-jun2025-q11": {
+  "topic": "algebra",
+  "spec": [
+   "2.3",
+   "2.5",
+   "2.11"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q12": {
+  "topic": "algebra",
+  "spec": [
+   "2.5",
+   "2.7",
+   "2.8"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q13": {
+  "topic": "trig",
+  "spec": [
+   "5.3",
+   "5.7"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q14": {
+  "topic": "vectors",
+  "spec": [
+   "10.3",
+   "10.5"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q15": {
+  "topic": "integ",
+  "spec": [
+   "5.6",
+   "7.3",
+   "7.4",
+   "8.3",
+   "8.5"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.3",
+     "7.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-nov2020-q1": {
+  "topic": "numerical",
+  "spec": [
+   "9.4"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q2": {
+  "topic": "vectors",
+  "spec": [
+   "10.3",
+   "10.4"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q3": {
+  "topic": "explog",
+  "spec": [
+   "6.4",
+   "6.5"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q4": {
+  "topic": "sequences",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q5": {
+  "topic": "explog",
+  "spec": [
+   "2.1",
+   "6.5"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q6": {
+  "topic": "integ",
+  "spec": [
+   "2.6",
+   "8.2",
+   "8.3"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q7": {
+  "topic": "numerical",
+  "spec": [
+   "7.2",
+   "7.3",
+   "9.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.2"
+    ]
+   },
+   "b": {
+    "topic": "diff",
+    "spec": [
+     "7.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-nov2020-q8": {
+  "topic": "integ",
+  "spec": [
+   "2.6",
+   "8.2"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q9": {
+  "topic": "explog",
+  "spec": [
+   "6.5",
+   "6.7"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q10": {
+  "topic": "trig",
+  "spec": [
+   "5.6",
+   "5.7",
+   "5.8"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q11": {
+  "topic": "algebra",
+  "spec": [
+   "2.5",
+   "2.7"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q12": {
+  "topic": "integ",
+  "spec": [
+   "3.3",
+   "5.6",
+   "8.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "coord",
+    "spec": [
+     "3.4"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-nov2020-q13": {
+  "topic": "diff",
+  "spec": [
+   "2.8",
+   "6.5",
+   "7.1",
+   "7.4"
+  ],
+  "parts": {
+   "a": {
+    "topic": "algebra",
+    "spec": [
+     "2.8"
+    ]
+   },
+   "c": {
+    "topic": "explog",
+    "spec": [
+     "6.5"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-nov2020-q14": {
+  "topic": "coord",
+  "spec": [
+   "2.3",
+   "3.2"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q15": {
+  "topic": "sequences",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q16": {
+  "topic": "proof",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q1": {
+  "topic": "sequences",
+  "spec": [
+   "4.4"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q2": {
+  "topic": "algebra",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q3": {
+  "topic": "explog",
+  "spec": [
+   "6.4",
+   "6.5"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q4": {
+  "topic": "trig",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q5": {
+  "topic": "diff",
+  "spec": [
+   "7.1",
+   "7.2",
+   "7.3"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q6": {
+  "topic": "trig",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q7": {
+  "topic": "integ",
+  "spec": [
+   "7.3",
+   "8.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-nov2021-q8": {
+  "topic": "diff",
+  "spec": [
+   "7.3",
+   "7.5"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q9": {
+  "topic": "sequences",
+  "spec": [
+   "4.3",
+   "4.5"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q10": {
+  "topic": "explog",
+  "spec": [
+   "6.6",
+   "6.7"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q11": {
+  "topic": "algebra",
+  "spec": [
+   "2.5",
+   "2.7",
+   "2.9"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q12": {
+  "topic": "integ",
+  "spec": [
+   "8.3",
+   "8.5"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q13": {
+  "topic": "diff",
+  "spec": [
+   "5.4",
+   "7.5"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q14": {
+  "topic": "integ",
+  "spec": [
+   "7.6",
+   "8.7",
+   "8.8"
+  ],
+  "parts": {
+   "a": {
+    "topic": "diff",
+    "spec": [
+     "7.4",
+     "7.6"
+    ]
+   }
+  }
+ },
+ "9ma0-p2-qp-nov2021-q15": {
+  "topic": "trig",
+  "spec": [
+   "5.6",
+   "5.7",
+   "5.9"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q1": {
+  "topic": "dist",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q2": {
+  "topic": "hyp",
+  "spec": [
+   "2.2",
+   "5.1"
+  ],
+  "parts": {
+   "b": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "c": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "d": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "e": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p3-qp-jun2018-q3": {
+  "topic": "dist",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q4": {
+  "topic": "data",
+  "spec": [
+   "1.1",
+   "2.1",
+   "2.3",
+   "2.4"
+  ],
+  "parts": {
+   "a": {
+    "topic": "sampling",
+    "spec": [
+     "1.1"
+    ]
+   },
+   "b": {
+    "topic": "sampling",
+    "spec": [
+     "1.1"
+    ]
+   },
+   "c": {
+    "topic": "sampling",
+    "spec": [
+     "1.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p3-qp-jun2018-q5": {
+  "topic": "hyp",
+  "spec": [
+   "3.2",
+   "4.2",
+   "5.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "dist",
+    "spec": [
+     "4.2"
+    ]
+   },
+   "b": {
+    "topic": "dist",
+    "spec": [
+     "3.2",
+     "4.2"
+    ]
+   },
+   "c": {
+    "topic": "dist",
+    "spec": [
+     "4.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p3-qp-jun2018-q6": {
+  "topic": "kin",
+  "spec": [
+   "7.4",
+   "7.5"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q7": {
+  "topic": "forces",
+  "spec": [
+   "8.2",
+   "8.5",
+   "8.6"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q8": {
+  "topic": "kin",
+  "spec": [
+   "7.3"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q9": {
+  "topic": "moments",
+  "spec": [
+   "9.1"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q10": {
+  "topic": "kin",
+  "spec": [
+   "7.5"
+  ]
+ },
+ "9ma0-p31-qp-jun2019-q1": {
+  "topic": "prob",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "9ma0-p31-qp-jun2019-q2": {
+  "topic": "dist",
+  "spec": [
+   "2.1",
+   "2.3",
+   "2.4",
+   "4.2",
+   "4.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "data",
+    "spec": [
+     "2.1",
+     "2.4"
+    ]
+   },
+   "b": {
+    "topic": "data",
+    "spec": [
+     "2.4"
+    ]
+   },
+   "c": {
+    "topic": "data",
+    "spec": [
+     "2.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2019-q3": {
+  "topic": "hyp",
+  "spec": [
+   "2.2",
+   "5.1"
+  ],
+  "parts": {
+   "b": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "c": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2019-q4": {
+  "topic": "dist",
+  "spec": [
+   "4.1",
+   "4.3"
+  ]
+ },
+ "9ma0-p31-qp-jun2019-q5": {
+  "topic": "hyp",
+  "spec": [
+   "4.2",
+   "4.3",
+   "5.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "dist",
+    "spec": [
+     "4.2"
+    ]
+   },
+   "b": {
+    "topic": "dist",
+    "spec": [
+     "4.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2022-q1": {
+  "topic": "dist",
+  "spec": [
+   "4.1",
+   "4.3"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q2": {
+  "topic": "dist",
+  "spec": [
+   "4.1",
+   "4.2"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q3": {
+  "topic": "dist",
+  "spec": [
+   "2.3",
+   "4.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "data",
+    "spec": [
+     "2.3"
+    ]
+   },
+   "b": {
+    "topic": "data",
+    "spec": [
+     "2.3"
+    ]
+   },
+   "c": {
+    "topic": "data",
+    "spec": [
+     "2.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2022-q4": {
+  "topic": "hyp",
+  "spec": [
+   "5.1",
+   "5.2"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q5": {
+  "topic": "prob",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q6": {
+  "topic": "hyp",
+  "spec": [
+   "2.2",
+   "5.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "c": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2023-q1": {
+  "topic": "prob",
+  "spec": [
+   "3.1",
+   "3.2"
+  ]
+ },
+ "9ma0-p31-qp-jun2023-q2": {
+  "topic": "hyp",
+  "spec": [
+   "4.1",
+   "5.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "dist",
+    "spec": [
+     "4.1"
+    ]
+   },
+   "b": {
+    "topic": "dist",
+    "spec": [
+     "4.1"
+    ]
+   },
+   "c": {
+    "topic": "dist",
+    "spec": [
+     "4.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2023-q3": {
+  "topic": "data",
+  "spec": [
+   "2.3",
+   "2.5"
+  ]
+ },
+ "9ma0-p31-qp-jun2023-q4": {
+  "topic": "hyp",
+  "spec": [
+   "4.2",
+   "5.1",
+   "5.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "dist",
+    "spec": [
+     "4.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2023-q5": {
+  "topic": "dist",
+  "spec": [
+   "3.2",
+   "4.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "prob",
+    "spec": [
+     "3.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2023-q6": {
+  "topic": "dist",
+  "spec": [
+   "2.1",
+   "4.2",
+   "4.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "data",
+    "spec": [
+     "2.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2024-q1": {
+  "topic": "dist",
+  "spec": [
+   "4.1",
+   "4.3"
+  ]
+ },
+ "9ma0-p31-qp-jun2024-q2": {
+  "topic": "hyp",
+  "spec": [
+   "2.2",
+   "5.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "c": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "d": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2024-q3": {
+  "topic": "data",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "9ma0-p31-qp-jun2024-q4": {
+  "topic": "hyp",
+  "spec": [
+   "5.1",
+   "5.2"
+  ]
+ },
+ "9ma0-p31-qp-jun2024-q5": {
+  "topic": "dist",
+  "spec": [
+   "3.1",
+   "4.2"
+  ],
+  "parts": {
+   "b": {
+    "topic": "prob",
+    "spec": [
+     "3.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2024-q6": {
+  "topic": "prob",
+  "spec": [
+   "3.1",
+   "3.2"
+  ]
+ },
+ "9ma0-p31-qp-jun2025-q1": {
+  "topic": "prob",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "9ma0-p31-qp-jun2025-q2": {
+  "topic": "data",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "9ma0-p31-qp-jun2025-q3": {
+  "topic": "hyp",
+  "spec": [
+   "4.1",
+   "5.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "dist",
+    "spec": [
+     "4.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2025-q4": {
+  "topic": "hyp",
+  "spec": [
+   "1.1",
+   "2.2",
+   "2.5",
+   "5.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "sampling",
+    "spec": [
+     "1.1"
+    ]
+   },
+   "b": {
+    "topic": "data",
+    "spec": [
+     "2.5"
+    ]
+   },
+   "c": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "d": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "f": {
+    "topic": "sampling",
+    "spec": [
+     "1.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-jun2025-q5": {
+  "topic": "dist",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "9ma0-p31-qp-jun2025-q6": {
+  "topic": "dist",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q1": {
+  "topic": "prob",
+  "spec": [
+   "3.1",
+   "3.2"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q2": {
+  "topic": "hyp",
+  "spec": [
+   "2.2",
+   "5.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "b": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "d": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-nov2020-q3": {
+  "topic": "data",
+  "spec": [
+   "2.1",
+   "2.3",
+   "2.4"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q4": {
+  "topic": "dist",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q5": {
+  "topic": "hyp",
+  "spec": [
+   "4.2",
+   "4.3",
+   "5.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "dist",
+    "spec": [
+     "4.2"
+    ]
+   },
+   "c": {
+    "topic": "dist",
+    "spec": [
+     "4.2",
+     "4.3"
+    ]
+   },
+   "d": {
+    "topic": "dist",
+    "spec": [
+     "4.2",
+     "4.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-nov2021-q1": {
+  "topic": "dist",
+  "spec": [
+   "1.1",
+   "4.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "sampling",
+    "spec": [
+     "1.1"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-nov2021-q2": {
+  "topic": "hyp",
+  "spec": [
+   "2.2",
+   "5.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "b": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "c": {
+    "topic": "data",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-nov2021-q3": {
+  "topic": "data",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "9ma0-p31-qp-nov2021-q4": {
+  "topic": "prob",
+  "spec": [
+   "3.1",
+   "3.2"
+  ]
+ },
+ "9ma0-p31-qp-nov2021-q5": {
+  "topic": "hyp",
+  "spec": [
+   "3.2",
+   "4.2",
+   "5.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "dist",
+    "spec": [
+     "4.2"
+    ]
+   },
+   "b": {
+    "topic": "dist",
+    "spec": [
+     "4.2"
+    ]
+   },
+   "c": {
+    "topic": "dist",
+    "spec": [
+     "3.2",
+     "4.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p31-qp-nov2021-q6": {
+  "topic": "dist",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "9ma0-p32-qp-jun2019-q1": {
+  "topic": "kin",
+  "spec": [
+   "7.4"
+  ]
+ },
+ "9ma0-p32-qp-jun2019-q2": {
+  "topic": "kin",
+  "spec": [
+   "7.3"
+  ]
+ },
+ "9ma0-p32-qp-jun2019-q3": {
+  "topic": "forces",
+  "spec": [
+   "8.4",
+   "8.5",
+   "8.6"
+  ]
+ },
+ "9ma0-p32-qp-jun2019-q4": {
+  "topic": "moments",
+  "spec": [
+   "8.5",
+   "8.6",
+   "9.1"
+  ]
+ },
+ "9ma0-p32-qp-jun2019-q5": {
+  "topic": "kin",
+  "spec": [
+   "7.5"
+  ]
+ },
+ "9ma0-p32-qp-jun2022-q1": {
+  "topic": "kin",
+  "spec": [
+   "7.4"
+  ]
+ },
+ "9ma0-p32-qp-jun2022-q2": {
+  "topic": "forces",
+  "spec": [
+   "8.2",
+   "8.5",
+   "8.6"
+  ]
+ },
+ "9ma0-p32-qp-jun2022-q3": {
+  "topic": "forces",
+  "spec": [
+   "7.3",
+   "8.2",
+   "8.5"
+  ]
+ },
+ "9ma0-p32-qp-jun2022-q4": {
+  "topic": "moments",
+  "spec": [
+   "8.4",
+   "8.6",
+   "9.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "forces",
+    "spec": [
+     "8.6"
+    ]
+   },
+   "c": {
+    "topic": "forces",
+    "spec": [
+     "8.4"
+    ]
+   },
+   "d": {
+    "topic": "forces",
+    "spec": [
+     "8.4",
+     "8.6"
+    ]
+   }
+  }
+ },
+ "9ma0-p32-qp-jun2022-q5": {
+  "topic": "kin",
+  "spec": [
+   "7.5"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q1": {
+  "topic": "kin",
+  "spec": [
+   "7.3"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q2": {
+  "topic": "forces",
+  "spec": [
+   "8.2",
+   "8.6"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q3": {
+  "topic": "kin",
+  "spec": [
+   "7.4"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q4": {
+  "topic": "kin",
+  "spec": [
+   "7.3"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q5": {
+  "topic": "kin",
+  "spec": [
+   "7.5"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q6": {
+  "topic": "moments",
+  "spec": [
+   "8.5",
+   "8.6",
+   "9.1"
+  ],
+  "parts": {
+   "a": {
+    "topic": "forces",
+    "spec": [
+     "8.6"
+    ]
+   },
+   "c": {
+    "topic": "forces",
+    "spec": [
+     "8.6"
+    ]
+   },
+   "d": {
+    "topic": "forces",
+    "spec": [
+     "8.5"
+    ]
+   }
+  }
+ },
+ "9ma0-p32-qp-jun2024-q1": {
+  "topic": "forces",
+  "spec": [
+   "8.4",
+   "8.6"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q2": {
+  "topic": "kin",
+  "spec": [
+   "7.2",
+   "7.3"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q3": {
+  "topic": "forces",
+  "spec": [
+   "8.2",
+   "8.5",
+   "8.6"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q4": {
+  "topic": "kin",
+  "spec": [
+   "7.4"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q5": {
+  "topic": "kin",
+  "spec": [
+   "7.5"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q6": {
+  "topic": "moments",
+  "spec": [
+   "8.6",
+   "9.1"
+  ],
+  "parts": {
+   "b": {
+    "topic": "forces",
+    "spec": [
+     "8.4",
+     "8.6"
+    ]
+   }
+  }
+ },
+ "9ma0-p32-qp-jun2025-q1": {
+  "topic": "forces",
+  "spec": [
+   "7.3",
+   "8.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "kin",
+    "spec": [
+     "7.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p32-qp-jun2025-q2": {
+  "topic": "forces",
+  "spec": [
+   "7.3",
+   "8.1",
+   "8.6"
+  ]
+ },
+ "9ma0-p32-qp-jun2025-q3": {
+  "topic": "forces",
+  "spec": [
+   "7.3",
+   "8.2"
+  ],
+  "parts": {
+   "b": {
+    "topic": "kin",
+    "spec": [
+     "7.3"
+    ]
+   },
+   "c": {
+    "topic": "kin",
+    "spec": [
+     "7.3"
+    ]
+   },
+   "d": {
+    "topic": "kin",
+    "spec": [
+     "7.3"
+    ]
+   }
+  }
+ },
+ "9ma0-p32-qp-jun2025-q4": {
+  "topic": "kin",
+  "spec": [
+   "7.4"
+  ]
+ },
+ "9ma0-p32-qp-jun2025-q5": {
+  "topic": "kin",
+  "spec": [
+   "7.5"
+  ]
+ },
+ "9ma0-p32-qp-jun2025-q6": {
+  "topic": "moments",
+  "spec": [
+   "8.6",
+   "9.1"
+  ]
+ },
+ "9ma0-p32-qp-nov2020-q1": {
+  "topic": "forces",
+  "spec": [
+   "8.1",
+   "8.5",
+   "8.6"
+  ]
+ },
+ "9ma0-p32-qp-nov2020-q2": {
+  "topic": "kin",
+  "spec": [
+   "7.3"
+  ]
+ },
+ "9ma0-p32-qp-nov2020-q3": {
+  "topic": "kin",
+  "spec": [
+   "7.4"
+  ]
+ },
+ "9ma0-p32-qp-nov2020-q4": {
+  "topic": "moments",
+  "spec": [
+   "8.6",
+   "9.1"
+  ]
+ },
+ "9ma0-p32-qp-nov2020-q5": {
+  "topic": "kin",
+  "spec": [
+   "7.5"
+  ]
+ },
+ "9ma0-p32-qp-nov2021-q1": {
+  "topic": "kin",
+  "spec": [
+   "7.3"
+  ]
+ },
+ "9ma0-p32-qp-nov2021-q2": {
+  "topic": "forces",
+  "spec": [
+   "7.2",
+   "8.4",
+   "8.5",
+   "8.6"
+  ],
+  "parts": {
+   "c": {
+    "topic": "kin",
+    "spec": [
+     "7.2"
+    ]
+   }
+  }
+ },
+ "9ma0-p32-qp-nov2021-q3": {
+  "topic": "moments",
+  "spec": [
+   "8.6",
+   "9.1"
+  ]
+ },
+ "9ma0-p32-qp-nov2021-q4": {
+  "topic": "kin",
+  "spec": [
+   "7.5"
+  ]
+ },
+ "9ma0-p32-qp-nov2021-q5": {
+  "topic": "kin",
+  "spec": [
+   "7.4"
+  ]
+ }
 }

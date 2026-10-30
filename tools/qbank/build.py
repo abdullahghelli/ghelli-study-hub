@@ -229,18 +229,44 @@ def main():
     for it in items:   # page + position for the viewer; keep msPage for older code
         a = it.pop("msAt", None)
         if a: it["msPage"], it["msY"] = a
-    # hand-checked corrections (exhaustive question bank check) override the automatic tags
+    # hand-checked corrections (exhaustive question bank check) override the automatic tags.
+    # A corrected question replaces its automatic part items with the parts listed in the correction.
     ov_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "overrides.json")
     if os.path.exists(ov_path):
         ov = {k: v for k, v in json.load(open(ov_path)).items() if not k.startswith("_")}
-        items = [it for it in items if not ov.get(it["id"], {}).get("drop")]
-        for it in items:
-            o = ov.get(it["id"])
-            if not o: continue
-            for k in ("topic", "spec", "partTopics"):
+        whole = {it["id"]: it for it in items if not it["part"]}
+        items = [it for it in items if not ov.get(it["id"], {}).get("drop")
+                 and not (it["part"] and any(it["id"] == k + it["part"] for k in ov))]
+        ms_cache, added, missing = {}, 0, []
+        for qid, o in ov.items():
+            it = whole.get(qid)
+            if not it:
+                missing.append(qid); continue
+            for k in ("topic", "spec"):
                 if k in o: it[k] = o[k]
             it["checked"] = True
-        print(len(ov), "hand-checked corrections applied")
+            if o.get("parts"):
+                it["partTopics"] = {lab: v["topic"] for lab, v in o["parts"].items()}
+            f = it["src"].split("/")[-1]
+            q = next(x for x in data[f]["questions"] if x["q"] == it["q"])
+            parts = {p["label"]: p for p in q.get("parts") or []}
+            for lab, v in (o.get("parts") or {}).items():
+                p = parts.get(lab)
+                if p:
+                    segs, text = q.get("stem", []) + p["segs"], clean(q.get("stem_text", "") + " " + p["text"])[:400]
+                elif lab == "a" and q.get("stem"):     # part (a) sits in the opening lines before the other parts
+                    segs, text = q["stem"], clean(q.get("stem_text", ""))[:400]
+                else:
+                    missing.append(f"{qid}{lab}"); continue
+                if it["ms"] not in ms_cache:
+                    ms_cache[it["ms"]] = ms_pages(os.path.join(papers_dir, it["ms"].split("/")[-1]), len(data[f]["questions"]))
+                at = ms_cache[it["ms"]].get((it["q"], lab))
+                pi = {k: it[k] for k in ("series", "year", "paper", "ptype", "q", "src", "ms") if k in it}
+                pi.update(id=f"{qid}{lab}", part=lab, topic=v["topic"], spec=v["spec"], marks=p["marks"] if p else None,
+                          segs=segs, text=text, checked=True,
+                          msPage=at[0] if at else it.get("msPage"), msY=at[1] if at else it.get("msY"))
+                items.append(pi); added += 1
+        print(len(ov), "hand-checked questions;", added, "parts listed under earlier topics;", "not found:", missing)
     out_data = dict(spec="9MA0", topics=[dict(id=t[0], num=NUM[t[0]], name=t[1], group=t[2]) for t in TOPICS],
                     points=NAMES, pdfs=pdfs, items=items)
     os.makedirs(os.path.dirname(out), exist_ok=True)
