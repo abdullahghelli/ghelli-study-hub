@@ -97,7 +97,9 @@
       this.undo = []; this.redo = [];
       this.matches = []; this.matchIdx = -1;
       this.cancelInk = []; this.pinching = false;
-      this.observer = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && this.renderPage(e.target._i)), { root: el, rootMargin: "600px 0px" });
+      /* only pages near the screen keep their canvases; the rest are released so long papers
+         don't run the iPad out of memory */
+      this.observer = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? this.renderPage(e.target._i) : this.release(e.target._i)), { root: el, rootMargin: "900px 0px" });
       el.addEventListener("scroll", () => {
         const c = this.currentPage(); if (c !== this.current) { this.current = c; this.onChange?.(); }
       }, { passive: true });
@@ -163,26 +165,56 @@
     layout() {
       if (!this.pages.length) return;
       const keepPage = this.current;
-      const w = Math.max(240, this.fitWidth() * this.zoom), dpr = window.devicePixelRatio || 1;
-      for (const p of this.pages) {
+      const w = Math.max(240, this.fitWidth() * this.zoom);
+      this.pages.forEach((p, i) => {
         const h = w * p.base.height / p.base.width;
-        p.w = w; p.h = h; p.rendered = false;
+        this.release(i);
+        p.w = w; p.h = h;
         p.el.style.width = w + "px"; p.el.style.height = h + "px";
-        for (const c of [p.pdf, p.ink]) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); c.style.width = w + "px"; c.style.height = h + "px"; }
-        this.drawInk(p, this.pages.indexOf(p));
-      }
+        for (const c of [p.pdf, p.ink, p.live]) { c.style.width = w + "px"; c.style.height = h + "px"; }
+      });
       this.goToPage(keepPage, false);
       const R = this.el.getBoundingClientRect();
-      this.pages.forEach((p, i) => { const r = p.el.getBoundingClientRect(); if (r.bottom > R.top - 600 && r.top < R.bottom + 600) this.renderPage(i); });
+      this.pages.forEach((p, i) => { const r = p.el.getBoundingClientRect(); if (r.bottom > R.top - 900 && r.top < R.bottom + 900) this.renderPage(i); });
+    }
+
+    /* pixels per CSS pixel for a page: sharp on Retina, but capped so a zoomed page stays within iPad canvas limits */
+    density(p) { return Math.min(window.devicePixelRatio || 1, Math.sqrt(10e6 / (p.w * p.h))); }
+    alloc(p, i) {
+      if (p.px) return;
+      p.px = this.density(p);
+      p.pdf.width = Math.round(p.w * p.px); p.pdf.height = Math.round(p.h * p.px);
+      this.drawInk(p, i);
+    }
+    /* the ink layer only takes memory on pages that have notes (or are being written on) */
+    inkCtx(p) {
+      const W = Math.round(p.w * p.px), H = Math.round(p.h * p.px), c = p.ink;
+      if (c.width !== W || c.height !== H) { c.width = W; c.height = H; }
+      const ctx = c.getContext("2d"); ctx.setTransform(p.px, 0, 0, p.px, 0, 0); return ctx;
+    }
+    release(i) {
+      const p = this.pages[i]; if (!p) return;
+      if (p.task) { try { p.task.cancel(); } catch (e) {} p.task = null; }
+      for (const c of [p.pdf, p.ink, p.live]) { c.width = 0; c.height = 0; }
+      p.px = 0; p.rendered = false; p.rendering = false;
+    }
+    destroy() {
+      this.observer.disconnect();
+      this.pages.forEach((p, i) => this.release(i));
+      try { this.doc?.destroy(); } catch (e) {}
+      this.pages = []; this.doc = null;
     }
 
     async renderPage(i) {
-      const p = this.pages[i]; if (!p || p.rendered || p.rendering) return;
+      const p = this.pages[i]; if (!p) return;
+      this.alloc(p, i);
+      if (p.rendered || p.rendering) return;
       p.rendering = true;
-      const dpr = window.devicePixelRatio || 1, scale = (p.w / p.base.width) * dpr;
-      try { await p.page.render({ canvasContext: p.pdf.getContext("2d"), viewport: p.page.getViewport({ scale }) }).promise; p.rendered = true; }
+      const task = p.page.render({ canvasContext: p.pdf.getContext("2d"), viewport: p.page.getViewport({ scale: (p.w / p.base.width) * p.px }) });
+      p.task = task;
+      try { await task.promise; if (p.task === task) p.rendered = true; }
       catch (e) {}
-      p.rendering = false;
+      if (p.task === task) { p.task = null; p.rendering = false; }
     }
 
     /* ----- pages ----- */
@@ -401,19 +433,21 @@
     }
     /* the stroke being written lives on its own layer so the rest of the page isn't redrawn on every move */
     drawLive(p, it) {
-      const c = p.live, dpr = window.devicePixelRatio || 1, W = Math.round(p.w * dpr), H = Math.round(p.h * dpr);
+      this.alloc(p, this.pages.indexOf(p));
+      const c = p.live, dpr = p.px, W = Math.round(p.w * dpr), H = Math.round(p.h * dpr);
       if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.width = p.w + "px"; c.style.height = p.h + "px"; }
       const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, p.w, p.h);
       if (it) this.drawItems(ctx, [it], p.w, p.h);
     }
     clearLive(p) { const c = p.live; if (c.width) c.getContext("2d").clearRect(0, 0, c.width, c.height); }
     addInk(p, it) {
-      const ctx = p.ink.getContext("2d"), dpr = window.devicePixelRatio || 1;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); this.drawItems(ctx, [it], p.w, p.h);
+      if (!p.px) return;
+      this.drawItems(this.inkCtx(p), [it], p.w, p.h);
     }
     drawInk(p, i, extra) {
-      const ctx = p.ink.getContext("2d"), dpr = window.devicePixelRatio || 1;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, p.w, p.h);
+      if (!p.px) return;   /* released page: drawn again when it scrolls back into view */
+      if (!this.ann[i]?.length && !extra) { p.ink.width = 0; p.ink.height = 0; return; }
+      const ctx = this.inkCtx(p); ctx.clearRect(0, 0, p.w, p.h);
       this.drawItems(ctx, this.ann[i], p.w, p.h);
       if (extra) this.drawItems(ctx, [extra], p.w, p.h);
     }
@@ -841,7 +875,8 @@
   function close() {
     const st = active; if (!st) return;
     active = null;
-    st.main?.commitText(); st.main?.flush(); st.ms?.flush?.();
+    st.main?.commitText(); st.main?.flush();
+    st.main?.destroy(); st.ms?.destroy();
     window.removeEventListener("resize", st.onResize);
     document.removeEventListener("keydown", st.onKey, true);
     window.removeEventListener("gsh-bookmarks", st.onBm);

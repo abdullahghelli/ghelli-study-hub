@@ -345,15 +345,25 @@
   let qbObs = null;
   function qbObserve(box, data) {
     qbObs?.disconnect();
-    qbObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { qbObs.unobserve(e.target); qbRender(e.target, data); } }), { rootMargin: "800px 0px" });
+    /* draw snips as they come near the screen and free the ones far away, so long topics stay light on memory */
+    qbObs = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? qbRender(e.target, data) : qbRelease(e.target)), { rootMargin: "1200px 0px" });
     box.querySelectorAll("[data-qb-snip]").forEach(el => qbObs.observe(el));
   }
+  function qbRelease(el) {
+    if (!el._qb) return;
+    el._qb = 0;
+    el.querySelectorAll("canvas").forEach(c => { c.width = 0; c.height = 0; });
+    if (el.dataset.ar) el.style.setProperty("--ar", el.dataset.ar);
+    el.replaceChildren(); el.classList.remove("ready");
+  }
   async function qbRender(el, data) {
+    if (el._qb) return;
+    const token = el._qb = Math.random();
     const it = data.items.find(x => x.id === el.dataset.qbSnip); if (!it || !window.Viewer?.getDoc) return;
     const m = data.pdfs[it.src], x0 = m.x0 || m.W * 0.092, x1 = m.x1 || m.W * 0.905, cx = m.cx || 0, cy = m.cy || 0;
     try {
       const doc = await window.Viewer.getDoc(it.src);
-      const cssW = el.clientWidth || 700, dpr = Math.min(window.devicePixelRatio || 1, 2.5), scale = cssW / (x1 - x0);
+      const cssW = el.clientWidth || 700, dpr = Math.min(window.devicePixelRatio || 1, 2), scale = cssW / (x1 - x0);
       const frag = document.createDocumentFragment();
       for (const [pn, y0, y1] of it.segs) {
         const page = await doc.getPage(pn);
@@ -362,10 +372,14 @@
         cv.width = Math.round((x1 - x0) * scale * dpr); cv.height = Math.round((y1 - y0) * scale * dpr);
         cv.style.width = cssW + "px"; cv.style.height = (y1 - y0) * scale + "px";
         await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
+        try { page.cleanup(); } catch (e) {}
         frag.appendChild(cv);
+        if (el._qb !== token) { frag.querySelectorAll("canvas").forEach(c => { c.width = 0; c.height = 0; }); return; }
       }
+      if (el._qb !== token) return;
+      el.dataset.ar = el.style.getPropertyValue("--ar") || el.dataset.ar || "";
       el.replaceChildren(frag); el.classList.add("ready"); el.style.removeProperty("--ar");
-    } catch (e) { el.innerHTML = `<p class="qb-err">This question couldn't load. <button class="qb-btn" data-qb-open="paper" data-qb-id="${it.id}">Open paper</button></p>`; }
+    } catch (e) { if (el._qb !== token) return; el.innerHTML = `<p class="qb-err">This question couldn't load. <button class="qb-btn" data-qb-open="paper" data-qb-id="${it.id}">Open paper</button></p>`; }
   }
 
   function byLevel(fn) {
