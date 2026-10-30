@@ -23,10 +23,11 @@ window.SITE = {
 
   levels: [
     {
-      id: "gcse", name: "GCSE", blurb: "Including IGCSE",
+      id: "gcse", name: "GCSE, IGCSE & O Level", short: "GCSE, IGCSE & O Level", blurb: "UK, international and Cambridge O Level",
       groups: [
         { name: "GCSE",  tracks: ["aqa", "edexcel"] },
         { name: "IGCSE", tracks: ["edexcel-igcse", "cambridge-igcse"] },
+        { name: "O Level", tracks: ["cambridge-o-level"] },
       ],
       tracks: {
         "aqa": {
@@ -63,11 +64,20 @@ window.SITE = {
             maths:     { code: "0580", topics: ["Number","Algebra and Graphs","Coordinate Geometry","Geometry","Mensuration","Trigonometry","Transformations and Vectors","Probability","Statistics"] },
           },
         },
+        "cambridge-o-level": {
+          name: "Cambridge O Level", full: "Cambridge O Level", series: ["May/Jun", "Oct/Nov"], papers: 4,
+          subjects: {
+            physics:   { code: "5054", topics: ["Motion, Forces and Energy","Thermal Physics","Waves","Electricity and Magnetism","Nuclear Physics","Space Physics"] },
+            chemistry: { code: "5070", topics: ["States of Matter","Atoms, Elements and Compounds","Stoichiometry","Electrochemistry","Chemical Energetics","Chemical Reactions","Acids, Bases and Salts","The Periodic Table","Metals","Chemistry of the Environment","Organic Chemistry","Experimental Techniques and Chemical Analysis"] },
+            biology:   { code: "5090", topics: ["Cells","Classification","Movement into and out of Cells","Biological Molecules","Enzymes","Plant Nutrition","Transport in Plants","Human Nutrition","Transport in Humans","Diseases and Immunity","Gas Exchange","Respiration","Coordination and Response","Homeostasis","Reproduction","Inheritance","Variation and Selection","Organisms and their Environment","Human Influences on Ecosystems","Biotechnology and Genetic Modification"] },
+            maths:     { code: "4024", topics: ["Number","Algebra and Graphs","Coordinate Geometry","Geometry","Mensuration","Trigonometry","Transformations and Vectors","Probability","Statistics"] },
+          },
+        },
       },
     },
 
     {
-      id: "a-level", name: "A Level", blurb: "Including International A Level",
+      id: "a-level", name: "A Level and International A Level", short: "A Level & IAL", blurb: "AS, A2 and IAL",
       groups: [
         { name: "A Level", tracks: ["aqa", "edexcel"] },
         { name: "International A Level", tracks: ["edexcel-ial", "cambridge"] },
@@ -109,7 +119,7 @@ window.SITE = {
     },
 
     {
-      id: "ib", name: "IB", blurb: "Diploma Programme, HL and SL",
+      id: "ib", name: "IB Diploma Programme", short: "IB Diploma", blurb: "Higher and Standard Level",
       groups: [
         { name: "IB Diploma", tracks: ["hl", "sl"] },
       ],

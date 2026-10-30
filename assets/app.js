@@ -84,7 +84,7 @@
       <div class="side-label">Qualifications</div>`;
     for (const L of S.levels) {
       const open = openGroups[L.id] ?? r.l === L.id;
-      h += `<div class="group ${open ? "open" : ""}"><button class="nav ${r.l === L.id && !r.t ? "on" : ""}" data-act="group" data-id="${L.id}">${icon.chev}${L.name}</button><div class="group-kids">`;
+      h += `<div class="group ${open ? "open" : ""}"><button class="nav ${r.l === L.id && !r.t ? "on" : ""}" data-act="group" data-id="${L.id}">${icon.chev}${esc(L.short || L.name)}</button><div class="group-kids">`;
       for (const g of L.groups) for (const t of g.tracks) {
         h += `<a class="nav ${r.l === L.id && r.t === t ? "on" : ""}" href="${url.track(L.id, t)}">${esc(L.tracks[t].name)}</a>`;
       }
@@ -101,7 +101,7 @@
       (p.href && i < parts.length - 1 ? `<a href="${p.href}">${esc(p.t)}</a>` : `<span class="cur">${esc(p.t)}</span>`)).join("");
   }
   const setTitle = t => { document.title = t ? `${t} · ${S.name}` : S.name; };
-  const trackCrumbs = (l, t) => [{ t: level(l).name, href: url.level(l) }, { t: track(l, t).name, href: url.track(l, t) }];
+  const trackCrumbs = (l, t) => [{ t: level(l).short || level(l).name, href: url.level(l) }, { t: track(l, t).name, href: url.track(l, t) }];
 
   /* ---------- Views ---------- */
   function vHome() {
@@ -112,7 +112,6 @@
       <div class="lvl-grid">` + S.levels.map(L => `
         <a class="lvl" href="${url.level(L.id)}">
           <span class="lvl-name">${L.name}</span>
-          <span class="lvl-blurb">${esc(L.blurb)}</span>
           <span class="lvl-boards">${L.groups.flatMap(g => g.tracks.map(t => esc(L.tracks[t].name))).join(" · ")}</span>
           ${icon.arrow}
         </a>`).join("") + `</div>
@@ -122,7 +121,7 @@
 
   function vLevel({ l, t }) {
     const L = level(l);
-    crumbs(t ? trackCrumbs(l, t) : [{ t: L.name }]);
+    crumbs(t ? trackCrumbs(l, t) : [{ t: L.short || L.name }]);
     setTitle(t ? track(l, t).full : L.name);
     let h = `<h1>${L.name}</h1><p class="lede">${t ? "Pick a subject." : "Choose your exam board."}</p>`;
     h += L.groups.map(g => `<h2>${esc(g.name)}</h2><div class="boards">` + g.tracks.map(id => {
@@ -138,8 +137,8 @@
   }
 
   function vSubject({ l, t, s }) {
-    const c = course(l, t, s), T = track(l, t), name = `${level(l).name} ${subj(s).name}`;
-    crumbs([...trackCrumbs(l, t), { t: subj(s).name }]); setTitle(`${name} (${T.name})`);
+    const c = course(l, t, s), T = track(l, t), name = `${T.full} ${subj(s).name}`;
+    crumbs([...trackCrumbs(l, t), { t: subj(s).name }]); setTitle(name);
     const nDone = c.topics.filter((_, i) => done[K(l, t, s, i + 1)]).length;
     return `${tile(s, true)}<h1>${esc(subj(s).name)}</h1>
       <div class="facts"><span>${esc(T.full)} <b class="mono">${c.code}</b></span><span><b>${c.topics.length}</b> topics</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a></div>
@@ -188,7 +187,7 @@
   }
 
   function byLevel(fn) {
-    return S.levels.map(L => `<h2>${L.name}</h2><div class="list">` +
+    return S.levels.map(L => `<h2>${esc(L.name)}</h2><div class="list">` +
       L.groups.flatMap(g => g.tracks).flatMap(t => Object.entries(L.tracks[t].subjects).map(([s, c]) => fn(L, t, s, c))).join("") + `</div>`).join("");
   }
   function vTool(kind) {
