@@ -37,9 +37,10 @@
     clock: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 2"/></svg>',
   };
 
-  /* Link that opens a PDF in the on-site viewer. */
-  const viewLink = (src, title, ms) => "/viewer?" + new URLSearchParams({ src, title, ...(ms ? { ms } : {}), back: location.pathname }).toString();
+  /* Attributes for a link that opens a PDF in the pop-up viewer (plain link still works with Ctrl/Cmd-click). */
+  const pdfAttrs = info => `href="${esc(info.src)}" data-pdf="${esc(JSON.stringify(info))}"`;
   const isPdf = href => /\.pdf($|[?#])/i.test(href);
+  const bmIcon = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M6 3.5h8v13l-4-3-4 3Z"/></svg>';
 
   /* ---------- Data helpers ---------- */
   function resources(l, t, s, n) {
@@ -98,7 +99,12 @@
     h += `<div class="side-label">Exam prep</div>
       <a class="nav ${path === "/past-papers" ? "on" : ""}" href="/past-papers">${icon.paper}Past papers</a>
       <a class="nav ${path === "/formula-sheets" ? "on" : ""}" href="/formula-sheets">${icon.sigma}Formula sheets</a>
-      <a class="nav ${path === "/exam-dates" ? "on" : ""}" href="/exam-dates">${icon.clock}Exam dates</a>`;
+      <a class="nav ${path === "/exam-dates" ? "on" : ""}" href="/exam-dates">${icon.clock}Exam dates</a>
+      <div class="side-label">PDF bookmarks</div>`;
+    const bms = window.Viewer ? window.Viewer.Bookmarks.all() : [];
+    h += bms.length
+      ? bms.slice(0, 12).map(b => `<div class="bm"><button class="nav" data-bm='${esc(JSON.stringify({ src: b.src, page: b.page }))}' title="${esc(b.title)} · page ${b.page}">${bmIcon}<span class="bm-t">${esc(b.title)}</span><span class="bm-p">p.${b.page}</span></button><button class="bm-x" data-bm-x='${esc(JSON.stringify({ src: b.src, page: b.page }))}' aria-label="Remove bookmark">×</button></div>`).join("")
+      : `<p class="side-hint">Open any PDF and tap Bookmark to save a page. It will show here.</p>`;
     $("#side").innerHTML = h;
   }
   function crumbs(parts) {
@@ -166,7 +172,7 @@
       h += `<section class="res-group"><h2>${g.label}<span>${g.items.filter(i => i.href).length}/${g.items.length}</span></h2><div class="list">` +
         g.items.map(it => it.href
           ? (isPdf(it.href)
-              ? `<a class="row" href="${esc(viewLink(it.href, `${title} · ${it.title}`))}"><span class="ftype">${it.kind}</span><span class="grow">${esc(it.title)}</span><span class="open">Open</span></a>`
+              ? `<a class="row" ${pdfAttrs({ src: it.href, title: it.title, desc: `${title} · ${T.full} ${subj(s).name}` })}><span class="ftype">${it.kind}</span><span class="grow">${esc(it.title)}</span><span class="open">Open</span></a>`
               : `<a class="row" href="${esc(it.href)}" target="_blank" rel="noopener"><span class="ftype">${it.kind}</span><span class="grow">${esc(it.title)}</span><span class="open">Open ↗</span></a>`)
           : `<div class="row off"><span class="ftype">${it.kind}</span><span class="grow">${esc(it.title)}</span><span class="soon">Coming soon</span></div>`).join("") +
         `</div></section>`;
@@ -188,9 +194,10 @@
     const cell = (ser, p, ty) => {
       const u = links[`${ser}|${p}|${ty}`];
       if (!u) return `<span class="chip" title="Coming soon">${ty}</span>`;
-      const name = `${c.code} ${colLabel(p)} · ${ser} · ${{ QP: "Question paper", MS: "Mark scheme", ER: "Examiner report" }[ty]}`;
-      const ms = ty === "QP" ? links[`${ser}|${p}|MS`] : null;
-      return `<a class="chip" href="${esc(viewLink(u, name, ms))}" title="${esc(name)}">${ty}</a>`;
+      const kind = { QP: "Question paper", MS: "Mark scheme", ER: "Examiner report" }[ty];
+      const name = `${colLabel(p)} · ${ser}`;
+      const ms = ty === "QP" ? links[`${ser}|${p}|MS`] : "";
+      return `<a class="chip" ${pdfAttrs({ src: u, title: `${name} (${ty})`, desc: `${kind} · ${T.full} ${subj(s).name} ${c.code}`, ms })} title="${esc(`${name} · ${kind}`)}">${ty}</a>`;
     };
     const rows = seriesRows.map(ser => `<tr><td>${ser}</td>${cols.map(([id]) => `<td>${cell(ser, id, "QP")}${cell(ser, id, "MS")}</td>`).join("")}${hasER ? `<td>${cell(ser, 0, "ER")}</td>` : ""}</tr>`).join("");
     return `${tile(s, true)}<h1>${esc(subj(s).name)} past papers</h1>
@@ -230,13 +237,13 @@
     const r = parse(location.pathname);
     renderSide(r);
     $("#app").classList.remove("nav-open");
-    window.Viewer?.unmount();
-    document.body.classList.toggle("viewer-mode", r.kind === "viewer");
     const page = $("#page");
     if (r.kind === "viewer") {
-      const q = new URLSearchParams(location.search), title = q.get("title") || "Paper";
-      crumbs([{ t: "Paper" }, { t: title }]); setTitle(title);
-      window.Viewer.mount(page, q);
+      /* Old /viewer links from the previous version: go back to where they came from and pop the paper open. */
+      const q = new URLSearchParams(location.search), back = q.get("back") || "/";
+      history.replaceState(null, "", back.startsWith("/") && !back.startsWith("//") ? back : "/");
+      render();
+      if (q.get("src")) window.Viewer?.open({ src: q.get("src"), title: q.get("title") || "Paper", ms: q.get("ms") || "" });
       return;
     }
     const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers };
@@ -280,6 +287,16 @@
 
   /* ---------- Events ---------- */
   document.addEventListener("click", e => {
+    const pdf = e.target.closest("[data-pdf]");
+    if (pdf && !e.metaKey && !e.ctrlKey && !e.shiftKey && window.Viewer) { e.preventDefault(); window.Viewer.open(JSON.parse(pdf.dataset.pdf)); return; }
+    const bmX = e.target.closest("[data-bm-x]");
+    if (bmX) { const b = JSON.parse(bmX.dataset.bmX); window.Viewer.Bookmarks.remove(b.src, b.page); return; }
+    const bm = e.target.closest("[data-bm]");
+    if (bm) {
+      const { src, page } = JSON.parse(bm.dataset.bm), b = window.Viewer.Bookmarks.all().find(x => x.src === src && x.page === page);
+      if (b) { $("#app").classList.remove("nav-open"); window.Viewer.open(b); }
+      return;
+    }
     const hit = e.target.closest("[data-href]");
     if (hit) { closeSearch(); go(hit.dataset.href); return; }
     const a = e.target.closest("a[href]");
@@ -315,7 +332,7 @@
   document.addEventListener("keydown", e => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $("#scrim").hidden ? openSearch() : closeSearch(); }
     else if (e.key === "Escape") closeSearch();
-    else if (e.key === "/" && $("#scrim").hidden && !/INPUT|TEXTAREA/.test(document.activeElement.tagName) && !document.body.classList.contains("viewer-mode")) { e.preventDefault(); openSearch(); }
+    else if (e.key === "/" && $("#scrim").hidden && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
   });
   $("#menuBtn").onclick = () => $("#app").classList.add("nav-open");
   $("#sideScrim").onclick = () => $("#app").classList.remove("nav-open");
@@ -324,6 +341,7 @@
     const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
     root.dataset.theme = dark ? "light" : "dark"; store.set("theme", root.dataset.theme);
   };
-  window.addEventListener("popstate", render);
+  window.addEventListener("popstate", () => { window.Viewer?.close(); render(); });
+  window.addEventListener("gsh-bookmarks", () => renderSide(parse(location.pathname)));
   render();
 })();

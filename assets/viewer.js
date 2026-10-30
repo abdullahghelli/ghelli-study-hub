@@ -1,5 +1,5 @@
-/* PDF viewer with annotation: pen, highlighter, text, eraser, undo/redo, zoom,
-   mark scheme side by side, autosave in the browser, download annotated PDF. */
+/* Pop-up PDF viewer: page controls, bookmarks, search, annotate (pen, highlighter,
+   text, eraser, undo/redo), zoom, mark scheme side by side, autosave, annotated download. */
 (() => {
   /* Bundled libraries (pdf.js 6.2.108 Apache-2.0, pdf-lib 1.17.1 MIT), served from this site. */
   const PDFJS = "/assets/vendor/pdf.min.mjs";
@@ -30,16 +30,39 @@
   const WIDTH = { pen: 0.0022, highlighter: 0.016 };
   const TEXT_SIZE = 0.02;
 
+  /* ---------- Bookmarks (shared with the sidebar) ---------- */
+  const BM_KEY = "gsh-bookmarks";
+  const Bookmarks = {
+    all() { return store.get(BM_KEY) || []; },
+    has(src, page) { return this.all().some(b => b.src === src && b.page === page); },
+    toggle(info, page) {
+      let list = this.all();
+      if (this.has(info.src, page)) list = list.filter(b => !(b.src === info.src && b.page === page));
+      else list.unshift({ src: info.src, title: info.title, desc: info.desc || "", ms: info.ms || "", page, at: Date.now() });
+      store.set(BM_KEY, list.slice(0, 50));
+      window.dispatchEvent(new Event("gsh-bookmarks"));
+    },
+    remove(src, page) {
+      store.set(BM_KEY, this.all().filter(b => !(b.src === src && b.page === page)));
+      window.dispatchEvent(new Event("gsh-bookmarks"));
+    },
+  };
+
   /* ---------- One scrollable PDF ---------- */
   class Pane {
-    constructor(el, { src, title, annotate, onChange }) {
+    constructor(el, { src, title, annotate, startPage, onChange }) {
       Object.assign(this, { el, src, title, annotate, onChange });
-      this.zoom = 1; this.tool = annotate ? "pen" : "hand"; this.color = "ink";
-      this.pages = []; this.bytes = null;
+      this.startPage = startPage || 1;
+      this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "ink";
+      this.pages = []; this.bytes = null; this.current = 1;
       this.key = "gsh-ann:" + src;
       this.ann = (annotate && store.get(this.key)) || {};
       this.undo = []; this.redo = [];
+      this.matches = []; this.matchIdx = -1;
       this.observer = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && this.renderPage(e.target._i)), { root: el, rootMargin: "600px 0px" });
+      el.addEventListener("scroll", () => {
+        const c = this.currentPage(); if (c !== this.current) { this.current = c; this.onChange?.(); }
+      }, { passive: true });
       this.load();
     }
 
@@ -47,16 +70,16 @@
 
     async load() {
       this.status(`<div class="vw-spin"></div><p>Opening ${esc(this.title)}…</p>`);
-      let lib;
-      try { lib = await pdfjs(); } catch (e) { this.status(`<p>The viewer couldn't start. Check your connection and refresh.</p>`); return; }
+      let L;
+      try { L = await pdfjs(); } catch (e) { this.status(`<p>The viewer couldn't start. Check your connection and try again.</p>`); return; }
       try {
         const r = await fetch(this.src, { mode: "cors" });
         if (!r.ok) throw new Error(r.status);
-        await this.open(lib, await r.arrayBuffer());
-      } catch (e) { this.fallback(lib); }
+        await this.open(L, await r.arrayBuffer());
+      } catch (e) { this.fallback(L); }
     }
 
-    fallback(lib) {
+    fallback(L) {
       this.status(`<p class="vw-big">This paper's website doesn't let it open here directly.</p>
         <p>Download it, then open the file here. Your notes will save to this paper.</p>
         <div class="vw-actions">
@@ -64,17 +87,17 @@
           <label class="vw-btn">2. Open the downloaded file<input type="file" accept="application/pdf" hidden></label>
         </div>
         <p class="vw-hint">You can also drag the PDF onto this area.</p>`);
-      const take = async f => { if (f) await this.open(lib, await f.arrayBuffer()); };
+      const take = async f => { if (f) await this.open(L, await f.arrayBuffer()); };
       this.el.querySelector("input").onchange = e => take(e.target.files[0]);
       this.el.ondragover = e => { e.preventDefault(); this.el.classList.add("drop"); };
       this.el.ondragleave = () => this.el.classList.remove("drop");
       this.el.ondrop = e => { e.preventDefault(); this.el.classList.remove("drop"); take([...e.dataTransfer.files].find(f => f.type === "application/pdf")); };
     }
 
-    async open(lib, buf) {
+    async open(L, buf) {
       this.el.ondragover = this.el.ondrop = this.el.ondragleave = null;
       this.bytes = buf.slice(0);
-      try { this.doc = await lib.getDocument({ data: new Uint8Array(buf) }).promise; }
+      try { this.doc = await L.getDocument({ data: new Uint8Array(buf) }).promise; }
       catch (e) { this.status(`<p>That file isn't a readable PDF.</p>`); return; }
       this.pages = [];
       for (let i = 1; i <= this.doc.numPages; i++) {
@@ -85,19 +108,22 @@
       this.wrap = this.el.firstChild;
       this.pages.forEach((p, i) => {
         const pg = document.createElement("div"); pg.className = "pg"; pg._i = i;
-        pg.innerHTML = `<canvas class="pdf"></canvas><canvas class="ink"></canvas><span class="pg-num">${i + 1}</span>`;
-        this.wrap.appendChild(pg); p.el = pg; p.pdf = pg.children[0]; p.ink = pg.children[1];
+        pg.innerHTML = `<canvas class="pdf"></canvas><div class="hl"></div><canvas class="ink"></canvas>`;
+        this.wrap.appendChild(pg); p.el = pg; p.pdf = pg.children[0]; p.hl = pg.children[1]; p.ink = pg.children[2];
         if (this.annotate) this.bindInk(p, i);
         this.observer.observe(pg);
       });
       this.layout();
       this.setTool(this.tool);
+      if (this.startPage > 1) this.goToPage(this.startPage, false);
       this.onChange?.();
     }
 
     fitWidth() { return Math.min(this.el.clientWidth - 32, 920); }
 
     layout() {
+      if (!this.pages.length) return;
+      const keepPage = this.current;
       const w = Math.max(240, this.fitWidth() * this.zoom), dpr = window.devicePixelRatio || 1;
       for (const p of this.pages) {
         const h = w * p.base.height / p.base.width;
@@ -106,8 +132,9 @@
         for (const c of [p.pdf, p.ink]) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); c.style.width = w + "px"; c.style.height = h + "px"; }
         this.drawInk(p, this.pages.indexOf(p));
       }
-      const vis = this.pages.filter(p => { const r = p.el.getBoundingClientRect(), R = this.el.getBoundingClientRect(); return r.bottom > R.top - 600 && r.top < R.bottom + 600; });
-      vis.forEach(p => this.renderPage(this.pages.indexOf(p)));
+      this.goToPage(keepPage, false);
+      const R = this.el.getBoundingClientRect();
+      this.pages.forEach((p, i) => { const r = p.el.getBoundingClientRect(); if (r.bottom > R.top - 600 && r.top < R.bottom + 600) this.renderPage(i); });
     }
 
     async renderPage(i) {
@@ -119,17 +146,81 @@
       p.rendering = false;
     }
 
-    setZoom(z) {
-      const before = this.el.scrollTop / Math.max(1, this.el.scrollHeight);
-      this.zoom = Math.min(3, Math.max(0.5, z)); this.layout();
-      this.el.scrollTop = before * this.el.scrollHeight;
-      this.onChange?.();
+    /* ----- pages ----- */
+    currentPage() {
+      if (!this.pages.length) return 1;
+      const mark = this.el.scrollTop + this.el.clientHeight * 0.35;
+      let n = 1;
+      for (let i = 0; i < this.pages.length; i++) if (this.pages[i].el.offsetTop <= mark) n = i + 1;
+      return n;
     }
+    goToPage(n, smooth = true) {
+      const p = this.pages[Math.min(Math.max(n, 1), this.pages.length) - 1]; if (!p) return;
+      this.el.scrollTo({ top: p.el.offsetTop - 12, behavior: smooth ? "smooth" : "auto" });
+      this.current = this.pages.indexOf(p) + 1; this.onChange?.();
+    }
+
+    setZoom(z) { this.zoom = Math.min(3, Math.max(0.5, z)); this.layout(); this.paintMatches(); this.onChange?.(); }
 
     setTool(t) {
       this.commitText();
       this.tool = t;
+      if (t !== "hand") this.drawTool = t;
       this.el.dataset.tool = t;
+      this.onChange?.();
+    }
+
+    /* ----- search ----- */
+    async buildIndex() {
+      if (this.index) return this.index;
+      const L = await pdfjs();
+      this.index = [];
+      for (let i = 0; i < this.pages.length; i++) {
+        const { page, base } = this.pages[i];
+        const tc = await page.getTextContent();
+        const items = [];
+        for (const it of tc.items) {
+          if (!it.str || !it.str.trim()) continue;
+          const tx = L.Util.transform(base.transform, it.transform);
+          const fh = Math.hypot(tx[2], tx[3]) || Math.abs(it.height) || 10;
+          items.push({ s: it.str.toLowerCase(), x: tx[4] / base.width, y: (tx[5] - fh) / base.height, w: (it.width || 0) / base.width, h: (fh * 1.15) / base.height });
+        }
+        this.index.push(items);
+      }
+      return this.index;
+    }
+    async search(q) {
+      q = q.trim().toLowerCase();
+      this.matches = []; this.matchIdx = -1;
+      if (q && this.pages.length) {
+        const idx = await this.buildIndex();
+        idx.forEach((items, i) => items.forEach(it => { if (it.s.includes(q)) this.matches.push({ page: i, it }); }));
+        if (this.matches.length) {
+          const from = this.matches.findIndex(m => m.page + 1 >= this.current);
+          this.matchIdx = from >= 0 ? from : 0;
+        }
+      }
+      this.paintMatches(true);
+      return this.matches.length;
+    }
+    stepMatch(d) {
+      if (!this.matches.length) return;
+      this.matchIdx = (this.matchIdx + d + this.matches.length) % this.matches.length;
+      this.paintMatches(true);
+    }
+    paintMatches(scroll) {
+      this.pages.forEach(p => { if (p.hl) p.hl.innerHTML = ""; });
+      this.matches.forEach((m, k) => {
+        const p = this.pages[m.page], d = document.createElement("i");
+        if (k === this.matchIdx) d.className = "cur";
+        Object.assign(d.style, { left: m.it.x * 100 + "%", top: m.it.y * 100 + "%", width: m.it.w * 100 + "%", height: m.it.h * 100 + "%" });
+        p.hl.appendChild(d);
+      });
+      const cur = this.matches[this.matchIdx];
+      if (scroll && cur) {
+        const p = this.pages[cur.page];
+        this.el.scrollTo({ top: p.el.offsetTop + cur.it.y * p.h - this.el.clientHeight * 0.35, behavior: "smooth" });
+      }
       this.onChange?.();
     }
 
@@ -137,7 +228,7 @@
     snapshot() { this.undo.push(JSON.stringify(this.ann)); if (this.undo.length > 80) this.undo.shift(); this.redo = []; }
     doUndo() { if (!this.undo.length) return; this.commitText(); this.redo.push(JSON.stringify(this.ann)); this.ann = JSON.parse(this.undo.pop()); this.redrawAll(); this.save(); }
     doRedo() { if (!this.redo.length) return; this.undo.push(JSON.stringify(this.ann)); this.ann = JSON.parse(this.redo.pop()); this.redrawAll(); this.save(); }
-    clearAll() { if (!Object.keys(this.ann).length) return; this.snapshot(); this.ann = {}; this.redrawAll(); this.save(); }
+    clearAll() { if (!this.hasNotes()) return; this.snapshot(); this.ann = {}; this.redrawAll(); this.save(); }
     hasNotes() { return Object.values(this.ann).some(a => a.length); }
     save() {
       clearTimeout(this._t);
@@ -238,7 +329,7 @@
       const grow = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; ta.style.width = "auto"; ta.style.width = Math.min(p.w - it.x * p.w - 4, Math.max(60, ta.scrollWidth + 8)) + "px"; };
       ta.oninput = grow; grow();
       this.editing = { ta, p, i, it, wasExisting: !!existing };
-      ta.onkeydown = e => { if (e.key === "Escape") { ta.blur(); } e.stopPropagation(); };
+      ta.onkeydown = e => { if (e.key === "Escape") ta.blur(); e.stopPropagation(); };
       ta.onblur = () => this.commitText();
       ta.focus(); requestAnimationFrame(() => ta.focus());
     }
@@ -253,7 +344,7 @@
     }
 
     async download() {
-      if (!this.bytes) return;
+      if (!this.bytes) throw new Error("not loaded");
       await loadScript(PDFLIB);
       const { PDFDocument } = window.PDFLib;
       const doc = await PDFDocument.load(this.bytes, { ignoreEncryption: true });
@@ -269,15 +360,16 @@
       }
       const blob = new Blob([await doc.save()], { type: "application/pdf" });
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob); a.download = this.title.replace(/[^\w\s.-]+/g, " ").replace(/\s+/g, " ").trim() + " (annotated).pdf";
+      a.href = URL.createObjectURL(blob);
+      a.download = this.title.replace(/[^\w\s.-]+/g, " ").replace(/\s+/g, " ").trim() + (this.hasNotes() ? " (annotated)" : "") + ".pdf";
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     }
   }
 
-  /* ---------- Viewer page ---------- */
+  /* ---------- Pop-up ---------- */
   const I = {
-    hand: '<path d="M7 11V5.5a1.5 1.5 0 0 1 3 0V10m0-1V4.5a1.5 1.5 0 0 1 3 0V10m0-.5V6a1.5 1.5 0 0 1 3 0v6a6 6 0 0 1-6 6h-.5a5 5 0 0 1-4.2-2.3L3.5 12.7a1.5 1.5 0 0 1 2.4-1.8L7 12.5"/>',
+    file: '<path d="M5.5 2.5h6l3 3v12h-9Z"/><path d="M11.5 2.5v3h3"/>',
     pen: '<path d="M4 16l1-4 8.5-8.5a2.1 2.1 0 0 1 3 3L8 15Z"/><path d="M12 5l3 3"/>',
     highlighter: '<path d="m9 15-4 1 1-4 7.5-7.5 3 3Z"/><path d="M3 18h14" stroke-width="2.4" opacity=".45"/>',
     text: '<path d="M5 5h10M10 5v11M7.5 16h5"/>',
@@ -285,115 +377,197 @@
     undo: '<path d="M7 7H12a4 4 0 0 1 0 8H8"/><path d="M9.5 4.5 7 7l2.5 2.5"/>',
     redo: '<path d="M13 7H8a4 4 0 0 0 0 8h4"/><path d="M10.5 4.5 13 7l-2.5 2.5"/>',
     minus: '<path d="M5 10h10"/>', plus: '<path d="M5 10h10M10 5v10"/>',
+    up: '<path d="m5.5 12 4.5-4.5 4.5 4.5"/>', down: '<path d="m5.5 8 4.5 4.5L14.5 8"/>',
     ms: '<rect x="3" y="4" width="14" height="12" rx="1.5"/><path d="M10 4v12"/>',
-    down: '<path d="M10 3.5v9m-3.5-3.5L10 12.5l3.5-3.5M4 16.5h12"/>',
-    back: '<path d="M12 5 7 10l5 5"/>',
+    save: '<path d="M10 3.5v9m-3.5-3.5L10 12.5l3.5-3.5M4 16.5h12"/>',
+    close: '<path d="m5.5 5.5 9 9m0-9-9 9"/>',
+    search: '<circle cx="9" cy="9" r="5.5"/><path d="m13 13 4 4"/>',
+    bookmark: '<path d="M6 3.5h8v13l-4-3-4 3Z"/>',
+    annotate: '<path d="M4 16l1-4 8.5-8.5a2.1 2.1 0 0 1 3 3L8 15Z"/>',
     trash: '<path d="M5 6h10M8 6V4.5h4V6M6.5 6l.7 9.5h5.6l.7-9.5"/>',
   };
-  const svg = n => `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
+  const svg = (n, fill) => `<svg viewBox="0 0 20 20" fill="${fill ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
+  const TOOL_NAMES = { pen: "Pen (P)", highlighter: "Highlighter (H)", text: "Text (T)", eraser: "Eraser (E)" };
 
   let active = null;
 
-  function mount(root, params) {
-    const src = params.get("src"), title = params.get("title") || "Paper", ms = params.get("ms"), back = params.get("back") || "/";
-    if (!src) { root.innerHTML = `<div class="vw-status"><p>No paper chosen. <a class="link" href="/">Go home</a></p></div>`; return; }
-    root.innerHTML = `<div class="vw">
-      <div class="vw-bar">
-        <a class="vw-ico" href="${esc(back)}" title="Back" aria-label="Back">${svg("back")}</a>
-        <div class="vw-title" title="${esc(title)}">${esc(title)}</div>
-        <div class="vw-tools" role="toolbar" aria-label="Annotation tools">
-          ${["hand", "pen", "highlighter", "text", "eraser"].map(t => `<button class="vw-ico" data-tool="${t}" title="${{ hand: "Scroll (V)", pen: "Pen (P)", highlighter: "Highlighter (H)", text: "Text (T)", eraser: "Eraser (E)" }[t]}" aria-label="${t}">${svg(t)}</button>`).join("")}
-          <span class="vw-sep"></span>
-          ${Object.keys(COLORS).map(c => `<button class="vw-color" data-color="${c}" title="${c === "ink" ? "Black" : c[0].toUpperCase() + c.slice(1)}" aria-label="${c}"><i style="background:${COLORS[c]}"></i></button>`).join("")}
-          <span class="vw-sep"></span>
-          <button class="vw-ico" data-do="undo" title="Undo (Ctrl+Z)" aria-label="Undo">${svg("undo")}</button>
-          <button class="vw-ico" data-do="redo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">${svg("redo")}</button>
-          <button class="vw-ico" data-do="clear" title="Clear all notes" aria-label="Clear all notes">${svg("trash")}</button>
+  function open(info) {
+    close();
+    const { src, title = "Paper", desc = "", ms = "", page = 1 } = info || {};
+    if (!src) return;
+    const root = document.createElement("div");
+    root.className = "pv-scrim";
+    root.innerHTML = `<div class="pv" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+      <header class="pv-head">
+        <span class="pv-icon">${svg("file")}</span>
+        <div class="pv-name"><b>${esc(title)}</b>${desc ? `<small>${esc(desc)}</small>` : ""}</div>
+        <button class="vw-ico" data-do="search" title="Search this paper" aria-label="Search this paper">${svg("search")}</button>
+        <button class="vw-ico" data-do="download" title="Download" aria-label="Download">${svg("save")}</button>
+        <button class="vw-ico" data-do="close" title="Close (Esc)" aria-label="Close">${svg("close")}</button>
+      </header>
+      <div class="pv-find" hidden>
+        ${svg("search")}<input type="search" placeholder="Find in this paper" aria-label="Find in this paper" id="pv-find-input">
+        <span class="pv-count" data-count></span>
+        <button class="vw-ico" data-do="find-prev" title="Previous match" aria-label="Previous match">${svg("up")}</button>
+        <button class="vw-ico" data-do="find-next" title="Next match" aria-label="Next match">${svg("down")}</button>
+        <button class="vw-ico" data-do="find-close" title="Close search" aria-label="Close search">${svg("close")}</button>
+      </div>
+      <div class="pv-bar">
+        <div class="pv-pager">
+          <button class="vw-ico" data-do="prev" title="Previous page" aria-label="Previous page">${svg("up")}</button>
+          <span data-pages>–</span>
+          <button class="vw-ico" data-do="next" title="Next page" aria-label="Next page">${svg("down")}</button>
         </div>
-        <div class="vw-right">
+        <button class="pv-pill" data-do="bookmark">${svg("bookmark")}<span>Bookmark</span></button>
+        <button class="pv-pill" data-do="annotate">${svg("annotate")}<span>Annotate</span></button>
+        ${ms ? `<button class="pv-pill" data-do="ms">${svg("ms")}<span>Mark scheme</span></button>` : ""}
+        <div class="pv-zoom">
           <button class="vw-ico" data-do="zoomout" title="Zoom out" aria-label="Zoom out">${svg("minus")}</button>
-          <span class="vw-zoom" data-zoom>100%</span>
+          <span data-zoom>100%</span>
           <button class="vw-ico" data-do="zoomin" title="Zoom in" aria-label="Zoom in">${svg("plus")}</button>
-          ${ms ? `<button class="vw-btn sm" data-do="ms">${svg("ms")}<span>Mark scheme</span></button>` : ""}
-          <button class="vw-btn sm" data-do="download" title="Download with your notes">${svg("down")}<span>Download</span></button>
         </div>
+      </div>
+      <div class="pv-tools" hidden role="toolbar" aria-label="Annotation tools">
+        ${Object.keys(TOOL_NAMES).map(t => `<button class="vw-ico" data-tool="${t}" title="${TOOL_NAMES[t]}" aria-label="${TOOL_NAMES[t]}">${svg(t)}</button>`).join("")}
+        <span class="vw-sep"></span>
+        ${Object.keys(COLORS).map(c => `<button class="vw-color" data-color="${c}" title="${c === "ink" ? "Black" : c[0].toUpperCase() + c.slice(1)}" aria-label="${c === "ink" ? "Black" : c}"><i style="background:${COLORS[c]}"></i></button>`).join("")}
+        <span class="vw-sep"></span>
+        <button class="vw-ico" data-do="undo" title="Undo (Ctrl+Z)" aria-label="Undo">${svg("undo")}</button>
+        <button class="vw-ico" data-do="redo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">${svg("redo")}</button>
+        <button class="vw-ico" data-do="clear" title="Clear all notes" aria-label="Clear all notes">${svg("trash")}</button>
+        <span class="pv-saved" data-save></span>
       </div>
       <div class="vw-confirm" hidden><span>Clear every note on this paper?</span><button class="vw-btn sm danger" data-do="clear-yes">Clear notes</button><button class="vw-btn sm" data-do="clear-no">Cancel</button></div>
       <div class="vw-body">
         <div class="vw-pane main"></div>
         ${ms ? `<div class="vw-pane ms" hidden><div class="vw-pane-label">Mark scheme <a href="${esc(ms)}" target="_blank" rel="noopener">original ↗</a></div><div class="vw-pane-inner"></div></div>` : ""}
       </div>
-      <div class="vw-foot"><span data-save></span><a href="${esc(src)}" target="_blank" rel="noopener">Original file ↗</a></div>
     </div>`;
+    document.body.appendChild(root);
+    document.body.classList.add("pv-open");
 
-    const bar = root.querySelector(".vw-bar");
+    const $ = s => root.querySelector(s);
+    const st = { info: { src, title, desc, ms }, root, annotating: false, lastFocus: document.activeElement };
+    active = st;
+
     const sync = () => {
-      const p = active.main;
-      bar.querySelectorAll("[data-tool]").forEach(b => b.classList.toggle("on", b.dataset.tool === p.tool));
-      bar.querySelectorAll("[data-color]").forEach(b => b.classList.toggle("on", b.dataset.color === p.color));
-      bar.querySelector('[data-do="undo"]').disabled = !p.undo.length;
-      bar.querySelector('[data-do="redo"]').disabled = !p.redo.length;
-      bar.querySelector("[data-zoom]").textContent = Math.round(p.zoom * 100) + "%";
-      const s = root.querySelector("[data-save]");
-      s.textContent = !p.pages.length ? "" : !p.hasNotes() ? "Notes save automatically in this browser" : p.saved === false ? "Couldn't save notes in this browser" : "Notes saved in this browser";
+      if (active !== st) return;
+      const p = st.main, n = p.pages.length;
+      $("[data-pages]").textContent = n ? `${p.current} / ${n}` : "–";
+      $('[data-do="prev"]').disabled = !n || p.current <= 1;
+      $('[data-do="next"]').disabled = !n || p.current >= n;
+      const bm = n && Bookmarks.has(src, p.current), bb = $('[data-do="bookmark"]');
+      bb.classList.toggle("on", !!bm); bb.innerHTML = `${svg("bookmark", bm)}<span>${bm ? "Bookmarked" : "Bookmark"}</span>`; bb.disabled = !n;
+      $('[data-do="annotate"]').classList.toggle("on", st.annotating);
+      $('[data-do="annotate"]').disabled = !n;
+      $(".pv-tools").hidden = !st.annotating;
+      root.querySelectorAll("[data-tool]").forEach(b => b.classList.toggle("on", b.dataset.tool === p.tool));
+      root.querySelectorAll("[data-color]").forEach(b => b.classList.toggle("on", b.dataset.color === p.color));
+      $('[data-do="undo"]').disabled = !p.undo.length;
+      $('[data-do="redo"]').disabled = !p.redo.length;
+      $('[data-do="download"]').disabled = !p.bytes;
+      $("[data-zoom]").textContent = Math.round(p.zoom * 100) + "%";
+      $("[data-save]").textContent = !p.hasNotes() ? "Notes save in this browser" : p.saved === false ? "Couldn't save notes" : "Saved";
+      const q = $("#pv-find-input").value.trim();
+      $("[data-count]").textContent = !q ? "" : p.matches.length ? `${p.matchIdx + 1} of ${p.matches.length}` : "No matches";
     };
-    active = { root };
-    active.main = new Pane(root.querySelector(".vw-pane.main"), { src, title, annotate: true, onChange: () => active && sync() });
+    st.main = new Pane($(".vw-pane.main"), { src, title, annotate: true, startPage: page, onChange: sync });
     sync();
 
-    bar.addEventListener("click", async e => {
-      const b = e.target.closest("button"); if (!b) return;
-      const p = active.main;
+    const setAnnotate = on => {
+      st.annotating = on;
+      st.main.setTool(on ? st.main.drawTool : "hand");
+    };
+    const toggleMs = btn => {
+      const pane = $(".vw-pane.ms"), body = $(".vw-body");
+      const show = pane.hidden; pane.hidden = !show; body.classList.toggle("split", show); btn.classList.toggle("on", show);
+      if (show && !st.ms) st.ms = new Pane(pane.querySelector(".vw-pane-inner"), { src: ms, title: "Mark scheme", annotate: false });
+      setTimeout(() => { st.main.layout(); st.ms?.layout(); }, 0);
+    };
+    const openFind = () => { $(".pv-find").hidden = false; const i = $("#pv-find-input"); i.focus(); i.select(); };
+    const closeFind = () => { $(".pv-find").hidden = true; $("#pv-find-input").value = ""; st.main.search(""); };
+
+    root.addEventListener("click", async e => {
+      if (e.target === root) { close(); return; }
+      const b = e.target.closest("button"); if (!b || b.disabled) return;
+      const p = st.main;
       if (b.dataset.tool) p.setTool(b.dataset.tool);
-      if (b.dataset.color) { p.color = b.dataset.color; if (p.tool === "hand" || p.tool === "eraser") p.setTool("pen"); else sync(); }
-      const act = b.dataset.do;
-      if (act === "undo") p.doUndo();
-      if (act === "redo") p.doRedo();
-      if (act === "clear") root.querySelector(".vw-confirm").hidden = false;
-      if (act === "zoomin") p.setZoom(p.zoom + 0.2);
-      if (act === "zoomout") p.setZoom(p.zoom - 0.2);
-      if (act === "ms") toggleMs(b);
-      if (act === "download") {
-        const label = b.querySelector("span"), old = label.textContent;
-        label.textContent = "Preparing…"; b.disabled = true;
-        try { await p.download(); label.textContent = "Downloaded"; } catch (err) { console.error(err); label.textContent = "Download failed"; }
-        setTimeout(() => { label.textContent = old; b.disabled = false; }, 1800);
+      if (b.dataset.color) { p.color = b.dataset.color; if (p.tool === "eraser") p.setTool("pen"); else sync(); }
+      switch (b.dataset.do) {
+        case "close": close(); break;
+        case "prev": p.goToPage(p.current - 1); break;
+        case "next": p.goToPage(p.current + 1); break;
+        case "bookmark": Bookmarks.toggle(st.info, p.current); sync(); break;
+        case "annotate": setAnnotate(!st.annotating); break;
+        case "ms": toggleMs(b); break;
+        case "zoomin": p.setZoom(p.zoom + 0.2); break;
+        case "zoomout": p.setZoom(p.zoom - 0.2); break;
+        case "undo": p.doUndo(); break;
+        case "redo": p.doRedo(); break;
+        case "clear": $(".vw-confirm").hidden = false; break;
+        case "clear-yes": p.clearAll(); $(".vw-confirm").hidden = true; break;
+        case "clear-no": $(".vw-confirm").hidden = true; break;
+        case "search": $(".pv-find").hidden ? openFind() : closeFind(); break;
+        case "find-prev": p.stepMatch(-1); break;
+        case "find-next": p.stepMatch(1); break;
+        case "find-close": closeFind(); break;
+        case "download":
+          b.classList.add("busy"); b.title = "Preparing download…";
+          try { await p.download(); } catch (err) { console.error(err); b.title = "Download failed, try again"; }
+          b.classList.remove("busy"); setTimeout(() => { b.title = "Download"; }, 2000);
+          break;
       }
     });
-    root.querySelector(".vw-confirm").addEventListener("click", e => {
-      const act = e.target.closest("button")?.dataset.do; if (!act) return;
-      if (act === "clear-yes") active.main.clearAll();
-      root.querySelector(".vw-confirm").hidden = true;
+    let ft;
+    $("#pv-find-input").addEventListener("input", e => { clearTimeout(ft); ft = setTimeout(() => st.main.search(e.target.value), 180); });
+    $("#pv-find-input").addEventListener("keydown", e => {
+      if (e.key === "Enter") { e.preventDefault(); st.main.stepMatch(e.shiftKey ? -1 : 1); }
+      if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeFind(); }
     });
 
-    function toggleMs(btn) {
-      const pane = root.querySelector(".vw-pane.ms"), body = root.querySelector(".vw-body");
-      const show = pane.hidden; pane.hidden = !show; body.classList.toggle("split", show); btn.classList.toggle("on", show);
-      if (show && !active.ms) active.ms = new Pane(pane.querySelector(".vw-pane-inner"), { src: ms, title: "Mark scheme", annotate: false });
-      setTimeout(() => { active.main.layout(); active.ms?.pages.length && active.ms.layout(); }, 0);
-    }
-
-    let rt; window.addEventListener("resize", active.onResize = () => { clearTimeout(rt); rt = setTimeout(() => { active?.main.pages.length && active.main.layout(); active?.ms?.pages.length && active.ms.layout(); }, 150); });
-    document.addEventListener("keydown", active.onKey = e => {
-      if (/INPUT|TEXTAREA/.test(document.activeElement.tagName) || !document.querySelector("#scrim").hidden) return;
-      const p = active.main, k = e.key.toLowerCase();
+    let rt;
+    st.onResize = () => { clearTimeout(rt); rt = setTimeout(() => { st.main.layout(); st.ms?.layout(); }, 150); };
+    window.addEventListener("resize", st.onResize);
+    st.onKey = e => {
+      if (active !== st) return;
+      const typing = /INPUT|TEXTAREA/.test(document.activeElement.tagName);
+      if (e.key === "Escape" && !typing) { e.preventDefault(); e.stopImmediatePropagation(); if (!$(".pv-find").hidden) closeFind(); else close(); return; }
+      const p = st.main, k = e.key.toLowerCase();
+      if ((e.metaKey || e.ctrlKey) && k === "f") { e.preventDefault(); e.stopImmediatePropagation(); openFind(); return; }
+      if ((e.metaKey || e.ctrlKey) && k === "k") { e.stopImmediatePropagation(); e.preventDefault(); return; }
+      if (typing) return;
       if ((e.metaKey || e.ctrlKey) && k === "z") { e.preventDefault(); e.shiftKey ? p.doRedo() : p.doUndo(); return; }
       if ((e.metaKey || e.ctrlKey) && k === "y") { e.preventDefault(); p.doRedo(); return; }
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const map = { v: "hand", p: "pen", h: "highlighter", t: "text", e: "eraser" };
-      if (map[k]) p.setTool(map[k]);
+      e.stopImmediatePropagation();
+      if (k === "arrowdown" || k === "pagedown") { e.preventDefault(); p.goToPage(p.current + 1); }
+      if (k === "arrowup" || k === "pageup") { e.preventDefault(); p.goToPage(p.current - 1); }
       if (k === "=" || k === "+") p.setZoom(p.zoom + 0.2);
       if (k === "-") p.setZoom(p.zoom - 0.2);
-    });
+      if (k === "a") setAnnotate(!st.annotating);
+      if (k === "b" && p.pages.length) { Bookmarks.toggle(st.info, p.current); sync(); }
+      if (st.annotating) {
+        const map = { p: "pen", h: "highlighter", t: "text", e: "eraser" };
+        if (map[k]) p.setTool(map[k]);
+      }
+    };
+    document.addEventListener("keydown", st.onKey, true);
+    st.onBm = () => sync();
+    window.addEventListener("gsh-bookmarks", st.onBm);
+    setTimeout(() => $('[data-do="close"]').focus({ preventScroll: true }), 0);
   }
 
-  function unmount() {
-    if (!active) return;
-    active.main?.commitText();
-    window.removeEventListener("resize", active.onResize);
-    document.removeEventListener("keydown", active.onKey);
+  function close() {
+    const st = active; if (!st) return;
     active = null;
+    st.main?.commitText();
+    window.removeEventListener("resize", st.onResize);
+    document.removeEventListener("keydown", st.onKey, true);
+    window.removeEventListener("gsh-bookmarks", st.onBm);
+    st.root.remove();
+    document.body.classList.remove("pv-open");
+    try { st.lastFocus?.focus({ preventScroll: true }); } catch (e) {}
   }
 
-  window.Viewer = { mount, unmount };
+  window.Viewer = { open, close, Bookmarks, isOpen: () => !!active };
 })();
