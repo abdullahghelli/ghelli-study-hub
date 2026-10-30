@@ -335,7 +335,7 @@
     return `<article class="qb-card" data-qb-card="${i.id}">
       <header class="qb-card-head">
         <div class="qb-title"><b>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` <span class="qb-part">part (${i.part})</span>` : ""}</b>
-          ${spec ? `<div class="qb-specs">${spec}</div>` : ""}
+          ${spec ? `<div class="qb-specs">${spec}${i.checked ? `<span class="qb-checked" title="Spec points checked by hand against the mark scheme">✓ Checked</span>` : ""}</div>` : ""}
           ${i.part ? `<small>Shown with the question's opening lines</small>` : ""}</div>
         ${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}
       </header>

@@ -454,6 +454,7 @@ html.side-hidden .side{display:none}
 .qb-head h2 .qb-num{min-width:0;margin-right:.45em;color:var(--muted)}
 .qb-specs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
 .qb-spec{font-size:12.5px;line-height:1.3;padding:3px 9px;border-radius:7px;background:var(--side);color:var(--muted)}
+.qb-checked{font-size:12px;align-self:center;padding:3px 4px;color:var(--accent);font-weight:500}
 .qb-spec b{font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums;margin-right:2px}
 .qb-marks{flex:none;font-size:12px;font-weight:500;padding:3px 9px;border-radius:999px;background:var(--side);color:var(--muted);font-variant-numeric:tabular-nums}
 .qb-snip{background:#fff;aspect-ratio:var(--ar,1.6);display:flex;flex-direction:column;gap:4px;padding:6px 0;max-width:100%}

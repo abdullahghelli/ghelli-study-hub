@@ -1,0 +1,9 @@
+{
+  "_about": "Hand-checked corrections from the exhaustive question bank check. Keyed by item id; each entry can set topic, spec and partTopics, or drop an item. Applied after automatic tagging.",
+  "9ma0-p2-qp-jun2019-q10": {
+    "topic": "vectors",
+    "spec": ["10.3", "10.4", "10.5"],
+    "partTopics": {"a": "vectors", "b": "vectors", "c": "vectors"},
+    "note": "MS: (a) CM from CA + AM (10.3); (b) ON = OC + λCM, position vectors (10.4); (c) compare coefficients of a and b to deduce ON:NB = 2:1, vectors solving a geometric problem (10.5). The 'prove' in (c) is vector reasoning, not the Proof topic."
+  }
+}

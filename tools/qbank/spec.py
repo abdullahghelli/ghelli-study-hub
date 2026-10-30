@@ -86,7 +86,7 @@ POINTS = {
    ("10.2", "Magnitude and direction", [(r"magnitude|unit vector|\bdirection\b|bearing|angle", 3)]),
    ("10.3", "Vector addition and scalar multiples", [(r"parallel|collinear|scalar|parallelogram|in terms of a and b|in terms of", 3)]),
    ("10.4", "Position vectors and distance", [(r"position vector|distance between|\boa\b|\bob\b|→", 3)]),
-   ("10.5", "Vectors in context", [(r"\bforce|particle|\bship|\bboat|\bmodel", 3)]),
+   ("10.5", "Solving problems with vectors", [(r"\bforce|particle|\bship|\bboat|\bmodel", 3)]),
  ]),
  "sampling": ("1.1", [("1.1", "Populations and sampling", [(r"sampl|population|census", 2)])]),
  "data": ("2.3", [
