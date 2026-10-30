@@ -18,17 +18,20 @@ files/              put PDFs here (optional; links can also point to Google Driv
 
 Everything lives in `assets/data.js`.
 
-- **Topic files:** add to `files`, keyed `"level/subject/board/topicNumber"`:
+The site is organised as qualification → board/option → subject → topic
+(GCSE includes IGCSE boards, A Level includes IAL, IB has HL and SL).
+
+- **Topic files:** add to `files`, keyed `"level/track/subject/topicNumber"`:
   ```js
-  "a-level/physics/edexcel/2": {
-    notes: { "Revision notes": "/files/a-level/physics/edexcel/02-mechanics-notes.pdf" },
+  "a-level/edexcel-ial/physics/1": {
+    notes: { "Revision notes": "/files/a-level/edexcel-ial/physics/01-mechanics-notes.pdf" },
   },
   ```
-- **Past papers:** add to `papers`, keyed `"level/subject/board"`, then `"Series Year|paper|QP"`:
+- **Past papers:** add to `papers`, keyed `"level/track/subject"`, then `"Series Year|paper|QP"`:
   ```js
-  "a-level/physics/edexcel": { "June 2024|1|QP": "/files/a-level/physics/edexcel/papers/p1-qp-jun24.pdf" },
+  "gcse/cambridge-igcse/physics": { "May/Jun 2024|2|QP": "/files/gcse/cambridge-igcse/physics/papers/p2-qp-mj24.pdf" },
   ```
-- **New subject or board:** add it under `courses`.
+- **New subject or board:** add it under the right level's `tracks` in `levels`.
 
 Anything without a link shows as "Coming soon".
 
@@ -38,7 +41,7 @@ Anything without a link shows as "Coming soon".
 - Build command: (leave empty)
 - Build output directory: `/`
 
-Cloudflare Pages serves `index.html` for any path that isn't a file, so clean URLs like `/a-level/physics/edexcel` work without extra config.
+Cloudflare Pages serves `index.html` for any path that isn't a file, so clean URLs like `/gcse/cambridge-igcse/physics` work without extra config.
 
 ## Run locally
 
