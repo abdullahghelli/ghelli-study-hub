@@ -28,9 +28,11 @@
   /* Pen colours: chalk white, pale yellow and mint green (from the house notes style).
      Each has a version for dark pages (true chalk colour) and a deeper one so it reads on white paper. */
   const PALETTE = {
-    ink:    { name: "Chalk",  dark: "#f3f3ef", light: "#1b1f1e" },
-    yellow: { name: "Yellow", dark: "#ebe48e", light: "#a38a00" },
-    green:  { name: "Green",  dark: "#63dba4", light: "#11905d" },
+    green:  { name: "Green",  dark: "#6ee7af", light: "#11905d" },
+    coral:  { name: "Coral",  dark: "#f19d90", light: "#d2533c" },
+    yellow: { name: "Yellow", dark: "#e0e582", light: "#9a8a00" },
+    purple: { name: "Purple", dark: "#c3a4e6", light: "#7a4fd0" },
+    ink:    { name: "White",  dark: "#f3f3ef", light: "#1b1f1e" },
   };
   const LEGACY = { red: "#d93025", blue: "#1a64d6" };
   const colorOf = (c, dark) => PALETTE[c] ? PALETTE[c][dark ? "dark" : "light"] : (LEGACY[c] || (/^#[0-9a-f]{6}$/i.test(c || "") ? c : PALETTE.ink[dark ? "dark" : "light"]));
@@ -61,7 +63,7 @@
     constructor(el, { src, title, annotate, startPage, onChange }) {
       Object.assign(this, { el, src, title, annotate, onChange });
       this.startPage = startPage || 1;
-      this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "ink"; this.dark = false;
+      this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "green"; this.dark = false;
       this.pages = []; this.bytes = null; this.current = 1;
       this.key = "gsh-ann:" + src;
       this.ann = (annotate && store.get(this.key)) || {};
