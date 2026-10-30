@@ -42,6 +42,15 @@
   const isPdf = href => /\.pdf($|[?#])/i.test(href);
   const bmIcon = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M6 3.5h8v13l-4-3-4 3Z"/></svg>';
 
+  /* Who owns each board's past papers. */
+  const ownerNote = t => {
+    if (t.startsWith("edexcel")) return "Past papers and mark schemes are the property of Pearson Education Ltd (Pearson Edexcel) and are used with permission.";
+    if (t.startsWith("aqa")) return "Past papers and mark schemes are the property of AQA.";
+    if (t.startsWith("cambridge")) return "Past papers and mark schemes are the property of Cambridge University Press & Assessment.";
+    if (t === "hl" || t === "sl") return "Past papers and mark schemes are the property of the International Baccalaureate Organization.";
+    return "Past papers and mark schemes are the property of their exam board.";
+  };
+
   /* ---------- Data helpers ---------- */
   function resources(l, t, s, n) {
     const f = S.files[K(l, t, s, n)] || {};
@@ -205,7 +214,8 @@
       <h2>By series</h2>
       <div class="pp"><table><thead><tr><th>Series</th>${cols.map(([, label]) => `<th>${esc(label)}</th>`).join("")}${hasER ? "<th>Report</th>" : ""}</tr></thead><tbody>${rows}</tbody></table></div>
       ${c.paperNote ? `<p class="legend">${esc(c.paperNote)}</p>` : ""}
-      <p class="legend">QP question paper · MS mark scheme${hasER ? " · ER examiner report" : ""}. Highlighted codes are available.</p>`;
+      <p class="legend">QP question paper · MS mark scheme${hasER ? " · ER examiner report" : ""}. Highlighted codes are available.</p>
+      <p class="legend owner">${esc(ownerNote(t))}</p>`;
   }
 
   function byLevel(fn) {
