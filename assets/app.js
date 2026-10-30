@@ -25,6 +25,8 @@
     subject: (l, t, s) => `/${l}/${t}/${s}`,
     topic: (l, t, s, n) => `/${l}/${t}/${s}/${n}-${slug(course(l, t, s).topics[n - 1])}`,
     papers: (l, t, s) => `/${l}/${t}/${s}/past-papers`,
+    ppLevel: l => `/past-papers/${l}`,
+    ppTrack: (l, t) => `/past-papers/${l}/${t}`,
   };
 
   const icon = {
@@ -72,6 +74,10 @@
     if (!p.length) return { kind: "home" };
     if (p[0] === "viewer") return { kind: "viewer" };
     if (p.length === 1 && ["past-papers", "formula-sheets", "exam-dates"].includes(p[0])) return { kind: p[0] };
+    if (p[0] === "past-papers" && level(p[1]) && p.length <= 3) {
+      if (p.length === 3 && !track(p[1], p[2])) return { kind: "notfound" };
+      return { kind: "level", l: p[1], t: p[2], mode: "papers" };
+    }
     const [l, t, s, rest] = p;
     if (!level(l)) return { kind: "notfound" };
     if (p.length === 1) return { kind: "level", l };
@@ -92,21 +98,22 @@
 
   /* ---------- Chrome ---------- */
   function renderSide(r) {
+    if (r.mode === "papers") r = { kind: r.kind, l: r.l, mode: r.mode, quiet: true };
     const path = location.pathname;
     let h = `<a class="brand" href="/"><img src="/assets/favicon.svg" alt="">${esc(S.name)}</a>
       <a class="nav ${path === "/" ? "on" : ""}" href="/">${icon.home}Home</a>
       <button class="nav" data-act="search">${icon.search}Search</button>
       <div class="side-label">Qualifications</div>`;
     for (const L of S.levels) {
-      const open = openGroups[L.id] ?? r.l === L.id;
-      h += `<div class="group ${open ? "open" : ""}"><button class="nav ${r.l === L.id && !r.t ? "on" : ""}" data-act="group" data-id="${L.id}">${icon.chev}${esc(L.short || L.name)}</button><div class="group-kids">`;
+      const open = openGroups[L.id] ?? (r.l === L.id && !r.quiet);
+      h += `<div class="group ${open ? "open" : ""}"><button class="nav ${r.l === L.id && !r.t && !r.quiet ? "on" : ""}" data-act="group" data-id="${L.id}">${icon.chev}${esc(L.short || L.name)}</button><div class="group-kids">`;
       for (const g of L.groups) for (const t of g.tracks) {
         h += `<a class="nav ${r.l === L.id && r.t === t ? "on" : ""}" href="${url.track(L.id, t)}">${esc(L.tracks[t].name)}</a>`;
       }
       h += `</div></div>`;
     }
     h += `<div class="side-label">Exam prep</div>
-      <a class="nav ${path === "/past-papers" ? "on" : ""}" href="/past-papers">${icon.paper}Past papers</a>
+      <a class="nav ${path === "/past-papers" || path.startsWith("/past-papers/") ? "on" : ""}" href="/past-papers">${icon.paper}Past papers</a>
       <a class="nav ${path === "/formula-sheets" ? "on" : ""}" href="/formula-sheets">${icon.sigma}Formula sheets</a>
       <a class="nav ${path === "/exam-dates" ? "on" : ""}" href="/exam-dates">${icon.clock}Exam dates</a>
       <div class="side-label">PDF bookmarks</div>`;
@@ -124,6 +131,14 @@
   const trackCrumbs = (l, t) => [{ t: level(l).short || level(l).name, href: url.level(l) }, { t: track(l, t).name, href: url.track(l, t) }];
 
   /* ---------- Views ---------- */
+  const levelCards = href => `<div class="lvl-grid">` + S.levels.map(L => `
+        <a class="lvl" href="${href(L.id)}">
+          <span class="lvl-name">${L.name}</span>
+          <span class="lvl-boards">${L.groups.flatMap(g => g.tracks.map(t => esc(L.tracks[t].name))).join(" · ")}</span>
+          ${icon.arrow}
+        </a>`).join("") + `</div>`;
+  const paperCount = (l, t, s) => Object.keys(S.papers[K(l, t, s)] || {}).length;
+
   function vHome() {
     crumbs([{ t: "Home" }]); setTitle();
     return `<div class="home">
@@ -139,19 +154,25 @@
     </div>`;
   }
 
-  function vLevel({ l, t }) {
-    const L = level(l);
-    crumbs(t ? trackCrumbs(l, t) : [{ t: L.short || L.name }]);
-    setTitle(t ? track(l, t).full : L.name);
-    let h = `<h1>${L.name}</h1><p class="lede">${t ? "Pick a subject." : "Choose your exam board."}</p>`;
+  function vLevel({ l, t, mode }) {
+    const L = level(l), pp = mode === "papers";
+    const trackHref = id => pp ? url.ppTrack(l, id) : url.track(l, id);
+    const base = pp ? [{ t: "Past papers", href: "/past-papers" }] : [];
+    const lvlCrumb = { t: L.short || L.name, href: pp ? url.ppLevel(l) : url.level(l) };
+    crumbs(t ? [...base, lvlCrumb, { t: track(l, t).name }] : [...base, { t: L.short || L.name }]);
+    setTitle(pp ? `${t ? track(l, t).full : L.name} past papers` : (t ? track(l, t).full : L.name));
+    let h = `<h1>${L.name}${pp ? " past papers" : ""}</h1><p class="lede">${t ? "Pick a subject." : "Choose your exam board."}</p>`;
     h += L.groups.map(g => `<h2>${esc(g.name)}</h2><div class="boards">` + g.tracks.map(id => {
       const T = L.tracks[id], n = Object.keys(T.subjects).length;
-      return `<a class="board ${id === t ? "on" : ""}" href="${url.track(l, id)}"><b>${esc(T.name)}</b><small>${n} subject${n > 1 ? "s" : ""}</small></a>`;
+      return `<a class="board ${id === t ? "on" : ""}" href="${trackHref(id)}"><b>${esc(T.name)}</b><small>${n} subject${n > 1 ? "s" : ""}</small></a>`;
     }).join("") + `</div>`).join("");
     if (t) {
       const T = track(l, t);
-      h += `<h2>${esc(T.full)} subjects</h2><div class="list">` + Object.entries(T.subjects).map(([s, c]) =>
-        `<a class="row" href="${url.subject(l, t, s)}">${tile(s)}<span class="grow">${esc(subj(s).name)}</span><span class="aside"><span class="mono">${c.code}</span> · ${c.topics.length} topics</span></a>`).join("") + `</div>`;
+      h += `<h2>${esc(T.full)} ${pp ? "past papers" : "subjects"}</h2><div class="list">` + Object.entries(T.subjects).map(([s, c]) => {
+        if (!pp) return `<a class="row" href="${url.subject(l, t, s)}">${tile(s)}<span class="grow">${esc(subj(s).name)}</span><span class="aside"><span class="mono">${c.code}</span> · ${c.topics.length} topics</span></a>`;
+        const n = paperCount(l, t, s);
+        return `<a class="row" href="${url.papers(l, t, s)}">${tile(s)}<span class="grow">${esc(subj(s).name)}</span><span class="aside"><span class="mono">${c.code}</span> · ${n ? `${n} files` : "Coming soon"}</span></a>`;
+      }).join("") + `</div>`;
     }
     return h;
   }
@@ -225,8 +246,7 @@
   function vTool(kind) {
     if (kind === "past-papers") {
       crumbs([{ t: "Past papers" }]); setTitle("Past papers");
-      return `<h1>Past papers</h1><p class="lede">Every series with question papers, mark schemes and examiner reports.</p>` +
-        byLevel((L, t, s, c) => `<a class="row" href="${url.papers(L.id, t, s)}">${tile(s)}<span class="grow">${esc(subj(s).name)}</span><span class="aside">${esc(L.tracks[t].name)} <span class="mono">${c.code}</span></span></a>`);
+      return `<div class="home"><h1>Past papers</h1><p class="lede">Question papers and mark schemes for every series, opened right here to annotate.</p>${levelCards(url.ppLevel)}</div>`;
     }
     if (kind === "formula-sheets") {
       crumbs([{ t: "Formula sheets" }]); setTitle("Formula sheets");
