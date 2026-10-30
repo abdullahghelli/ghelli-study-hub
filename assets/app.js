@@ -161,14 +161,16 @@
     const lvlCrumb = { t: L.short || L.name, href: pp ? url.ppLevel(l) : url.level(l) };
     crumbs(t ? [...base, lvlCrumb, { t: track(l, t).name }] : [...base, { t: L.short || L.name }]);
     setTitle(pp ? `${t ? track(l, t).full : L.name} past papers` : (t ? track(l, t).full : L.name));
-    let h = `<h1>${L.name}${pp ? " past papers" : ""}</h1><p class="lede">${t ? "Pick a subject." : "Choose your exam board."}</p>`;
-    h += L.groups.map(g => `<h2>${esc(g.name)}</h2><div class="boards">` + g.tracks.map(id => {
+    let h = t
+      ? `<h1>${esc(track(l, t).full)}${pp ? " past papers" : ""}</h1><p class="lede">Pick a subject.</p>`
+      : `<h1>${L.name}${pp ? " past papers" : ""}</h1><p class="lede">Choose your exam board.</p>`;
+    if (!t) h += L.groups.map(g => `<h2>${esc(g.name)}</h2><div class="boards">` + g.tracks.map(id => {
       const T = L.tracks[id], n = Object.keys(T.subjects).length;
       return `<a class="board ${id === t ? "on" : ""}" href="${trackHref(id)}"><b>${esc(T.name)}</b><small>${n} subject${n > 1 ? "s" : ""}</small></a>`;
     }).join("") + `</div>`).join("");
     if (t) {
       const T = track(l, t);
-      h += `<h2>${esc(T.full)} ${pp ? "past papers" : "subjects"}</h2><div class="list">` + Object.entries(T.subjects).map(([s, c]) => {
+      h += `<div class="list" style="margin-top:28px">` + Object.entries(T.subjects).map(([s, c]) => {
         if (!pp) return `<a class="row" href="${url.subject(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code">(${c.code})</span></span><span class="aside">${c.topics.length} topics</span></a>`;
         const n = paperCount(l, t, s);
         return `<a class="row" href="${url.papers(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code">(${c.code})</span></span><span class="aside">${n ? `${n} files` : "Coming soon"}</span></a>`;
