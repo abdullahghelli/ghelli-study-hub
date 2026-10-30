@@ -132,7 +132,7 @@
 
   /* ---------- Views ---------- */
   const levelCards = href => `<div class="lvl-grid">` + S.levels.map(L => `
-        <a class="lvl" href="${href(L.id)}">
+        <a class="lvl lv-${L.id}" href="${href(L.id)}">
           <span class="lvl-name">${L.name}</span>
           <span class="lvl-boards">${L.groups.flatMap(g => g.tracks.map(t => esc(L.tracks[t].name))).join(" · ")}</span>
           ${icon.arrow}
@@ -145,7 +145,7 @@
       <h1>What are you revising?</h1>
       <p class="lede">Notes, flashcards, questions and past papers, sorted by exam board.</p>
       <div class="lvl-grid">` + S.levels.map(L => `
-        <a class="lvl" href="${url.level(L.id)}">
+        <a class="lvl lv-${L.id}" href="${url.level(L.id)}">
           <span class="lvl-name">${L.name}</span>
           <span class="lvl-boards">${L.groups.flatMap(g => g.tracks.map(t => esc(L.tracks[t].name))).join(" · ")}</span>
           ${icon.arrow}
@@ -162,18 +162,18 @@
     crumbs(t ? [...base, lvlCrumb, { t: track(l, t).name }] : [...base, { t: L.short || L.name }]);
     setTitle(pp ? `${t ? track(l, t).full : L.name} past papers` : (t ? track(l, t).full : L.name));
     let h = t
-      ? `<h1>${esc(track(l, t).full)}${pp ? " past papers" : ""}</h1><p class="lede">Pick a subject.</p>`
-      : `<h1>${L.name}${pp ? " past papers" : ""}</h1><p class="lede">Choose your exam board.</p>`;
+      ? `<div class="eyebrow lv-${l}"><span class="lv-dot"></span>${esc(L.name)}</div><h1>${esc(track(l, t).full)}${pp ? " past papers" : ""}</h1><p class="lede">Pick a subject.</p>`
+      : `<div class="eyebrow lv-${l}"><span class="lv-dot"></span>${pp ? "Past papers" : "Qualification"}</div><h1>${L.name}${pp ? " past papers" : ""}</h1><p class="lede">Choose your exam board.</p>`;
     if (!t) h += L.groups.map(g => `<h2>${esc(g.name)}</h2><div class="boards">` + g.tracks.map(id => {
       const T = L.tracks[id], n = Object.keys(T.subjects).length;
-      return `<a class="board ${id === t ? "on" : ""}" href="${trackHref(id)}"><b>${esc(T.name)}</b><small>${n} subject${n > 1 ? "s" : ""}</small></a>`;
+      return `<a class="board lv-${l} ${id === t ? "on" : ""}" href="${trackHref(id)}"><b>${esc(T.name)}</b><small>${n} subject${n > 1 ? "s" : ""}</small></a>`;
     }).join("") + `</div>`).join("");
     if (t) {
       const T = track(l, t);
       h += `<div class="list" style="margin-top:28px">` + Object.entries(T.subjects).map(([s, c]) => {
-        if (!pp) return `<a class="row" href="${url.subject(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code">(${c.code})</span></span><span class="aside">${c.topics.length} topics</span></a>`;
+        if (!pp) return `<a class="row" href="${url.subject(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code s-${subj(s).color}-t">(${c.code})</span></span><span class="aside">${c.topics.length} topics</span></a>`;
         const n = paperCount(l, t, s);
-        return `<a class="row" href="${url.papers(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code">(${c.code})</span></span><span class="aside">${n ? `${n} files` : "Coming soon"}</span></a>`;
+        return `<a class="row" href="${url.papers(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code s-${subj(s).color}-t">(${c.code})</span></span><span class="aside">${n ? `${n} files` : "Coming soon"}</span></a>`;
       }).join("") + `</div>`;
     }
     return h;
@@ -183,13 +183,13 @@
     const c = course(l, t, s), T = track(l, t), name = `${T.full} ${subj(s).name}`;
     crumbs([...trackCrumbs(l, t), { t: subj(s).name }]); setTitle(name);
     const nDone = c.topics.filter((_, i) => done[K(l, t, s, i + 1)]).length;
-    return `<h1>${esc(subj(s).name)} <span class="h-code">(${c.code})</span></h1>
+    return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span></h1>
       <div class="facts"><span>${esc(T.full)}</span><span><b>${c.topics.length}</b> topics</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a></div>
-      <div class="progress"><div class="bar"><i style="width:${(nDone / c.topics.length) * 100}%"></i></div><span>${nDone}/${c.topics.length} done</span></div>
+      <div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(nDone / c.topics.length) * 100}%"></i></div><span>${nDone}/${c.topics.length} done</span></div>
       <h2>Topics</h2><div class="list">` +
       c.topics.map((tp, i) => {
         const n = i + 1, k = K(l, t, s, n), live = liveCount(l, t, s, n);
-        return `<a class="row" href="${url.topic(l, t, s, n)}"><span class="num">${String(n).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span><span class="aside hide-sm">${live ? `${live} file${live > 1 ? "s" : ""}` : ""}</span><span class="tick ${done[k] ? "on" : ""}" aria-label="${done[k] ? "Done" : "Not done"}"></span></a>`;
+        return `<a class="row" href="${url.topic(l, t, s, n)}"><span class="num s-${subj(s).color}-t">${String(n).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span><span class="aside hide-sm">${live ? `${live} file${live > 1 ? "s" : ""}` : ""}</span><span class="tick ${done[k] ? "on" : ""}" aria-label="${done[k] ? "Done" : "Not done"}"></span></a>`;
       }).join("") + `</div>`;
   }
 
@@ -229,10 +229,10 @@
       const kind = { QP: "Question paper", MS: "Mark scheme", ER: "Examiner report" }[ty];
       const name = `${colLabel(p)} · ${ser}`;
       const ms = ty === "QP" ? links[`${ser}|${p}|MS`] : "";
-      return `<a class="chip" ${pdfAttrs({ src: u, title: `${name} (${ty})`, desc: `${kind} · ${T.full} ${subj(s).name} ${c.code}`, ms })} title="${esc(`${name} · ${kind}`)}">${ty}</a>`;
+      return `<a class="chip chip-${ty.toLowerCase()}" ${pdfAttrs({ src: u, title: `${name} (${ty})`, desc: `${kind} · ${T.full} ${subj(s).name} ${c.code}`, ms })} title="${esc(`${name} · ${kind}`)}">${ty}</a>`;
     };
     const rows = seriesRows.map(ser => `<tr><td>${ser}</td>${cols.map(([id]) => `<td>${cell(ser, id, "QP")}${cell(ser, id, "MS")}</td>`).join("")}${hasER ? `<td>${cell(ser, 0, "ER")}</td>` : ""}</tr>`).join("");
-    return `<h1>${esc(subj(s).name)} <span class="h-code">(${c.code})</span> past papers</h1>
+    return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span> past papers</h1>
       <div class="facts"><span>${esc(T.full)}</span></div>
       <h2>By series</h2>
       <div class="pp"><table><thead><tr><th>Series</th>${cols.map(([, label]) => `<th>${esc(label)}</th>`).join("")}${hasER ? "<th>Report</th>" : ""}</tr></thead><tbody>${rows}</tbody></table></div>

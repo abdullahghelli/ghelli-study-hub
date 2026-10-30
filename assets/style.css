@@ -352,3 +352,60 @@ body.pv-open{overflow:hidden}
 /* Spec codes shown in brackets after names */
 .code{color:var(--faint);font-variant-numeric:tabular-nums}
 .h-code{color:var(--faint);font-weight:500}
+
+/* ---------- Colour ---------- */
+:root{
+  --lv-gcse:#0f8a7a; --lv-gcse-s:#e3f4f1; --lv-gcse-b:#bfe6df;
+  --lv-alevel:#4f5bd5; --lv-alevel-s:#eceefc; --lv-alevel-b:#cdd2f6;
+  --lv-ib:#d0602b; --lv-ib-s:#fcefe7; --lv-ib-b:#f4d2bf;
+  --qp:#0f8a7a; --qp-s:#e1f3ef; --ms:#7a4fd0; --ms-s:#efe9fb;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --lv-gcse:#4fd1bd; --lv-gcse-s:#132b27; --lv-gcse-b:#1f4a43;
+  --lv-alevel:#8f99f5; --lv-alevel-s:#1a1d38; --lv-alevel-b:#2c3263;
+  --lv-ib:#f2945f; --lv-ib-s:#30201a; --lv-ib-b:#55332a;
+  --qp:#5fd6c2; --qp-s:#14302b; --ms:#b398f5; --ms-s:#251d3d;
+}}
+:root[data-theme="dark"]{
+  --lv-gcse:#4fd1bd; --lv-gcse-s:#132b27; --lv-gcse-b:#1f4a43;
+  --lv-alevel:#8f99f5; --lv-alevel-s:#1a1d38; --lv-alevel-b:#2c3263;
+  --lv-ib:#f2945f; --lv-ib-s:#30201a; --lv-ib-b:#55332a;
+  --qp:#5fd6c2; --qp-s:#14302b; --ms:#b398f5; --ms-s:#251d3d;
+}
+.lv-gcse{--lv:var(--lv-gcse);--lv-s:var(--lv-gcse-s);--lv-b:var(--lv-gcse-b)}
+.lv-a-level{--lv:var(--lv-alevel);--lv-s:var(--lv-alevel-s);--lv-b:var(--lv-alevel-b)}
+.lv-ib{--lv:var(--lv-ib);--lv-s:var(--lv-ib-s);--lv-b:var(--lv-ib-b)}
+
+/* Qualification cards: tinted, with a coloured name rule and arrow */
+.lvl{background:var(--lv-s);box-shadow:inset 0 0 0 1px transparent;transition:background .15s,transform .15s,box-shadow .15s}
+.lvl:hover{background:var(--lv-s);box-shadow:inset 0 0 0 1px var(--lv-b)}
+.lvl-name{color:var(--fg)}
+.lvl-name::before{content:"";display:block;width:28px;height:3px;border-radius:3px;background:var(--lv);margin-bottom:14px}
+.lvl .arrow{color:var(--lv)}
+.lvl:hover .arrow{color:var(--lv)}
+.lvl-boards{color:color-mix(in srgb,var(--lv) 55%,var(--muted))}
+
+/* Board cards take their qualification's colour */
+.board{background:var(--lv-s,var(--side))}
+.board:hover{background:var(--lv-s,var(--hover));box-shadow:inset 0 0 0 1px var(--lv-b,transparent)}
+.board.on{border-color:var(--lv,var(--fg));background:var(--bg)}
+.board small{color:color-mix(in srgb,var(--lv,var(--muted)) 60%,var(--muted))}
+.eyebrow .lv-dot{width:8px;height:8px;border-radius:50%;background:var(--lv)}
+.eyebrow.lv-gcse,.eyebrow.lv-a-level,.eyebrow.lv-ib{color:var(--lv);font-weight:500}
+
+/* Subject colour on spec codes, topic numbers and progress */
+.s-phys-t{color:var(--phys)} .s-chem-t{color:var(--chem)} .s-bio-t{color:var(--bio)} .s-math-t{color:var(--math)}
+.code.s-phys-t,.code.s-chem-t,.code.s-bio-t,.code.s-math-t,.h-code.s-phys-t,.h-code.s-chem-t,.h-code.s-bio-t,.h-code.s-math-t{opacity:.9}
+.s-phys-v .bar i{background:var(--phys)} .s-chem-v .bar i{background:var(--chem)} .s-bio-v .bar i{background:var(--bio)} .s-math-v .bar i{background:var(--math)}
+
+/* QP / MS buttons */
+a.chip.chip-qp{background:var(--qp-s);color:var(--qp)}
+a.chip.chip-ms{background:var(--ms-s);color:var(--ms)}
+a.chip.chip-er{background:var(--lv-ib-s);color:var(--lv-ib)}
+a.chip:hover{filter:none;box-shadow:inset 0 0 0 1px currentColor}
+
+/* Brand and active nav */
+.brand img{filter:none}
+.nav.on{background:var(--accent-soft);color:var(--accent)}
+.nav.on svg{opacity:1}
+.hero-search:hover{color:var(--accent)}
