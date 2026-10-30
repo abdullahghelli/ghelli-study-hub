@@ -291,7 +291,15 @@
     bindInk(p, i) {
       const pos = e => { const b = p.ink.getBoundingClientRect(); return [(e.clientX - b.left) / b.width, (e.clientY - b.top) / b.height]; };
       let cur = null, erasing = false;
+      /* Apple Pencil: once a pen is used, fingers scroll instead of drawing (palm rejection) */
+      let fingerScroll = null;
       p.ink.addEventListener("pointerdown", e => {
+        if (e.pointerType === "pen" && !this.penSeen) { this.penSeen = true; this.onChange?.(); }
+        if (this.penSeen && e.pointerType === "touch" && this.tool !== "hand") {
+          fingerScroll = { x: e.clientX, y: e.clientY, top: this.el.scrollTop, left: this.el.scrollLeft, id: e.pointerId };
+          try { p.ink.setPointerCapture(e.pointerId); } catch (err) {}
+          return;
+        }
         if (this.tool === "hand" || (e.pointerType === "mouse" && e.button !== 0)) return;
         const [x, y] = pos(e);
         if (this.tool === "text") {
@@ -300,12 +308,17 @@
           this.editText(p, i, hitIdx >= 0 ? hitIdx : null, x, y);
           return;
         }
-        e.preventDefault(); p.ink.setPointerCapture(e.pointerId);
+        e.preventDefault(); try { p.ink.setPointerCapture(e.pointerId); } catch (err) {}
         if (this.tool === "eraser") { this.snapshot(); erasing = true; this.eraseAt(p, i, x, y); return; }
         cur = { t: this.tool, c: this.color, w: WIDTH[this.tool], p: [[x, y]] };
         this.drawInk(p, i, cur);
       });
       p.ink.addEventListener("pointermove", e => {
+        if (fingerScroll && e.pointerId === fingerScroll.id) {
+          this.el.scrollTop = fingerScroll.top - (e.clientY - fingerScroll.y);
+          this.el.scrollLeft = fingerScroll.left - (e.clientX - fingerScroll.x);
+          return;
+        }
         if (erasing) { const [x, y] = pos(e); this.eraseAt(p, i, x, y); return; }
         if (!cur) return;
         const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
@@ -316,7 +329,8 @@
         }
         this.drawInk(p, i, cur);
       });
-      const end = () => {
+      const end = e => {
+        if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
         if (erasing) { erasing = false; this.save(); return; }
         if (!cur) return;
         this.snapshot(); (this.ann[i] ||= []).push(cur); cur = null;
@@ -500,7 +514,7 @@
       $('[data-do="redo"]').disabled = !p.redo.length;
       $('[data-do="download"]').disabled = !p.bytes;
       $("[data-zoom]").textContent = Math.round(p.zoom * 100) + "%";
-      $("[data-save]").textContent = !p.hasNotes() ? "Notes save in this browser" : p.saved === false ? "Couldn't save notes" : "Saved";
+      $("[data-save]").textContent = (p.penSeen ? "Pencil writes, finger scrolls · " : "") + (!p.hasNotes() ? "Notes save in this browser" : p.saved === false ? "Couldn't save notes" : "Saved");
       const q = $("#pv-find-input").value.trim();
       $("[data-count]").textContent = !q ? "" : p.matches.length ? `${p.matchIdx + 1} of ${p.matches.length}` : "No matches";
     };

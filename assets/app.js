@@ -494,7 +494,7 @@
     else if (e.key === "/" && $("#scrim").hidden && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
   });
   /* Sidebar: hide/show on desktop (remembered), slide-in drawer on phones */
-  const isPhone = () => matchMedia("(max-width: 820px)").matches;
+  const isPhone = () => matchMedia("(max-width: 820px), (max-width: 1400px) and (pointer: coarse)").matches;  /* drawer mode: phones and touch tablets */
   const syncSideBtn = () => {
     const hidden = isPhone() ? !$("#app").classList.contains("nav-open") : document.documentElement.classList.contains("side-hidden");
     $("#sideBtn").setAttribute("aria-label", hidden ? "Show sidebar" : "Hide sidebar");
