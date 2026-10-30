@@ -16,18 +16,18 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#9aa19f; --faint:#666d6b;
   --line:#262a29; --hover:#212524; --press:#2a2e2d;
-  --accent:#78c2bc; --accent-soft:#1c2f2d;
-  --phys:#8eadf2; --phys-s:#1e2840; --chem:#e6a75c; --chem-s:#30261a;
-  --bio:#80cc96;  --bio-s:#1b2e21;  --math:#b6a0f2; --math-s:#28223d;
-  --done:#80cc96; --shadow:0 24px 64px -12px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.3);
+  --accent:#6ee7af; --accent-soft:#21342b;
+  --phys:#c3a4e6; --phys-s:#2d2b33; --chem:#e0e582; --chem-s:#2d3023;
+  --bio:#6ee7af;  --bio-s:#21342b;  --math:#f19d90; --math-s:#342a27;
+  --done:#6ee7af; --shadow:0 24px 64px -12px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.3);
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#9aa19f; --faint:#666d6b;
   --line:#262a29; --hover:#212524; --press:#2a2e2d;
-  --accent:#78c2bc; --accent-soft:#1c2f2d;
-  --phys:#8eadf2; --phys-s:#1e2840; --chem:#e6a75c; --chem-s:#30261a;
-  --bio:#80cc96;  --bio-s:#1b2e21;  --math:#b6a0f2; --math-s:#28223d;
-  --done:#80cc96; --shadow:0 24px 64px -12px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.3);
+  --accent:#6ee7af; --accent-soft:#21342b;
+  --phys:#c3a4e6; --phys-s:#2d2b33; --chem:#e0e582; --chem-s:#2d3023;
+  --bio:#6ee7af;  --bio-s:#21342b;  --math:#f19d90; --math-s:#342a27;
+  --done:#6ee7af; --shadow:0 24px 64px -12px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.3);
   color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -326,7 +326,7 @@ body.pv-open{overflow:hidden}
 /* Dark mode inside the viewer window, independent of the site theme. */
 .pv.dark-pages{
   --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#9aa19f; --faint:#666d6b;
-  --line:#262a29; --hover:#212524; --press:#2a2e2d; --accent:#78c2bc; --accent-soft:#1c2f2d;
+  --line:#262a29; --hover:#212524; --press:#2a2e2d; --accent:#6ee7af; --accent-soft:#21342b;
   color-scheme:dark; color:var(--fg)}
 /* Dark pages: invert the paper (and notes, so they stay readable on it); colours keep their hue. */
 .pv.dark-pages .vw-pane{background:#0f1110}
@@ -361,16 +361,16 @@ body.pv-open{overflow:hidden}
   --qp:#0f8a7a; --qp-s:#e1f3ef; --ms:#7a4fd0; --ms-s:#efe9fb;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --lv-gcse:#4fd1bd; --lv-gcse-s:#132b27; --lv-gcse-b:#1f4a43;
-  --lv-alevel:#8f99f5; --lv-alevel-s:#1a1d38; --lv-alevel-b:#2c3263;
-  --lv-ib:#f2945f; --lv-ib-s:#30201a; --lv-ib-b:#55332a;
-  --qp:#5fd6c2; --qp-s:#14302b; --ms:#b398f5; --ms-s:#251d3d;
+  --lv-gcse:#6ee7af; --lv-gcse-s:#203028; --lv-gcse-b:#315a47;
+  --lv-alevel:#c3a4e6; --lv-alevel-s:#2c2931; --lv-alevel-b:#50475d;
+  --lv-ib:#f19d90; --lv-ib-s:#2f2725; --lv-ib-b:#5b423d;
+  --qp:#6ee7af; --qp-s:#22362d; --ms:#c3a4e6; --ms-s:#312e37;
 }}
 :root[data-theme="dark"]{
-  --lv-gcse:#4fd1bd; --lv-gcse-s:#132b27; --lv-gcse-b:#1f4a43;
-  --lv-alevel:#8f99f5; --lv-alevel-s:#1a1d38; --lv-alevel-b:#2c3263;
-  --lv-ib:#f2945f; --lv-ib-s:#30201a; --lv-ib-b:#55332a;
-  --qp:#5fd6c2; --qp-s:#14302b; --ms:#b398f5; --ms-s:#251d3d;
+  --lv-gcse:#6ee7af; --lv-gcse-s:#203028; --lv-gcse-b:#315a47;
+  --lv-alevel:#c3a4e6; --lv-alevel-s:#2c2931; --lv-alevel-b:#50475d;
+  --lv-ib:#f19d90; --lv-ib-s:#2f2725; --lv-ib-b:#5b423d;
+  --qp:#6ee7af; --qp-s:#22362d; --ms:#c3a4e6; --ms-s:#312e37;
 }
 .lv-gcse{--lv:var(--lv-gcse);--lv-s:var(--lv-gcse-s);--lv-b:var(--lv-gcse-b)}
 .lv-a-level{--lv:var(--lv-alevel);--lv-s:var(--lv-alevel-s);--lv-b:var(--lv-alevel-b)}
