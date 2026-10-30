@@ -147,8 +147,8 @@
       this.bindPinch();
       this.pages.forEach((p, i) => {
         const pg = document.createElement("div"); pg.className = "pg"; pg._i = i;
-        pg.innerHTML = `<canvas class="pdf"></canvas><div class="hl"></div><canvas class="ink"></canvas>`;
-        this.wrap.appendChild(pg); p.el = pg; p.pdf = pg.children[0]; p.hl = pg.children[1]; p.ink = pg.children[2];
+        pg.innerHTML = `<canvas class="pdf"></canvas><div class="hl"></div><canvas class="live"></canvas><canvas class="ink"></canvas>`;
+        this.wrap.appendChild(pg); p.el = pg; p.pdf = pg.children[0]; p.hl = pg.children[1]; p.live = pg.children[2]; p.ink = pg.children[3];
         if (this.annotate) this.bindInk(p, i);
         this.observer.observe(pg);
       });
@@ -332,14 +332,33 @@
 
     /* ----- annotation model: ann[pageIndex] = [items], coords as fractions of page size ----- */
     snapshot() { this.undo.push(JSON.stringify(this.ann)); if (this.undo.length > 80) this.undo.shift(); this.redo = []; }
-    doUndo() { if (!this.undo.length) return; this.commitText(); this.redo.push(JSON.stringify(this.ann)); this.ann = JSON.parse(this.undo.pop()); this.redrawAll(); this.save(); }
-    doRedo() { if (!this.redo.length) return; this.undo.push(JSON.stringify(this.ann)); this.ann = JSON.parse(this.redo.pop()); this.redrawAll(); this.save(); }
+    /* only copy the one page a stroke touches, so finishing a stroke stays instant */
+    snapshotPage(i) { this.undo.push({ i, v: JSON.stringify(this.ann[i] || []) }); if (this.undo.length > 80) this.undo.shift(); this.redo = []; }
+    swap(from, to) {
+      const e = from.pop();
+      if (typeof e === "object") {
+        to.push({ i: e.i, v: JSON.stringify(this.ann[e.i] || []) });
+        this.ann[e.i] = JSON.parse(e.v);
+        if (this.pages[e.i]) this.drawInk(this.pages[e.i], e.i);
+        this.onChange?.();
+      } else { to.push(JSON.stringify(this.ann)); this.ann = JSON.parse(e); this.redrawAll(); }
+      this.save();
+    }
+    doUndo() { if (!this.undo.length) return; this.commitText(); this.swap(this.undo, this.redo); }
+    doRedo() { if (!this.redo.length) return; this.swap(this.redo, this.undo); }
     clearAll() { if (!this.hasNotes()) return; this.snapshot(); this.ann = {}; this.redrawAll(); this.save(); }
     hasNotes() { return Object.values(this.ann).some(a => a.length); }
     save() {
       clearTimeout(this._t);
-      this._t = setTimeout(() => { this.saved = store.set(this.key, this.ann); this.onChange?.(); }, 300);
+      /* write to storage only once writing pauses, never in the middle of the next stroke */
+      const later = () => { this._t = setTimeout(() => { if (this.inking) return later(); this.flush(); }, 2000); };
+      this.dirty = true; later();
       this.onChange?.();
+    }
+    flush() {
+      clearTimeout(this._t);
+      if (!this.dirty || !this.annotate) return;
+      this.dirty = false; this.saved = store.set(this.key, this.ann); this.onChange?.();
     }
     redrawAll() { this.pages.forEach((p, i) => this.drawInk(p, i)); this.onChange?.(); }
     setDark(on) {
@@ -380,6 +399,18 @@
       }
       ctx.globalAlpha = 1;
     }
+    /* the stroke being written lives on its own layer so the rest of the page isn't redrawn on every move */
+    drawLive(p, it) {
+      const c = p.live, dpr = window.devicePixelRatio || 1, W = Math.round(p.w * dpr), H = Math.round(p.h * dpr);
+      if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.width = p.w + "px"; c.style.height = p.h + "px"; }
+      const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, p.w, p.h);
+      if (it) this.drawItems(ctx, [it], p.w, p.h);
+    }
+    clearLive(p) { const c = p.live; if (c.width) c.getContext("2d").clearRect(0, 0, c.width, c.height); }
+    addInk(p, it) {
+      const ctx = p.ink.getContext("2d"), dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); this.drawItems(ctx, [it], p.w, p.h);
+    }
     drawInk(p, i, extra) {
       const ctx = p.ink.getContext("2d"), dpr = window.devicePixelRatio || 1;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, p.w, p.h);
@@ -404,7 +435,8 @@
       let fingerScroll = null;
       this.cancelInk.push(() => {
         fingerScroll = null; erasing = false;
-        if (cur && cur.touch) { cur = null; this.drawInk(p, i); }
+        if (cur && cur.touch) { cur = null; this.clearLive(p); }
+        this.inking = false;
       });
       p.ink.addEventListener("pointerdown", e => {
         if (this.pinching && e.pointerType === "touch") return;
@@ -423,10 +455,10 @@
           return;
         }
         e.preventDefault(); try { p.ink.setPointerCapture(e.pointerId); } catch (err) {}
-        if (this.tool === "eraser") { this.snapshot(); erasing = true; this.eraseAt(p, i, x, y); return; }
+        if (this.tool === "eraser") { this.snapshotPage(i); erasing = true; this.inking = true; this.eraseAt(p, i, x, y); return; }
         cur = { t: this.tool, c: this.color, w: WIDTH[this.tool], p: [e.pointerType === "pen" && this.tool === "pen" ? [x, y, +(e.pressure || 0.5).toFixed(2)] : [x, y]] };
         if (e.pointerType === "touch") Object.defineProperty(cur, "touch", { value: true });
-        this.drawInk(p, i, cur);
+        this.inking = true; this.drawLive(p, cur);
       });
       p.ink.addEventListener("pointermove", e => {
         if (this.pinching && e.pointerType === "touch") return;
@@ -449,19 +481,20 @@
           if (withP) pt.push(+((ev.pressure || 0.5) * 0.35 + last[2] * 0.65).toFixed(3));   /* smooth pressure changes */
           cur.p.push(pt);
         }
-        this.drawInk(p, i, cur);
+        this.drawLive(p, cur);
       });
       const end = e => {
-        if (this.pinching && e && e.pointerType === "touch") { if (cur && cur.touch) { cur = null; this.drawInk(p, i); } fingerScroll = null; return; }
+        if (this.pinching && e && e.pointerType === "touch") { if (cur && cur.touch) { cur = null; this.clearLive(p); this.inking = false; } fingerScroll = null; return; }
         if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
-        if (erasing) { erasing = false; this.save(); return; }
+        if (erasing) { erasing = false; this.inking = false; this.save(); return; }
         if (!cur) return;
         if (cur.p[0].length > 2 && e && e.clientX != null && e.type === "pointerup") {   /* finish exactly where the Pencil lifted */
           const [x, y] = pos(e), last = cur.p[cur.p.length - 1];
           if (Math.hypot(x - last[0], y - last[1]) > 0.3 / p.w) cur.p.push([+x.toFixed(5), +y.toFixed(5), last[2]]);
         }
-        this.snapshot(); (this.ann[i] ||= []).push(cur); cur = null;
-        this.drawInk(p, i); this.save();
+        this.snapshotPage(i); (this.ann[i] ||= []).push(cur);
+        this.addInk(p, cur); this.clearLive(p); cur = null; this.inking = false;
+        this.save();
       };
       p.ink.addEventListener("pointerup", end);
       p.ink.addEventListener("pointercancel", end);
@@ -547,6 +580,10 @@
   const TOOL_NAMES = { pen: "Pen (P)", highlighter: "Highlighter (H)", text: "Text (T)", eraser: "Eraser (E)" };
 
   let active = null;
+  /* save unsaved notes if the tab is hidden or closed */
+  const flushAll = () => { try { active?.main?.flush(); } catch (e) {} };
+  window.addEventListener("pagehide", flushAll);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushAll(); });
 
   function open(info) {
     close();
@@ -804,7 +841,7 @@
   function close() {
     const st = active; if (!st) return;
     active = null;
-    st.main?.commitText();
+    st.main?.commitText(); st.main?.flush(); st.ms?.flush?.();
     window.removeEventListener("resize", st.onResize);
     document.removeEventListener("keydown", st.onKey, true);
     window.removeEventListener("gsh-bookmarks", st.onBm);
