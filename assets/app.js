@@ -124,6 +124,7 @@
     $("#side").innerHTML = h;
   }
   function crumbs(parts) {
+    if (!(parts[0] && parts[0].t === "Home")) parts = [{ t: "Home", href: "/" }, ...parts];
     $("#crumbs").innerHTML = parts.map((p, i) => (i ? '<span class="sep">/</span>' : "") +
       (p.href && i < parts.length - 1 ? `<a href="${p.href}">${esc(p.t)}</a>` : `<span class="cur">${esc(p.t)}</span>`)).join("");
   }
@@ -150,7 +151,12 @@
           <span class="lvl-boards">${L.groups.flatMap(g => g.tracks.map(t => esc(L.tracks[t].name))).join(" · ")}</span>
           ${icon.arrow}
         </a>`).join("") + `</div>
-      <button class="hero-search" data-act="search">${icon.search}<span>Or search a topic</span><kbd>⌘K</kbd></button>
+      <div class="home-links">
+        <a href="/past-papers">${icon.paper}Past papers</a>
+        <a href="/formula-sheets">${icon.sigma}Formula sheets</a>
+        <a href="/exam-dates">${icon.clock}Exam dates</a>
+        <button data-act="search">${icon.search}Search a topic<kbd>⌘K</kbd></button>
+      </div>
     </div>`;
   }
 
@@ -366,8 +372,22 @@
     else if (e.key === "Escape") closeSearch();
     else if (e.key === "/" && $("#scrim").hidden && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
   });
-  $("#menuBtn").onclick = () => $("#app").classList.add("nav-open");
-  $("#sideScrim").onclick = () => $("#app").classList.remove("nav-open");
+  /* Sidebar: hide/show on desktop (remembered), slide-in drawer on phones */
+  const isPhone = () => matchMedia("(max-width: 820px)").matches;
+  const syncSideBtn = () => {
+    const hidden = isPhone() ? !$("#app").classList.contains("nav-open") : document.documentElement.classList.contains("side-hidden");
+    $("#sideBtn").setAttribute("aria-label", hidden ? "Show sidebar" : "Hide sidebar");
+    $("#sideBtn").title = (hidden ? "Show sidebar" : "Hide sidebar") + " (Ctrl+\\)";
+  };
+  const toggleSide = () => {
+    if (isPhone()) $("#app").classList.toggle("nav-open");
+    else { const h = document.documentElement.classList.toggle("side-hidden"); try { localStorage.setItem("gsh-side", h ? "hidden" : "shown"); } catch (e) {} }
+    syncSideBtn();
+  };
+  $("#sideBtn").onclick = toggleSide;
+  document.addEventListener("keydown", e => { if ((e.ctrlKey || e.metaKey) && e.key === "\\" && !window.Viewer?.isOpen()) { e.preventDefault(); toggleSide(); } });
+  syncSideBtn();
+  $("#sideScrim").onclick = () => { $("#app").classList.remove("nav-open"); syncSideBtn(); };
   $("#themeBtn").onclick = () => {
     const root = document.documentElement;
     const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;

@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/assets/style.css">
-<script>try{var t=localStorage.getItem("gsh-theme");if(t){t=t.replace(/"/g,"");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}}catch(e){}</script>
+<script>try{if(localStorage.getItem("gsh-side")==="hidden")document.documentElement.classList.add("side-hidden");var t=localStorage.getItem("gsh-theme");if(t){t=t.replace(/"/g,"");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}}catch(e){}</script>
 </head>
 <body>
 <div class="app" id="app">
@@ -20,9 +20,12 @@
   <div class="side-scrim" id="sideScrim"></div>
   <main class="main">
     <header class="topbar">
-      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+      <button class="icon-btn" id="sideBtn" aria-label="Hide sidebar" title="Hide sidebar (Ctrl+\)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="14" height="12" rx="2"/><path d="M8 4v12"/></svg>
       </button>
+      <a class="icon-btn" id="homeBtn" href="/" aria-label="Home" title="Home">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.5 9 10 3.5 16.5 9v7a.5.5 0 0 1-.5.5h-4v-5h-4v5H4a.5.5 0 0 1-.5-.5Z"/></svg>
+      </a>
       <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
       <div class="top-right">
         <button class="search-trigger" id="searchBtn">
