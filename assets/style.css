@@ -491,7 +491,6 @@ html.side-hidden .side{display:none}
   .crumbs a,.crumbs span.cur{padding:8px 6px}
   /* viewer */
   .pv,.pv *{-webkit-touch-callout:none}
-  .pv .vw-pages{-webkit-user-select:none;user-select:none}
   .vw-ico{width:44px;height:44px}
   .vw-ico svg{width:21px;height:21px}
   .vw-color{width:36px;height:44px}
@@ -512,3 +511,6 @@ html.side-hidden .side{display:none}
   .pv-scrim{padding:0}
   .pv{border-radius:0;max-height:none;width:100%;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 }
+/* nothing in the viewer gets selected by fast Pencil strokes or long presses; typing fields still work */
+.pv,.pv *{-webkit-user-select:none;user-select:none}
+.pv input,.pv textarea,.pv [contenteditable]{-webkit-user-select:text;user-select:text}

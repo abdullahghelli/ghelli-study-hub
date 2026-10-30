@@ -615,6 +615,11 @@
 
   let active = null;
   /* save unsaved notes if the tab is hidden or closed */
+  /* Safari can still start a selection from a fast stroke; stop it inside the viewer unless it's a text field */
+  document.addEventListener("selectstart", e => {
+    const t = e.target.nodeType === 1 ? e.target : e.target.parentElement;
+    if (t?.closest?.(".pv") && !t.closest("input, textarea, [contenteditable]")) e.preventDefault();
+  });
   const flushAll = () => { try { active?.main?.flush(); } catch (e) {} };
   window.addEventListener("pagehide", flushAll);
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushAll(); });
