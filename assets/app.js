@@ -37,6 +37,10 @@
     clock: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 2"/></svg>',
   };
 
+  /* Link that opens a PDF in the on-site viewer. */
+  const viewLink = (src, title, ms) => "/viewer?" + new URLSearchParams({ src, title, ...(ms ? { ms } : {}), back: location.pathname }).toString();
+  const isPdf = href => /\.pdf($|[?#])/i.test(href);
+
   /* ---------- Data helpers ---------- */
   function resources(l, t, s, n) {
     const f = S.files[K(l, t, s, n)] || {};
@@ -56,6 +60,7 @@
   function parse(path) {
     const p = path.replace(/\/+$/, "").split("/").filter(Boolean);
     if (!p.length) return { kind: "home" };
+    if (p[0] === "viewer") return { kind: "viewer" };
     if (p.length === 1 && ["past-papers", "formula-sheets", "exam-dates"].includes(p[0])) return { kind: p[0] };
     const [l, t, s, rest] = p;
     if (!level(l)) return { kind: "notfound" };
@@ -70,7 +75,7 @@
     return { kind: "notfound" };
   }
   function go(href) {
-    if (href !== location.pathname) history.pushState(null, "", href);
+    if (href !== location.pathname + location.search) history.pushState(null, "", href);
     render();
     window.scrollTo(0, 0);
   }
@@ -160,7 +165,9 @@
     for (const g of resources(l, t, s, n)) {
       h += `<section class="res-group"><h2>${g.label}<span>${g.items.filter(i => i.href).length}/${g.items.length}</span></h2><div class="list">` +
         g.items.map(it => it.href
-          ? `<a class="row" href="${esc(it.href)}" target="_blank" rel="noopener"><span class="ftype">${it.kind}</span><span class="grow">${esc(it.title)}</span><span class="open">Open ↗</span></a>`
+          ? (isPdf(it.href)
+              ? `<a class="row" href="${esc(viewLink(it.href, `${title} · ${it.title}`))}"><span class="ftype">${it.kind}</span><span class="grow">${esc(it.title)}</span><span class="open">Open</span></a>`
+              : `<a class="row" href="${esc(it.href)}" target="_blank" rel="noopener"><span class="ftype">${it.kind}</span><span class="grow">${esc(it.title)}</span><span class="open">Open ↗</span></a>`)
           : `<div class="row off"><span class="ftype">${it.kind}</span><span class="grow">${esc(it.title)}</span><span class="soon">Coming soon</span></div>`).join("") +
         `</div></section>`;
     }
@@ -177,7 +184,14 @@
     const cols = c.paperList || Array.from({ length: T.papers }, (_, i) => [String(i + 1), `Paper ${i + 1}`]);
     const seriesRows = c.paperSeries || S.years.flatMap(y => T.series.map(se => `${se} ${y}`));
     const hasER = Object.keys(links).some(k => k.endsWith("|ER")) || !c.paperList;
-    const cell = (ser, p, ty) => { const u = links[`${ser}|${p}|${ty}`]; return u ? `<a class="chip" href="${esc(u)}" target="_blank" rel="noopener">${ty}</a>` : `<span class="chip" title="Coming soon">${ty}</span>`; };
+    const colLabel = id => (cols.find(c2 => c2[0] === String(id)) || [, "Examiner report"])[1];
+    const cell = (ser, p, ty) => {
+      const u = links[`${ser}|${p}|${ty}`];
+      if (!u) return `<span class="chip" title="Coming soon">${ty}</span>`;
+      const name = `${c.code} ${colLabel(p)} · ${ser} · ${{ QP: "Question paper", MS: "Mark scheme", ER: "Examiner report" }[ty]}`;
+      const ms = ty === "QP" ? links[`${ser}|${p}|MS`] : null;
+      return `<a class="chip" href="${esc(viewLink(u, name, ms))}" title="${esc(name)}">${ty}</a>`;
+    };
     const rows = seriesRows.map(ser => `<tr><td>${ser}</td>${cols.map(([id]) => `<td>${cell(ser, id, "QP")}${cell(ser, id, "MS")}</td>`).join("")}${hasER ? `<td>${cell(ser, 0, "ER")}</td>` : ""}</tr>`).join("");
     return `${tile(s, true)}<h1>${esc(subj(s).name)} past papers</h1>
       <div class="facts"><span>${esc(T.full)} <b class="mono">${c.code}</b></span></div>
@@ -216,8 +230,16 @@
     const r = parse(location.pathname);
     renderSide(r);
     $("#app").classList.remove("nav-open");
-    const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers };
+    window.Viewer?.unmount();
+    document.body.classList.toggle("viewer-mode", r.kind === "viewer");
     const page = $("#page");
+    if (r.kind === "viewer") {
+      const q = new URLSearchParams(location.search), title = q.get("title") || "Paper";
+      crumbs([{ t: "Paper" }, { t: title }]); setTitle(title);
+      window.Viewer.mount(page, q);
+      return;
+    }
+    const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers };
     page.style.animation = "none"; void page.offsetWidth; page.style.animation = "";
     page.innerHTML = views[r.kind] ? views[r.kind](r) : vTool(r.kind);
   }
@@ -261,8 +283,8 @@
     const hit = e.target.closest("[data-href]");
     if (hit) { closeSearch(); go(hit.dataset.href); return; }
     const a = e.target.closest("a[href]");
-    if (a && a.origin === location.origin && !a.target && !a.pathname.startsWith("/files/") && !e.metaKey && !e.ctrlKey && !e.shiftKey) {
-      e.preventDefault(); go(a.pathname); return;
+    if (a && /^https?:$/.test(a.protocol) && a.origin === location.origin && !a.target && !a.hasAttribute("download") && !a.pathname.startsWith("/files/") && !e.metaKey && !e.ctrlKey && !e.shiftKey) {
+      e.preventDefault(); go(a.pathname + a.search); return;
     }
     const tg = e.target.closest("[data-act]");
     if (!tg) return;
@@ -293,7 +315,7 @@
   document.addEventListener("keydown", e => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $("#scrim").hidden ? openSearch() : closeSearch(); }
     else if (e.key === "Escape") closeSearch();
-    else if (e.key === "/" && $("#scrim").hidden && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
+    else if (e.key === "/" && $("#scrim").hidden && !/INPUT|TEXTAREA/.test(document.activeElement.tagName) && !document.body.classList.contains("viewer-mode")) { e.preventDefault(); openSearch(); }
   });
   $("#menuBtn").onclick = () => $("#app").classList.add("nav-open");
   $("#sideScrim").onclick = () => $("#app").classList.remove("nav-open");
