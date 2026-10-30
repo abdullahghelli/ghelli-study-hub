@@ -169,9 +169,9 @@
     if (t) {
       const T = track(l, t);
       h += `<h2>${esc(T.full)} ${pp ? "past papers" : "subjects"}</h2><div class="list">` + Object.entries(T.subjects).map(([s, c]) => {
-        if (!pp) return `<a class="row" href="${url.subject(l, t, s)}">${tile(s)}<span class="grow">${esc(subj(s).name)}</span><span class="aside"><span class="mono">${c.code}</span> · ${c.topics.length} topics</span></a>`;
+        if (!pp) return `<a class="row" href="${url.subject(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code">(${c.code})</span></span><span class="aside">${c.topics.length} topics</span></a>`;
         const n = paperCount(l, t, s);
-        return `<a class="row" href="${url.papers(l, t, s)}">${tile(s)}<span class="grow">${esc(subj(s).name)}</span><span class="aside"><span class="mono">${c.code}</span> · ${n ? `${n} files` : "Coming soon"}</span></a>`;
+        return `<a class="row" href="${url.papers(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code">(${c.code})</span></span><span class="aside">${n ? `${n} files` : "Coming soon"}</span></a>`;
       }).join("") + `</div>`;
     }
     return h;
@@ -181,8 +181,8 @@
     const c = course(l, t, s), T = track(l, t), name = `${T.full} ${subj(s).name}`;
     crumbs([...trackCrumbs(l, t), { t: subj(s).name }]); setTitle(name);
     const nDone = c.topics.filter((_, i) => done[K(l, t, s, i + 1)]).length;
-    return `${tile(s, true)}<h1>${esc(subj(s).name)}</h1>
-      <div class="facts"><span>${esc(T.full)} <b class="mono">${c.code}</b></span><span><b>${c.topics.length}</b> topics</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a></div>
+    return `<h1>${esc(subj(s).name)} <span class="h-code">(${c.code})</span></h1>
+      <div class="facts"><span>${esc(T.full)}</span><span><b>${c.topics.length}</b> topics</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a></div>
       <div class="progress"><div class="bar"><i style="width:${(nDone / c.topics.length) * 100}%"></i></div><span>${nDone}/${c.topics.length} done</span></div>
       <h2>Topics</h2><div class="list">` +
       c.topics.map((tp, i) => {
@@ -195,7 +195,7 @@
     const c = course(l, t, s), T = track(l, t), title = c.topics[n - 1], k = K(l, t, s, n);
     crumbs([...trackCrumbs(l, t), { t: subj(s).name, href: url.subject(l, t, s) }, { t: title }]); setTitle(title);
     recent = [{ l, t, s, n }, ...recent.filter(x => K(x.l, x.t, x.s, x.n) !== k)].slice(0, 8); store.set("recent2", recent);
-    let h = `<div class="eyebrow">${tile(s)}<span>${esc(T.full)} ${esc(subj(s).name)} <span class="mono">${c.code}</span> · Topic ${n} of ${c.topics.length}</span></div>
+    let h = `<div class="eyebrow"><span>${esc(T.full)} ${esc(subj(s).name)} (${c.code}) · Topic ${n} of ${c.topics.length}</span></div>
       <h1>${esc(title)}</h1>
       <button class="done-toggle ${done[k] ? "on" : ""}" data-act="done" data-k="${k}"><span class="tick ${done[k] ? "on" : ""}"></span>${done[k] ? "Done" : "Mark as done"}</button>`;
     for (const g of resources(l, t, s, n)) {
@@ -230,8 +230,8 @@
       return `<a class="chip" ${pdfAttrs({ src: u, title: `${name} (${ty})`, desc: `${kind} · ${T.full} ${subj(s).name} ${c.code}`, ms })} title="${esc(`${name} · ${kind}`)}">${ty}</a>`;
     };
     const rows = seriesRows.map(ser => `<tr><td>${ser}</td>${cols.map(([id]) => `<td>${cell(ser, id, "QP")}${cell(ser, id, "MS")}</td>`).join("")}${hasER ? `<td>${cell(ser, 0, "ER")}</td>` : ""}</tr>`).join("");
-    return `${tile(s, true)}<h1>${esc(subj(s).name)} past papers</h1>
-      <div class="facts"><span>${esc(T.full)} <b class="mono">${c.code}</b></span></div>
+    return `<h1>${esc(subj(s).name)} <span class="h-code">(${c.code})</span> past papers</h1>
+      <div class="facts"><span>${esc(T.full)}</span></div>
       <h2>By series</h2>
       <div class="pp"><table><thead><tr><th>Series</th>${cols.map(([, label]) => `<th>${esc(label)}</th>`).join("")}${hasER ? "<th>Report</th>" : ""}</tr></thead><tbody>${rows}</tbody></table></div>
       ${c.paperNote ? `<p class="legend">${esc(c.paperNote)}</p>` : ""}
@@ -251,9 +251,9 @@
     if (kind === "formula-sheets") {
       crumbs([{ t: "Formula sheets" }]); setTitle("Formula sheets");
       return `<h1>Formula sheets</h1><p class="lede">Official data booklets and equation sheets.</p>` +
-        byLevel((L, t, s, c) => { const u = S.formulaSheets[K(L.id, t, s)], label = `${esc(subj(s).name)} · ${esc(L.tracks[t].name)}`;
-          return u ? `<a class="row" href="${esc(u)}" target="_blank" rel="noopener">${tile(s)}<span class="grow">${label}</span><span class="open">Open ↗</span></a>`
-                   : `<div class="row off">${tile(s)}<span class="grow">${label}</span><span class="soon">Coming soon</span></div>`; });
+        byLevel((L, t, s, c) => { const u = S.formulaSheets[K(L.id, t, s)], label = `${esc(subj(s).name)} (${c.code}) · ${esc(L.tracks[t].name)}`;
+          return u ? `<a class="row" href="${esc(u)}" target="_blank" rel="noopener"><span class="grow">${label}</span><span class="open">Open ↗</span></a>`
+                   : `<div class="row off"><span class="grow">${label}</span><span class="soon">Coming soon</span></div>`; });
     }
     if (kind === "exam-dates") {
       crumbs([{ t: "Exam dates" }]); setTitle("Exam dates");
@@ -307,7 +307,7 @@
     let last = "", h = "";
     hits.forEach((x, i) => {
       if (x.type !== last) { h += `<div class="res-label">${x.type}</div>`; last = x.type; }
-      h += `<button class="result ${i === sel ? "sel" : ""}" data-href="${x.href}" data-i="${i}">${tile(x.s)}<span class="grow">${esc(x.text)}</span><small>${esc(x.sub)}</small></button>`;
+      h += `<button class="result ${i === sel ? "sel" : ""}" data-href="${x.href}" data-i="${i}"><span class="grow">${esc(x.text)}</span><small>${esc(x.sub)}</small></button>`;
     });
     $("#results").innerHTML = h;
     $("#results .sel")?.scrollIntoView({ block: "nearest" });
