@@ -449,11 +449,10 @@
     document.body.classList.add("pv-open");
 
     const $ = s => root.querySelector(s);
-    /* Dark pages: follow the site theme unless the student has chosen. */
+    /* Viewer dark mode: starts in the website's mode each time; the toggle applies to this window only. */
     const siteDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-    const darkPref = () => { const v = store.get("gsh-pv-dark"); return v === null ? siteDark() : v; };
     const applyDark = on => { root.querySelector(".pv").classList.toggle("dark-pages", on); const b = root.querySelector('[data-do="dark"]'); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); };
-    applyDark(darkPref());
+    applyDark(siteDark());
     const st = { info: { src, title, desc, ms }, root, annotating: false, lastFocus: document.activeElement };
     active = st;
 
@@ -502,7 +501,7 @@
       if (b.dataset.color) { p.color = b.dataset.color; if (p.tool === "eraser") p.setTool("pen"); else sync(); }
       switch (b.dataset.do) {
         case "close": close(); break;
-        case "dark": { const on = !root.querySelector(".pv").classList.contains("dark-pages"); store.set("gsh-pv-dark", on); applyDark(on); break; }
+        case "dark": applyDark(!root.querySelector(".pv").classList.contains("dark-pages")); break;
         case "prev": p.goToPage(p.current - 1); break;
         case "next": p.goToPage(p.current + 1); break;
         case "bookmark": Bookmarks.toggle(st.info, p.current); sync(); break;
@@ -553,7 +552,7 @@
       if (k === "=" || k === "+") p.setZoom(p.zoom + 0.2);
       if (k === "-") p.setZoom(p.zoom - 0.2);
       if (k === "a") setAnnotate(!st.annotating);
-      if (k === "d") { const on = !root.querySelector(".pv").classList.contains("dark-pages"); store.set("gsh-pv-dark", on); applyDark(on); }
+      if (k === "d") applyDark(!root.querySelector(".pv").classList.contains("dark-pages"));
       if (k === "b" && p.pages.length) { Bookmarks.toggle(st.info, p.current); sync(); }
       if (st.annotating) {
         const map = { p: "pen", h: "highlighter", t: "text", e: "eraser" };
