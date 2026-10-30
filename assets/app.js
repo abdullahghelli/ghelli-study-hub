@@ -293,13 +293,13 @@
           <label class="qb-select"><span>Year</span><select id="qb-year">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
           ${groups.map(([g, name]) => `<div class="qb-group"><div class="qb-gname">${name}</div>${data.topics.filter(t => t.group === g).map(t => {
             const n = filtered(t.id).length;
-            return `<button class="qb-topic ${t.id === st.topic ? "on" : ""}" data-qb-topic="${t.id}" ${n ? "" : "disabled"}><span>${esc(t.name)}</span><small>${n}</small></button>`;
+            return `<button class="qb-topic ${t.id === st.topic ? "on" : ""}" data-qb-topic="${t.id}" ${n ? "" : "disabled"}><span>${t.num ? `<i class="qb-num">${t.num}</i>` : ""}${esc(t.name)}</span><small>${n}</small></button>`;
           }).join("")}</div>`).join("")}
         </aside>
         <section class="qb-main">
           <div class="qb-mobile"><label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
-          <label class="qb-select"><span>Topic</span><select id="qb-topic">${groups.map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
-          <div class="qb-head"><h2>${esc(tp.name)}</h2><span>${list.length} question${list.length === 1 ? "" : "s"}</span></div>
+          <label class="qb-select"><span>Topic</span><select id="qb-topic">${groups.map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
+          <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${list.length} question${list.length === 1 ? "" : "s"}</span></div>
           ${list.length ? list.map(i => qbCard(i, data)).join("") : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`}
         </section>`;
       qbObserve(box, data);
@@ -327,13 +327,16 @@
     };
     render();
   }
+  /* Pure and Paper 3 reuse the same numbers (8.4 is integration in Pure, forces in Mechanics) */
+  const GROUP_OF = (i, data) => (data.topics.find(t => t.id === i.topic) || {}).group || "pure";
   function qbCard(i, data) {
-    const topicName = id => (data.topics.find(t => t.id === id) || {}).name || "";
-    const others = i.partTopics ? [...new Set(Object.values(i.partTopics))].filter(t => t !== i.topic).map(topicName) : [];
+    /* spec points the question covers, e.g. "8.5 Integration by substitution and by parts" */
+    const spec = (i.spec || []).map(c => `<span class="qb-spec"><b>${c}</b> ${esc(((data.points || {})[GROUP_OF(i, data)] || {})[c] || "")}</span>`).join("");
     return `<article class="qb-card" data-qb-card="${i.id}">
       <header class="qb-card-head">
         <div class="qb-title"><b>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` <span class="qb-part">part (${i.part})</span>` : ""}</b>
-          <small>${i.part ? "Shown with the question's opening lines" : others.length ? `Also covers ${esc(others.join(", "))}` : ""}</small></div>
+          ${spec ? `<div class="qb-specs">${spec}</div>` : ""}
+          ${i.part ? `<small>Shown with the question's opening lines</small>` : ""}</div>
         ${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}
       </header>
       <div class="qb-snip" data-qb-snip="${i.id}" style="--ar:${qbAspect(i, data)}"></div>

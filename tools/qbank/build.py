@@ -9,6 +9,8 @@ Usage: python3 tools/qbank/build.py extracted.json papers_dir out.json
 """
 import json, os, re, sys
 import pdfplumber
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from spec import NUM, NAMES, points_for, key as spec_key
 
 # Spec order (Pearson Edexcel A Level Mathematics 9MA0)
 TOPICS = [
@@ -40,9 +42,9 @@ KW = {
     "proof": [(r"\bprove\b", 4), (r"\bproof\b", 4), (r"contradiction", 5), (r"counter[- ]?example", 5), (r"disprove", 5), (r"\bfor all\b", 2), (r"\bexhaustion", 4)],
     "algebra": [(r"\bf\s?\(\s?x\s?\)", 1), (r"\bdomain\b", 3), (r"\brange of\b", 3), (r"\binverse\b", 3), (r"\bf\s?-\s?1|f −1", 3), (r"composite|\bfg\s?\(|\bgf\s?\(", 4),
                 (r"partial fractions?", 4), (r"modulus|\|\s?x", 3), (r"inequalit", 2), (r"factor theorem|is a factor of|remainder", 4), (r"\bquadratic\b", 2),
-                (r"discriminant", 4), (r"simultaneous", 2), (r"\bpolynomial", 2), (r"transformation|stretch|translation|sketch the graph", 2),
+                (r"discriminant", 4), (r"simultaneous", 2), (r"\bpolynomial", 2), (r"transformation|transformed|is mapped|stretch|translation|sketch the graph", 3),
                 (r"\basymptote", 2), (r"proportional", 2), (r"surd|rationali[sz]e", 3), (r"\bindices\b", 2), (r"\bcubic\b", 2), (r"\breal roots?\b", 2), (r"many-one|one-one", 4)],
-    "coord": [(r"\bcircle\b", 4), (r"\bcentre\b", 2), (r"\bradius\b", 2), (r"parametric", 5), (r"\bparameter\b", 4), (r"cartesian equation", 5),
+    "coord": [(r"(?<!sector of a )(?<!segment of a )\bcircle\b", 4), (r"\bcentre\b", 2), (r"\bradius\b", 2), (r"parametric", 5), (r"\bparameter\b", 4), (r"cartesian equation", 5),
               (r"\bline l\b|line l1|line l2|the line l", 2), (r"perpendicular", 2), (r"\bmid-?point", 2), (r"equation of the line", 2), (r"\bx = .{0,12}\bt\b.{0,25}\by = ", 3)],
     "sequences": [(r"arithmetic", 4), (r"geometric", 4), (r"\bsequence", 4), (r"\bseries\b", 3), (r"sum to infinity", 5), (r"common ratio", 5), (r"common difference", 5),
                   (r"binomial expansion|expand .{0,25} in ascending powers|ascending powers", 5), (r"\bnth term|\bn th term|\bu\s?n\s?\+\s?1|un\+1|recurrence", 3),
@@ -81,6 +83,21 @@ KW = {
     "moments": [(r"\bmoments?\b", 6), (r"\brod\b", 4), (r"\bbeam\b|\bplank\b", 5), (r"\bladder\b", 6), (r"pivot|fulcrum|hinged|hinge", 5), (r"centre of mass", 4),
                 (r"point of tilting|about to tilt|on the point of", 3), (r"uniform rod|non-uniform", 4), (r"\bsupports?\b", 3)],
 }
+
+def spec_points(text, topic, group):
+    """Spec points for a piece of a question: points with evidence in its own topic, in the topic it scores best on,
+    and in any other topic with strong evidence; the topic's main point if nothing matches."""
+    low = clean(text).lower()
+    sc = score(text, group)
+    look = [topic] if topic else []
+    if sc:
+        b, bs = max(sc.items(), key=lambda kv: kv[1])
+        if bs >= 4: look.append(b)
+        look += [t for t, v in sc.items() if v >= 10 and v >= 0.75 * bs]
+    out = []
+    for t in dict.fromkeys(look):
+        out += points_for(text, t, low, need=True)[:2 if t == topic else 1]
+    return out or (points_for(text, topic, low) if topic else [])
 
 def allowed_for(paper):
     return {"1": "pure", "2": "pure", "31": "stats", "32": "mech"}.get(paper)
@@ -193,15 +210,18 @@ def main():
                             tag = cand
                     ptags.append(tag)
                 top = max(ptags, key=lambda t: ORDER[t])
-                items.append(dict(base, id=f"{f[:-4]}-q{q['q']}", part=None, topic=top, marks=q["marks"], segs=q["segs"],
+                pspec = [spec_points(stem_t + " " + p["text"], t, g) for p, t in zip(parts, ptags)]
+                allspec = sorted({c for ps in pspec for c in ps}, key=spec_key)
+                items.append(dict(base, id=f"{f[:-4]}-q{q['q']}", part=None, topic=top, spec=allspec, marks=q["marks"], segs=q["segs"],
                                   partTopics={p["label"]: t for p, t in zip(parts, ptags)}, text=clean(q["text"])[:400]))
-                for p, t in zip(parts, ptags):
+                for p, t, ps in zip(parts, ptags, pspec):
                     if ORDER[t] < ORDER[top]:
                         lab = re.sub(r"[^a-z]", "", p["label"])[:1]
-                        items.append(dict(base, msAt=msp.get((q["q"], lab)) or base["msAt"], id=f"{f[:-4]}-q{q['q']}{p['label']}", part=p["label"], topic=t, marks=p["marks"],
+                        items.append(dict(base, msAt=msp.get((q["q"], lab)) or base["msAt"], spec=sorted(set(ps), key=spec_key), id=f"{f[:-4]}-q{q['q']}{p['label']}", part=p["label"], topic=t, marks=p["marks"],
                                           segs=q.get("stem", []) + p["segs"], text=clean(stem_t + " " + p["text"])[:400]))
             else:
-                items.append(dict(base, id=f"{f[:-4]}-q{q['q']}", part=None, topic=qtopic_fallback, marks=q["marks"], segs=q["segs"], text=clean(q["text"])[:400]))
+                items.append(dict(base, id=f"{f[:-4]}-q{q['q']}", part=None, topic=qtopic_fallback,
+                                  spec=sorted(set(spec_points(q["text"], qtopic_fallback, g)), key=spec_key), marks=q["marks"], segs=q["segs"], text=clean(q["text"])[:400]))
     for it in items:   # not found: start at the previous question's mark scheme instead of page 1
         if not it.get("msAt") and it.get("ms"):
             prev = [o["msAt"] for o in items if o.get("ms") == it["ms"] and o["q"] < it["q"] and o.get("msAt")]
@@ -209,7 +229,8 @@ def main():
     for it in items:   # page + position for the viewer; keep msPage for older code
         a = it.pop("msAt", None)
         if a: it["msPage"], it["msY"] = a
-    out_data = dict(spec="9MA0", topics=[dict(id=t[0], name=t[1], group=t[2]) for t in TOPICS], pdfs=pdfs, items=items)
+    out_data = dict(spec="9MA0", topics=[dict(id=t[0], num=NUM[t[0]], name=t[1], group=t[2]) for t in TOPICS],
+                    points=NAMES, pdfs=pdfs, items=items)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(out_data, open(out, "w"), separators=(",", ":"))
     from collections import Counter
