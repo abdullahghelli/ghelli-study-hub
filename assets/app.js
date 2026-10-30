@@ -44,7 +44,7 @@
 
   /* Who owns each board's past papers. */
   const ownerNote = t => {
-    if (t.startsWith("edexcel")) return "Past papers and mark schemes are the property of Pearson Education Ltd (Pearson Edexcel) and are used with permission.";
+    if (t.startsWith("edexcel")) return "Past papers and mark schemes are the property of Pearson Education Ltd (Pearson Edexcel).";
     if (t.startsWith("aqa")) return "Past papers and mark schemes are the property of AQA.";
     if (t.startsWith("cambridge")) return "Past papers and mark schemes are the property of Cambridge University Press & Assessment.";
     if (t === "hl" || t === "sl") return "Past papers and mark schemes are the property of the International Baccalaureate Organization.";
