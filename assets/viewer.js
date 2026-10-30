@@ -58,6 +58,33 @@
     },
   };
 
+  /* Variable-width stroke outline (smooth edges, round ends). pts: [[x, y, pressure], ...] in pixels */
+  function strokeOutline(pts, width) {
+    const n = pts.length, L = [], R = [];
+    // light smoothing of pressure along the stroke
+    const pr = pts.map((q, k) => (pts[Math.max(0, k - 1)][2] + 2 * q[2] + pts[Math.min(n - 1, k + 1)][2]) / 4);
+    for (let k = 0; k < n; k++) {
+      const a = pts[Math.max(0, k - 1)], b = pts[Math.min(n - 1, k + 1)];
+      let dx = b[0] - a[0], dy = b[1] - a[1]; const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
+      // taper the first and last few points slightly for a natural pen look
+      const taper = Math.min(1, (k + 1) / 3, (n - k) / 3) * 0.35 + 0.65;
+      const r = (width / 2) * (0.7 + 0.6 * pr[k]) * taper;
+      L.push([pts[k][0] - dy * r, pts[k][1] + dx * r]);
+      R.push([pts[k][0] + dy * r, pts[k][1] - dx * r]);
+    }
+    const path = new Path2D(), ring = L.concat(R.reverse());
+    const rEnd = (width / 2) * (0.7 + 0.6 * pr[n - 1]) * 0.65, rStart = (width / 2) * (0.7 + 0.6 * pr[0]) * 0.65;
+    path.moveTo((ring[0][0] + ring[1][0]) / 2, (ring[0][1] + ring[1][1]) / 2);
+    for (let k = 1; k < ring.length; k++) {
+      const c = ring[k], d = ring[(k + 1) % ring.length];
+      path.quadraticCurveTo(c[0], c[1], (c[0] + d[0]) / 2, (c[1] + d[1]) / 2);
+    }
+    path.closePath();
+    path.moveTo(pts[n - 1][0] + rEnd, pts[n - 1][1]); path.arc(pts[n - 1][0], pts[n - 1][1], rEnd, 0, Math.PI * 2);
+    path.moveTo(pts[0][0] + rStart, pts[0][1]); path.arc(pts[0][0], pts[0][1], rStart, 0, Math.PI * 2);
+    return path;
+  }
+
   /* ---------- One scrollable PDF ---------- */
   class Pane {
     constructor(el, { src, title, annotate, startPage, onChange }) {
@@ -276,16 +303,10 @@
           for (let k = 1; k < n - 1; k++) ctx.quadraticCurveTo(X(k), Y(k), (X(k) + X(k + 1)) / 2, (Y(k) + Y(k + 1)) / 2);
           ctx.lineTo(X(n - 1), Y(n - 1)); ctx.stroke();
         } else {
-          /* Apple Pencil: same smooth curve, with line weight following pressure */
-          let px = X(0), py = Y(0);
-          for (let k = 1; k < n - 1; k++) {
-            const mx = (X(k) + X(k + 1)) / 2, my = (Y(k) + Y(k + 1)) / 2, pr = pts[k][2];
-            ctx.lineWidth = it.w * w * (0.55 + 0.9 * pr);
-            ctx.beginPath(); ctx.moveTo(px, py); ctx.quadraticCurveTo(X(k), Y(k), mx, my); ctx.stroke();
-            px = mx; py = my;
-          }
-          ctx.lineWidth = it.w * w * (0.55 + 0.9 * pts[n - 1][2]);
-          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(X(n - 1), Y(n - 1)); ctx.stroke();
+          /* Apple Pencil: draw the stroke as one filled outline whose width follows pressure,
+             so the edges stay smooth with no seams between segments. */
+          ctx.fillStyle = ctx.strokeStyle;
+          ctx.fill(strokeOutline(pts.map(q => [q[0] * w, q[1] * h, q[2]]), it.w * w));
         }
       }
       ctx.globalAlpha = 1;
@@ -347,8 +368,9 @@
           if (cur.t === "highlighter" && e.shiftKey) y = cur.p[0][1];
           const last = cur.p[cur.p.length - 1];
           if (Math.abs(x - last[0]) < minD && Math.abs(y - last[1]) * p.h / p.w < minD) continue;
+          if (withP) { x = last[0] + (x - last[0]) * 0.55; y = last[1] + (y - last[1]) * 0.55; }   /* steady Pencil jitter */
           const pt = [+x.toFixed(5), +y.toFixed(5)];
-          if (withP) pt.push(+((ev.pressure || 0.5) * 0.7 + last[2] * 0.3).toFixed(2));   /* smooth pressure changes */
+          if (withP) pt.push(+((ev.pressure || 0.5) * 0.35 + last[2] * 0.65).toFixed(3));   /* smooth pressure changes */
           cur.p.push(pt);
         }
         this.drawInk(p, i, cur);
@@ -357,6 +379,10 @@
         if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
         if (erasing) { erasing = false; this.save(); return; }
         if (!cur) return;
+        if (cur.p[0].length > 2 && e && e.clientX != null && e.type === "pointerup") {   /* finish exactly where the Pencil lifted */
+          const [x, y] = pos(e), last = cur.p[cur.p.length - 1];
+          if (Math.hypot(x - last[0], y - last[1]) > 0.3 / p.w) cur.p.push([+x.toFixed(5), +y.toFixed(5), last[2]]);
+        }
         this.snapshot(); (this.ann[i] ||= []).push(cur); cur = null;
         this.drawInk(p, i); this.save();
       };
