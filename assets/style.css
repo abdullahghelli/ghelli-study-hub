@@ -322,3 +322,8 @@ body.pv-open{overflow:hidden}
   .pv-saved{display:none}
   .bm-x{opacity:1}
 }
+
+/* Dark pages: invert the paper (and notes, so they stay readable on it); colours keep their hue. */
+.pv.dark-pages .vw-pane{background:#0f1110}
+.pv.dark-pages .pg{filter:invert(.9) hue-rotate(180deg);box-shadow:0 0 0 1px rgba(255,255,255,.06)}
+.pv.dark-pages .vw-text{border-color:#888}

@@ -385,6 +385,7 @@
     bookmark: '<path d="M6 3.5h8v13l-4-3-4 3Z"/>',
     annotate: '<path d="M4 16l1-4 8.5-8.5a2.1 2.1 0 0 1 3 3L8 15Z"/>',
     trash: '<path d="M5 6h10M8 6V4.5h4V6M6.5 6l.7 9.5h5.6l.7-9.5"/>',
+    moon: '<path d="M15.5 12A6 6 0 0 1 8 4.5a6 6 0 1 0 7.5 7.5Z"/>',
   };
   const svg = (n, fill) => `<svg viewBox="0 0 20 20" fill="${fill ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
   const TOOL_NAMES = { pen: "Pen (P)", highlighter: "Highlighter (H)", text: "Text (T)", eraser: "Eraser (E)" };
@@ -421,6 +422,7 @@
         <button class="pv-pill" data-do="bookmark">${svg("bookmark")}<span>Bookmark</span></button>
         <button class="pv-pill" data-do="annotate">${svg("annotate")}<span>Annotate</span></button>
         ${ms ? `<button class="pv-pill" data-do="ms">${svg("ms")}<span>Mark scheme</span></button>` : ""}
+        <button class="pv-pill" data-do="dark" title="Dark pages (D)">${svg("moon")}<span>Dark pages</span></button>
         <div class="pv-zoom">
           <button class="vw-ico" data-do="zoomout" title="Zoom out" aria-label="Zoom out">${svg("minus")}</button>
           <span data-zoom>100%</span>
@@ -447,6 +449,11 @@
     document.body.classList.add("pv-open");
 
     const $ = s => root.querySelector(s);
+    /* Dark pages: follow the site theme unless the student has chosen. */
+    const siteDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const darkPref = () => { const v = store.get("gsh-pv-dark"); return v === null ? siteDark() : v; };
+    const applyDark = on => { root.querySelector(".pv").classList.toggle("dark-pages", on); const b = root.querySelector('[data-do="dark"]'); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); };
+    applyDark(darkPref());
     const st = { info: { src, title, desc, ms }, root, annotating: false, lastFocus: document.activeElement };
     active = st;
 
@@ -495,6 +502,7 @@
       if (b.dataset.color) { p.color = b.dataset.color; if (p.tool === "eraser") p.setTool("pen"); else sync(); }
       switch (b.dataset.do) {
         case "close": close(); break;
+        case "dark": { const on = !root.querySelector(".pv").classList.contains("dark-pages"); store.set("gsh-pv-dark", on); applyDark(on); break; }
         case "prev": p.goToPage(p.current - 1); break;
         case "next": p.goToPage(p.current + 1); break;
         case "bookmark": Bookmarks.toggle(st.info, p.current); sync(); break;
@@ -545,6 +553,7 @@
       if (k === "=" || k === "+") p.setZoom(p.zoom + 0.2);
       if (k === "-") p.setZoom(p.zoom - 0.2);
       if (k === "a") setAnnotate(!st.annotating);
+      if (k === "d") { const on = !root.querySelector(".pv").classList.contains("dark-pages"); store.set("gsh-pv-dark", on); applyDark(on); }
       if (k === "b" && p.pages.length) { Bookmarks.toggle(st.info, p.current); sync(); }
       if (st.annotating) {
         const map = { p: "pen", h: "highlighter", t: "text", e: "eraser" };
