@@ -96,6 +96,7 @@
       this.ann = (annotate && store.get(this.key)) || {};
       this.undo = []; this.redo = [];
       this.matches = []; this.matchIdx = -1;
+      this.cancelInk = []; this.pinching = false;
       this.observer = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && this.renderPage(e.target._i)), { root: el, rootMargin: "600px 0px" });
       el.addEventListener("scroll", () => {
         const c = this.currentPage(); if (c !== this.current) { this.current = c; this.onChange?.(); }
@@ -143,6 +144,7 @@
       }
       this.el.innerHTML = `<div class="vw-pages"></div>`;
       this.wrap = this.el.firstChild;
+      this.bindPinch();
       this.pages.forEach((p, i) => {
         const pg = document.createElement("div"); pg.className = "pg"; pg._i = i;
         pg.innerHTML = `<canvas class="pdf"></canvas><div class="hl"></div><canvas class="ink"></canvas>`;
@@ -197,7 +199,74 @@
       this.current = this.pages.indexOf(p) + 1; this.onChange?.();
     }
 
-    setZoom(z) { this.zoom = Math.min(3, Math.max(0.5, z)); this.layout(); this.paintMatches(); this.onChange?.(); }
+    setZoom(z, at) {
+      z = Math.min(3, Math.max(0.5, z));
+      /* keep the spot under the fingers (or the screen centre) in place */
+      const R = this.el.getBoundingClientRect();
+      const cx = at ? at.x : R.left + R.width / 2, cy = at ? at.y : R.top + R.height / 2;
+      let anchor = null;
+      for (const p of this.pages) {
+        const r = p.el?.getBoundingClientRect(); if (!r) continue;
+        if (cy <= r.bottom + 8 || p === this.pages[this.pages.length - 1]) { anchor = { p, fx: (cx - r.left) / r.width, fy: (cy - r.top) / r.height }; break; }
+      }
+      this.zoom = z; this.layout(); this.paintMatches();
+      if (anchor) {
+        const r = anchor.p.el.getBoundingClientRect();
+        this.el.scrollLeft += r.left + anchor.fx * r.width - cx;
+        this.el.scrollTop += r.top + anchor.fy * r.height - cy;
+        this.current = this.currentPage();
+      }
+      this.onChange?.();
+    }
+
+    /* two-finger pinch to zoom (and trackpad pinch / Ctrl + scroll) */
+    bindPinch() {
+      const el = this.el;
+      let g = null;
+      const mid = t => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 });
+      const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) || 1;
+      el.addEventListener("touchstart", e => {
+        if (e.touches.length !== 2 || !this.wrap) return;
+        e.preventDefault();
+        this.pinching = true; this.cancelInk.forEach(f => f());
+        const m = mid(e.touches), w = this.wrap.getBoundingClientRect();
+        g = { d: dist(e.touches), m, s: 1, ox: m.x - w.left, oy: m.y - w.top };
+        this.wrap.style.transformOrigin = `${g.ox}px ${g.oy}px`;
+        this.wrap.style.willChange = "transform";
+      }, { passive: false });
+      el.addEventListener("touchmove", e => {
+        if (!g || e.touches.length < 2) return;
+        e.preventDefault();
+        const m = mid(e.touches);
+        g.s = Math.min(3 / this.zoom, Math.max(0.5 / this.zoom, dist(e.touches) / g.d));
+        g.at = m;
+        this.wrap.style.transform = `translate(${m.x - g.m.x}px, ${m.y - g.m.y}px) scale(${g.s})`;
+      }, { passive: false });
+      const finish = e => {
+        if (!g || (e.touches && e.touches.length >= 2)) return;
+        const { s, m, at } = g; g = null;
+        const pt = at || m;
+        /* where the original focal point sits after the live pan */
+        this.wrap.style.transform = ""; this.wrap.style.willChange = "";
+        if (Math.abs(s - 1) > 0.02) {
+          this.el.scrollLeft -= pt.x - m.x; this.el.scrollTop -= pt.y - m.y;
+          this.setZoom(this.zoom * s, pt);
+        } else { this.el.scrollLeft -= pt.x - m.x; this.el.scrollTop -= pt.y - m.y; }
+        setTimeout(() => { this.pinching = false; }, 60);
+      };
+      el.addEventListener("touchend", finish);
+      el.addEventListener("touchcancel", finish);
+      /* stop Safari zooming the whole page */
+      el.addEventListener("gesturestart", e => e.preventDefault());
+      el.addEventListener("wheel", e => {
+        if (!e.ctrlKey || !this.wrap) return;
+        e.preventDefault();
+        clearTimeout(this.wheelT);
+        this.wheelZ = (this.wheelZ || this.zoom) * Math.exp(-e.deltaY * 0.01);
+        this.wheelAt = { x: e.clientX, y: e.clientY };
+        this.wheelT = setTimeout(() => { this.setZoom(this.wheelZ, this.wheelAt); this.wheelZ = 0; }, 90);
+      }, { passive: false });
+    }
 
     setTool(t) {
       this.commitText();
@@ -333,7 +402,12 @@
       let cur = null, erasing = false;
       /* Apple Pencil: once a pen is used, fingers scroll instead of drawing (palm rejection) */
       let fingerScroll = null;
+      this.cancelInk.push(() => {
+        fingerScroll = null; erasing = false;
+        if (cur && cur.touch) { cur = null; this.drawInk(p, i); }
+      });
       p.ink.addEventListener("pointerdown", e => {
+        if (this.pinching && e.pointerType === "touch") return;
         if (e.pointerType === "pen" && !this.penSeen) { this.penSeen = true; this.onChange?.(); }
         if (this.penSeen && e.pointerType === "touch" && this.tool !== "hand") {
           fingerScroll = { x: e.clientX, y: e.clientY, top: this.el.scrollTop, left: this.el.scrollLeft, id: e.pointerId };
@@ -351,9 +425,11 @@
         e.preventDefault(); try { p.ink.setPointerCapture(e.pointerId); } catch (err) {}
         if (this.tool === "eraser") { this.snapshot(); erasing = true; this.eraseAt(p, i, x, y); return; }
         cur = { t: this.tool, c: this.color, w: WIDTH[this.tool], p: [e.pointerType === "pen" && this.tool === "pen" ? [x, y, +(e.pressure || 0.5).toFixed(2)] : [x, y]] };
+        if (e.pointerType === "touch") Object.defineProperty(cur, "touch", { value: true });
         this.drawInk(p, i, cur);
       });
       p.ink.addEventListener("pointermove", e => {
+        if (this.pinching && e.pointerType === "touch") return;
         if (fingerScroll && e.pointerId === fingerScroll.id) {
           this.el.scrollTop = fingerScroll.top - (e.clientY - fingerScroll.y);
           this.el.scrollLeft = fingerScroll.left - (e.clientX - fingerScroll.x);
@@ -376,6 +452,7 @@
         this.drawInk(p, i, cur);
       });
       const end = e => {
+        if (this.pinching && e && e.pointerType === "touch") { if (cur && cur.touch) { cur = null; this.drawInk(p, i); } fingerScroll = null; return; }
         if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
         if (erasing) { erasing = false; this.save(); return; }
         if (!cur) return;

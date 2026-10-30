@@ -246,7 +246,7 @@ a.chip:hover{filter:brightness(.96)}
 .pg .hl{position:absolute;inset:0;pointer-events:none}
 .pg .hl i{position:absolute;background:rgba(255,200,0,.35);border-radius:2px}
 .pg .hl i.cur{background:rgba(255,140,0,.55);outline:2px solid rgba(255,120,0,.8)}
-.pg .ink{touch-action:pan-x pan-y}
+.vw-pane,.pg .ink{touch-action:pan-x pan-y}
 .vw-pane[data-tool="pen"] .ink,.vw-pane[data-tool="highlighter"] .ink,.vw-pane[data-tool="eraser"] .ink,.vw-pane[data-tool="text"] .ink{touch-action:none}
 .vw-pane[data-tool="pen"] .ink{cursor:crosshair}
 .vw-pane[data-tool="highlighter"] .ink{cursor:crosshair}
