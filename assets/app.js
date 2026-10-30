@@ -172,18 +172,19 @@
   function vPapers({ l, t, s }) {
     const c = course(l, t, s), T = track(l, t);
     crumbs([...trackCrumbs(l, t), { t: subj(s).name, href: url.subject(l, t, s) }, { t: "Past papers" }]); setTitle(`${T.full} ${subj(s).name} past papers`);
-    const links = S.papers[K(l, t, s)] || {}, np = T.papers;
+    const links = S.papers[K(l, t, s)] || {};
+    /* A course can name its own papers (c.paperList: [[id, label], …]) and list its exact series (c.paperSeries). */
+    const cols = c.paperList || Array.from({ length: T.papers }, (_, i) => [String(i + 1), `Paper ${i + 1}`]);
+    const seriesRows = c.paperSeries || S.years.flatMap(y => T.series.map(se => `${se} ${y}`));
+    const hasER = Object.keys(links).some(k => k.endsWith("|ER")) || !c.paperList;
     const cell = (ser, p, ty) => { const u = links[`${ser}|${p}|${ty}`]; return u ? `<a class="chip" href="${esc(u)}" target="_blank" rel="noopener">${ty}</a>` : `<span class="chip" title="Coming soon">${ty}</span>`; };
-    let rows = "";
-    for (const y of S.years) for (const se of T.series) {
-      const ser = `${se} ${y}`;
-      rows += `<tr><td>${ser}</td>${Array.from({ length: np }, (_, i) => `<td>${cell(ser, i + 1, "QP")}${cell(ser, i + 1, "MS")}</td>`).join("")}<td>${cell(ser, 0, "ER")}</td></tr>`;
-    }
+    const rows = seriesRows.map(ser => `<tr><td>${ser}</td>${cols.map(([id]) => `<td>${cell(ser, id, "QP")}${cell(ser, id, "MS")}</td>`).join("")}${hasER ? `<td>${cell(ser, 0, "ER")}</td>` : ""}</tr>`).join("");
     return `${tile(s, true)}<h1>${esc(subj(s).name)} past papers</h1>
       <div class="facts"><span>${esc(T.full)} <b class="mono">${c.code}</b></span></div>
       <h2>By series</h2>
-      <div class="pp"><table><thead><tr><th>Series</th>${Array.from({ length: np }, (_, i) => `<th>Paper ${i + 1}</th>`).join("")}<th>Report</th></tr></thead><tbody>${rows}</tbody></table></div>
-      <p class="legend">QP question paper · MS mark scheme · ER examiner report. Highlighted codes are available.</p>`;
+      <div class="pp"><table><thead><tr><th>Series</th>${cols.map(([, label]) => `<th>${esc(label)}</th>`).join("")}${hasER ? "<th>Report</th>" : ""}</tr></thead><tbody>${rows}</tbody></table></div>
+      ${c.paperNote ? `<p class="legend">${esc(c.paperNote)}</p>` : ""}
+      <p class="legend">QP question paper · MS mark scheme${hasER ? " · ER examiner report" : ""}. Highlighted codes are available.</p>`;
   }
 
   function byLevel(fn) {
