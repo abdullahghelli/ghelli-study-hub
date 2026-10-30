@@ -25,8 +25,16 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
   };
 
-  const COLORS = { ink: "#1b1f1e", red: "#d93025", blue: "#1a64d6", green: "#16803c" };
-  const HIGHLIGHT = { ink: "#ffe14d", red: "#ff8a80", blue: "#7fb8ff", green: "#7be08f" };
+  /* Pen colours: chalk white, pale yellow and mint green (from the house notes style).
+     Each has a version for dark pages (true chalk colour) and a deeper one so it reads on white paper. */
+  const PALETTE = {
+    ink:    { name: "Chalk",  dark: "#f3f3ef", light: "#1b1f1e" },
+    yellow: { name: "Yellow", dark: "#ebe48e", light: "#a38a00" },
+    green:  { name: "Green",  dark: "#63dba4", light: "#11905d" },
+  };
+  const LEGACY = { red: "#d93025", blue: "#1a64d6" };
+  const colorOf = (c, dark) => PALETTE[c] ? PALETTE[c][dark ? "dark" : "light"] : (LEGACY[c] || (/^#[0-9a-f]{6}$/i.test(c || "") ? c : PALETTE.ink[dark ? "dark" : "light"]));
+  const RECENT_KEY = "gsh-pv-colors";
   const WIDTH = { pen: 0.0022, highlighter: 0.016 };
   const TEXT_SIZE = 0.02;
 
@@ -53,7 +61,7 @@
     constructor(el, { src, title, annotate, startPage, onChange }) {
       Object.assign(this, { el, src, title, annotate, onChange });
       this.startPage = startPage || 1;
-      this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "ink";
+      this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "ink"; this.dark = false;
       this.pages = []; this.bytes = null; this.current = 1;
       this.key = "gsh-ann:" + src;
       this.ann = (annotate && store.get(this.key)) || {};
@@ -236,18 +244,23 @@
       this.onChange?.();
     }
     redrawAll() { this.pages.forEach((p, i) => this.drawInk(p, i)); this.onChange?.(); }
+    setDark(on) {
+      this.dark = on; this.redrawAll();
+      if (this.editing) this.editing.ta.style.color = colorOf(this.editing.it.c, on);
+    }
 
-    drawItems(ctx, items, w, h) {
+    drawItems(ctx, items, w, h, dark = this.dark) {
       for (const it of items || []) {
         if (it.t === "text") {
-          ctx.globalAlpha = 1; ctx.fillStyle = COLORS[it.c] || COLORS.ink;
+          ctx.globalAlpha = 1; ctx.fillStyle = colorOf(it.c, dark);
           const size = it.s * w; ctx.font = `500 ${size}px Geist, system-ui, sans-serif`; ctx.textBaseline = "top";
           it.v.split("\n").forEach((line, k) => ctx.fillText(line, it.x * w, it.y * h + k * size * 1.25));
           continue;
         }
         const hl = it.t === "highlighter";
-        ctx.globalAlpha = hl ? 0.38 : 1;
-        ctx.strokeStyle = hl ? (HIGHLIGHT[it.c] || HIGHLIGHT.ink) : (COLORS[it.c] || COLORS.ink);
+        ctx.globalAlpha = hl ? (dark ? 0.32 : 0.38) : 1;
+        const col = colorOf(it.c, dark);
+        ctx.strokeStyle = hl && PALETTE[it.c] && !dark ? PALETTE[it.c].dark.replace("#f3f3ef", "#ffe14d") : col;
         ctx.lineWidth = it.w * w; ctx.lineCap = hl ? "butt" : "round"; ctx.lineJoin = "round";
         ctx.beginPath();
         it.p.forEach(([x, y], k) => k ? ctx.lineTo(x * w, y * h) : ctx.moveTo(x * w, y * h));
@@ -324,7 +337,7 @@
       if (existing) { items.splice(idx, 1); this.drawInk(p, i); }
       const ta = document.createElement("textarea");
       ta.className = "vw-text"; ta.value = it.v; ta.spellcheck = false;
-      Object.assign(ta.style, { left: it.x * p.w + "px", top: it.y * p.h + "px", fontSize: it.s * p.w + "px", color: COLORS[it.c] });
+      Object.assign(ta.style, { left: it.x * p.w + "px", top: it.y * p.h + "px", fontSize: it.s * p.w + "px", color: colorOf(it.c, this.dark), background: this.dark ? "rgba(20,22,21,.85)" : "rgba(255,255,255,.85)" });
       p.el.appendChild(ta);
       const grow = () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; ta.style.width = "auto"; ta.style.width = Math.min(p.w - it.x * p.w - 4, Math.max(60, ta.scrollWidth + 8)) + "px"; };
       ta.oninput = grow; grow();
@@ -354,7 +367,7 @@
         const { width, height } = page.getSize(), k = 3;
         const c = document.createElement("canvas"); c.width = width * k; c.height = height * k;
         const ctx = c.getContext("2d"); ctx.scale(k, k);
-        this.drawItems(ctx, items, width, height);
+        this.drawItems(ctx, items, width, height, false);
         const png = await doc.embedPng(c.toDataURL("image/png"));
         page.drawImage(png, { x: 0, y: 0, width, height });
       }
@@ -432,12 +445,19 @@
       <div class="pv-tools" hidden role="toolbar" aria-label="Annotation tools">
         ${Object.keys(TOOL_NAMES).map(t => `<button class="vw-ico" data-tool="${t}" title="${TOOL_NAMES[t]}" aria-label="${TOOL_NAMES[t]}">${svg(t)}</button>`).join("")}
         <span class="vw-sep"></span>
-        ${Object.keys(COLORS).map(c => `<button class="vw-color" data-color="${c}" title="${c === "ink" ? "Black" : c[0].toUpperCase() + c.slice(1)}" aria-label="${c === "ink" ? "Black" : c}"><i style="background:${COLORS[c]}"></i></button>`).join("")}
+        ${Object.keys(PALETTE).map(c => `<button class="vw-color" data-color="${c}" title="${PALETTE[c].name}" aria-label="${PALETTE[c].name}"><i></i></button>`).join("")}
+        <button class="vw-color wheel" data-do="wheel" title="More colours" aria-label="More colours" aria-haspopup="dialog"><i></i></button>
         <span class="vw-sep"></span>
         <button class="vw-ico" data-do="undo" title="Undo (Ctrl+Z)" aria-label="Undo">${svg("undo")}</button>
         <button class="vw-ico" data-do="redo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">${svg("redo")}</button>
         <button class="vw-ico" data-do="clear" title="Clear all notes" aria-label="Clear all notes">${svg("trash")}</button>
         <span class="pv-saved" data-save></span>
+      </div>
+      <div class="pv-wheel" hidden role="dialog" aria-label="Pick a colour">
+        <canvas width="200" height="200" aria-label="Colour wheel"></canvas>
+        <label class="pv-wheel-row"><span>Brightness</span><input type="range" min="15" max="85" value="55" data-light aria-label="Brightness"></label>
+        <div class="pv-wheel-row"><i class="pv-wheel-prev"></i><code data-hex>#63dba4</code></div>
+        <div class="pv-wheel-recent" data-recent></div>
       </div>
       <div class="vw-confirm" hidden><span>Clear every note on this paper?</span><button class="vw-btn sm danger" data-do="clear-yes">Clear notes</button><button class="vw-btn sm" data-do="clear-no">Cancel</button></div>
       <div class="vw-body">
@@ -451,8 +471,11 @@
     const $ = s => root.querySelector(s);
     /* Viewer dark mode: starts in the website's mode each time; the toggle applies to this window only. */
     const siteDark = () => { const t = (document.documentElement.dataset.theme || "").replace(/"/g, ""); return t === "dark" || (t !== "light" && matchMedia("(prefers-color-scheme: dark)").matches); };
-    const applyDark = on => { root.querySelector(".pv").classList.toggle("dark-pages", on); const b = root.querySelector('[data-do="dark"]'); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); };
-    applyDark(siteDark());
+    const applyDark = on => {
+      root.querySelector(".pv").classList.toggle("dark-pages", on);
+      const b = root.querySelector('[data-do="dark"]'); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on);
+      st.dark = on; st.main?.setDark(on); st.ms?.setDark(on); sync?.();
+    };
     const st = { info: { src, title, desc, ms }, root, annotating: false, lastFocus: document.activeElement };
     active = st;
 
@@ -468,7 +491,9 @@
       $('[data-do="annotate"]').disabled = !n;
       $(".pv-tools").hidden = !st.annotating;
       root.querySelectorAll("[data-tool]").forEach(b => b.classList.toggle("on", b.dataset.tool === p.tool));
-      root.querySelectorAll("[data-color]").forEach(b => b.classList.toggle("on", b.dataset.color === p.color));
+      root.querySelectorAll("[data-color]").forEach(b => { b.classList.toggle("on", b.dataset.color === p.color); b.firstElementChild.style.background = colorOf(b.dataset.color, st.dark); });
+      const custom = !PALETTE[p.color], wb = $('[data-do="wheel"]');
+      wb.classList.toggle("on", custom); wb.classList.toggle("has", custom); wb.firstElementChild.style.setProperty("--c", custom ? p.color : "transparent");
       $('[data-do="undo"]').disabled = !p.undo.length;
       $('[data-do="redo"]').disabled = !p.redo.length;
       $('[data-do="download"]').disabled = !p.bytes;
@@ -478,6 +503,7 @@
       $("[data-count]").textContent = !q ? "" : p.matches.length ? `${p.matchIdx + 1} of ${p.matches.length}` : "No matches";
     };
     st.main = new Pane($(".vw-pane.main"), { src, title, annotate: true, startPage: page, onChange: sync });
+    applyDark(siteDark());
     sync();
 
     const setAnnotate = on => {
@@ -487,18 +513,85 @@
     const toggleMs = btn => {
       const pane = $(".vw-pane.ms"), body = $(".vw-body");
       const show = pane.hidden; pane.hidden = !show; body.classList.toggle("split", show); btn.classList.toggle("on", show);
-      if (show && !st.ms) st.ms = new Pane(pane.querySelector(".vw-pane-inner"), { src: ms, title: "Mark scheme", annotate: false });
+      if (show && !st.ms) { st.ms = new Pane(pane.querySelector(".vw-pane-inner"), { src: ms, title: "Mark scheme", annotate: false }); st.ms.dark = st.dark; }
       setTimeout(() => { st.main.layout(); st.ms?.layout(); }, 0);
     };
     const openFind = () => { $(".pv-find").hidden = false; const i = $("#pv-find-input"); i.focus(); i.select(); };
     const closeFind = () => { $(".pv-find").hidden = true; $("#pv-find-input").value = ""; st.main.search(""); };
 
+    /* ----- colour wheel ----- */
+    const wheel = (() => {
+      const box = $(".pv-wheel"), cv = box.querySelector("canvas"), light = box.querySelector("[data-light]");
+      let h = 150, sat = 0.6;
+      const hsl2hex = (H, S, L) => {
+        S /= 100; L /= 100;
+        const k = n => (n + H / 30) % 12, a = S * Math.min(L, 1 - L);
+        const f = n => Math.round(255 * (L - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1))));
+        return "#" + [f(0), f(8), f(4)].map(x => x.toString(16).padStart(2, "0")).join("");
+      };
+      const draw = () => {
+        const ctx = cv.getContext("2d"), W = cv.width, R = W / 2, img = ctx.createImageData(W, W), L = +light.value;
+        for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
+          const dx = x - R, dy = y - R, r = Math.hypot(dx, dy), i = (y * W + x) * 4;
+          if (r > R) { img.data[i + 3] = 0; continue; }
+          const hex = hsl2hex((Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360, (r / R) * 100, L);
+          img.data[i] = parseInt(hex.slice(1, 3), 16); img.data[i + 1] = parseInt(hex.slice(3, 5), 16); img.data[i + 2] = parseInt(hex.slice(5, 7), 16);
+          img.data[i + 3] = r > R - 1 ? Math.round(255 * (R - r)) : 255;
+        }
+        ctx.putImageData(img, 0, 0);
+        const mx = R + Math.cos(h * Math.PI / 180) * sat * R, my = R + Math.sin(h * Math.PI / 180) * sat * R;
+        ctx.beginPath(); ctx.arc(mx, my, 7, 0, Math.PI * 2); ctx.lineWidth = 3; ctx.strokeStyle = "#fff"; ctx.stroke();
+        ctx.beginPath(); ctx.arc(mx, my, 7, 0, Math.PI * 2); ctx.lineWidth = 1; ctx.strokeStyle = "rgba(0,0,0,.5)"; ctx.stroke();
+      };
+      const current = () => hsl2hex(h, sat * 100, +light.value);
+      const recents = () => { try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch (e) { return []; } };
+      const remember = hex => { try { localStorage.setItem(RECENT_KEY, JSON.stringify([hex, ...recents().filter(x => x !== hex)].slice(0, 8))); } catch (e) {} };
+      const showRecent = () => {
+        const r = recents();
+        box.querySelector("[data-recent]").innerHTML = r.length ? `<span>Recent</span>${r.map(c => `<button class="vw-color" data-pick="${c}" title="${c}" aria-label="Recent colour ${c}"><i style="background:${c}"></i></button>`).join("")}` : "";
+      };
+      const preview = () => { const hex = current(); box.querySelector(".pv-wheel-prev").style.background = hex; box.querySelector("[data-hex]").textContent = hex; };
+      const apply = () => { const hex = current(); preview(); st.main.color = hex; if (st.main.tool === "eraser" || st.main.tool === "hand") { if (!st.annotating) setAnnotate(true); st.main.setTool("pen"); } else sync(); return hex; };
+      let dragging = false;
+      const pickAt = e => {
+        const b = cv.getBoundingClientRect(), R = b.width / 2, dx = e.clientX - b.left - R, dy = e.clientY - b.top - R;
+        h = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360; sat = Math.min(1, Math.hypot(dx, dy) / R);
+        draw(); apply();
+      };
+      cv.addEventListener("pointerdown", e => { dragging = true; cv.setPointerCapture(e.pointerId); pickAt(e); });
+      cv.addEventListener("pointermove", e => { if (dragging) pickAt(e); });
+      const end = () => { if (dragging) { dragging = false; remember(current()); showRecent(); } };
+      cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+      light.addEventListener("input", () => { draw(); apply(); });
+      light.addEventListener("change", () => { remember(current()); showRecent(); });
+      return {
+        toggle(btn) {
+          if (!box.hidden) return this.hide();
+          box.hidden = false; showRecent(); draw(); preview();
+          const r = btn.getBoundingClientRect(), pv = $(".pv").getBoundingClientRect();
+          box.style.left = Math.max(8, Math.min(r.left - pv.left - 90, pv.width - box.offsetWidth - 8)) + "px";
+          box.style.top = (r.bottom - pv.top + 8) + "px";
+        },
+        hide() { box.hidden = true; },
+        choose(hex) { st.main.color = hex; box.querySelector(".pv-wheel-prev").style.background = hex; box.querySelector("[data-hex]").textContent = hex; remember(hex); showRecent(); if (st.main.tool === "eraser") st.main.setTool("pen"); else sync(); },
+        isOpen: () => !box.hidden,
+      };
+    })();
+
+    root.addEventListener("pointerdown", e => {
+      if (wheel.isOpen() && !e.target.closest(".pv-wheel,[data-do=\"wheel\"]")) {
+        wheel.hide();
+        if (e.target.closest(".pg")) { e.stopPropagation(); e.preventDefault(); }  /* this tap only closes the wheel */
+      }
+    }, true);
     root.addEventListener("click", async e => {
       if (e.target === root) { close(); return; }
       const b = e.target.closest("button"); if (!b || b.disabled) return;
       const p = st.main;
       if (b.dataset.tool) p.setTool(b.dataset.tool);
-      if (b.dataset.color) { p.color = b.dataset.color; if (p.tool === "eraser") p.setTool("pen"); else sync(); }
+      if (b.dataset.color) { p.color = b.dataset.color; wheel.hide(); if (p.tool === "eraser") p.setTool("pen"); else sync(); }
+      if (b.dataset.do === "wheel") { wheel.toggle(b); return; }
+      if (b.dataset.pick) { wheel.choose(b.dataset.pick); return; }
       switch (b.dataset.do) {
         case "close": close(); break;
         case "dark": applyDark(!root.querySelector(".pv").classList.contains("dark-pages")); break;
@@ -538,7 +631,7 @@
     st.onKey = e => {
       if (active !== st) return;
       const typing = /INPUT|TEXTAREA/.test(document.activeElement.tagName);
-      if (e.key === "Escape" && !typing) { e.preventDefault(); e.stopImmediatePropagation(); if (!$(".pv-find").hidden) closeFind(); else close(); return; }
+      if (e.key === "Escape" && !typing) { e.preventDefault(); e.stopImmediatePropagation(); if (wheel.isOpen()) wheel.hide(); else if (!$(".pv-find").hidden) closeFind(); else close(); return; }
       const p = st.main, k = e.key.toLowerCase();
       if ((e.metaKey || e.ctrlKey) && k === "f") { e.preventDefault(); e.stopImmediatePropagation(); openFind(); return; }
       if ((e.metaKey || e.ctrlKey) && k === "k") { e.stopImmediatePropagation(); e.preventDefault(); return; }
