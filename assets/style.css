@@ -323,6 +323,12 @@ body.pv-open{overflow:hidden}
   .bm-x{opacity:1}
 }
 
+/* Dark mode inside the viewer window, independent of the site theme. */
+.pv.dark-pages{
+  --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#9aa19f; --faint:#666d6b;
+  --line:#262a29; --hover:#212524; --press:#2a2e2d; --accent:#78c2bc; --accent-soft:#1c2f2d;
+  color-scheme:dark; color:var(--fg)}
+.pv.dark-pages .vw-color[data-color="ink"] i{outline:1px solid var(--faint)}
 /* Dark pages: invert the paper (and notes, so they stay readable on it); colours keep their hue. */
 .pv.dark-pages .vw-pane{background:#0f1110}
 .pv.dark-pages .pg{filter:invert(.9) hue-rotate(180deg);box-shadow:0 0 0 1px rgba(255,255,255,.06)}

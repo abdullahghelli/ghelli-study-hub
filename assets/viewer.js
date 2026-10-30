@@ -422,7 +422,7 @@
         <button class="pv-pill" data-do="bookmark">${svg("bookmark")}<span>Bookmark</span></button>
         <button class="pv-pill" data-do="annotate">${svg("annotate")}<span>Annotate</span></button>
         ${ms ? `<button class="pv-pill" data-do="ms">${svg("ms")}<span>Mark scheme</span></button>` : ""}
-        <button class="pv-pill" data-do="dark" title="Dark pages (D)">${svg("moon")}<span>Dark pages</span></button>
+        <button class="pv-pill" data-do="dark" title="Dark mode (D)">${svg("moon")}<span>Dark mode</span></button>
         <div class="pv-zoom">
           <button class="vw-ico" data-do="zoomout" title="Zoom out" aria-label="Zoom out">${svg("minus")}</button>
           <span data-zoom>100%</span>
