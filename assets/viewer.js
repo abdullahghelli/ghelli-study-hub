@@ -672,5 +672,9 @@
     try { st.lastFocus?.focus({ preventScroll: true }); } catch (e) {}
   }
 
-  window.Viewer = { open, close, Bookmarks, isOpen: () => !!active };
+  /* Shared PDF loading for other parts of the site (question bank snips). */
+  const docs = {};
+  const getDoc = src => docs[src] ||= pdfjs().then(L => L.getDocument({ url: src, disableAutoFetch: true }).promise);
+
+  window.Viewer = { open, close, Bookmarks, isOpen: () => !!active, getDoc };
 })();

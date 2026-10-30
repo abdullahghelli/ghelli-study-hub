@@ -298,6 +298,11 @@ window.SITE = {
   },
   years: [2025, 2024, 2023, 2022, 2021, 2020, 2019],
 
+  /* Question banks: questions snipped from the past papers, grouped by spec topic. Key: "level/track/subject" */
+  qbanks: {
+    "a-level/edexcel/maths": "/assets/qbank/9ma0.json",
+  },
+
   /* Formula sheets / data booklets. Key: "level/track/subject" → link */
   formulaSheets: {
   },

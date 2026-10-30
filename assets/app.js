@@ -25,6 +25,7 @@
     subject: (l, t, s) => `/${l}/${t}/${s}`,
     topic: (l, t, s, n) => `/${l}/${t}/${s}/${n}-${slug(course(l, t, s).topics[n - 1])}`,
     papers: (l, t, s) => `/${l}/${t}/${s}/past-papers`,
+    qbank: (l, t, s) => `/${l}/${t}/${s}/question-bank`,
     ppLevel: l => `/past-papers/${l}`,
     ppTrack: (l, t) => `/past-papers/${l}/${t}`,
   };
@@ -86,6 +87,7 @@
     if (!course(l, t, s)) return { kind: "notfound" };
     if (p.length === 3) return { kind: "subject", l, t, s };
     if (rest === "past-papers") return { kind: "papers", l, t, s };
+    if (rest === "question-bank" && (S.qbanks || {})[K(l, t, s)]) return { kind: "qbank", l, t, s };
     const n = parseInt(rest, 10);
     if (n >= 1 && n <= course(l, t, s).topics.length) return { kind: "topic", l, t, s, n };
     return { kind: "notfound" };
@@ -125,8 +127,13 @@
   }
   function crumbs(parts) {
     if (!(parts[0] && parts[0].t === "Home")) parts = [{ t: "Home", href: "/" }, ...parts];
-    $("#crumbs").innerHTML = parts.map((p, i) => (i ? '<span class="sep">/</span>' : "") +
-      (p.href && i < parts.length - 1 ? `<a href="${p.href}">${esc(p.t)}</a>` : `<span class="cur">${esc(p.t)}</span>`)).join("");
+    const n = parts.length;
+    $("#crumbs").innerHTML = parts.map((p, i) => {
+      const mid = (i < n - 2 && n > 1) || (i === 0 && n > 1) ? " mid" : "";   /* hidden on phones: Home (the button covers it) and middle steps */
+      const sepMid = mid || (i === n - 2 && n > 2) || (i === 1 && n === 2) ? " mid" : "";
+      return (i ? `<span class="sep${sepMid}">/</span>` : "") +
+        (p.href && i < n - 1 ? `<a class="crumb${mid}" href="${p.href}">${esc(p.t)}</a>` : `<span class="cur crumb${mid}">${esc(p.t)}</span>`);
+    }).join("");
   }
   const setTitle = t => { document.title = t ? `${t} · ${S.name}` : S.name; };
   const trackCrumbs = (l, t) => [{ t: level(l).short || level(l).name, href: url.level(l) }, { t: track(l, t).name, href: url.track(l, t) }];
@@ -190,7 +197,7 @@
     crumbs([...trackCrumbs(l, t), { t: subj(s).name }]); setTitle(name);
     const nDone = c.topics.filter((_, i) => done[K(l, t, s, i + 1)]).length;
     return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span></h1>
-      <div class="facts"><span>${esc(T.full)}</span><span><b>${c.topics.length}</b> topics</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a></div>
+      <div class="facts"><span>${esc(T.full)}</span><span><b>${c.topics.length}</b> topics</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a>${(S.qbanks || {})[K(l, t, s)] ? `<a href="${url.qbank(l, t, s)}" class="link">Question bank →</a>` : ""}</div>
       <div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(nDone / c.topics.length) * 100}%"></i></div><span>${nDone}/${c.topics.length} done</span></div>
       <h2>Topics</h2><div class="list">` +
       c.topics.map((tp, i) => {
@@ -244,7 +251,121 @@
       <div class="pp"><table><thead><tr><th>Series</th>${cols.map(([, label]) => `<th>${esc(label)}</th>`).join("")}${hasER ? "<th>Report</th>" : ""}</tr></thead><tbody>${rows}</tbody></table></div>
       ${c.paperNote ? `<p class="legend">${esc(c.paperNote)}</p>` : ""}
       <p class="legend">QP question paper · MS mark scheme${hasER ? " · ER examiner report" : ""}. Highlighted codes are available.</p>
+      <p class="legend owner">${esc(ownerNote(t))}</p>
+      ${(S.qbanks || {})[K(l, t, s)] ? `<a class="qb-cta" href="${url.qbank(l, t, s)}"><b>Question bank</b><span>Every question from these papers, sorted by spec topic →</span></a>` : ""}`;
+  }
+
+  /* ---------- Question bank ---------- */
+  const qbCache = {};
+  const qbState = store.get("qb", { topic: null, ptype: "all", year: "all" });
+  function vQbank({ l, t, s }) {
+    const c = course(l, t, s), T = track(l, t);
+    crumbs([...trackCrumbs(l, t), { t: subj(s).name, href: url.subject(l, t, s) }, { t: "Question bank" }]);
+    setTitle(`${T.full} ${subj(s).name} question bank`);
+    const src = S.qbanks[K(l, t, s)];
+    setTimeout(() => qbMount(src, K(l, t, s)), 0);
+    return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span> question bank</h1>
+      <div class="facts"><span>${esc(T.full)}</span><span data-qb-count>Loading questions…</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a></div>
+      <div class="qb" id="qb"><div class="qb-loading">Loading the question bank…</div></div>
       <p class="legend owner">${esc(ownerNote(t))}</p>`;
+  }
+  async function qbMount(src, key) {
+    const box = $("#qb"); if (!box) return;
+    let data = qbCache[src];
+    if (!data) {
+      try { data = qbCache[src] = await (await fetch(src)).json(); }
+      catch (e) { box.innerHTML = `<div class="qb-loading">The question bank couldn't load. Check your connection and refresh.</div>`; return; }
+    }
+    if (!document.body.contains(box)) return;
+    const papers = new Set(data.items.map(i => i.src));
+    $("[data-qb-count]").innerHTML = `<b>${data.items.filter(i => !i.part).length}</b> questions from ${papers.size} papers`;
+    const years = [...new Set(data.items.map(i => i.year))].sort((a, b) => b - a);
+    const groups = [["pure", "Pure"], ["stats", "Statistics"], ["mech", "Mechanics"]];
+    const st = qbState;
+    if (!st.topic || !data.topics.some(t => t.id === st.topic)) st.topic = data.topics[0].id;
+    const filtered = topicId => data.items.filter(i => (!topicId || i.topic === topicId) && (st.year === "all" || i.year === +st.year));
+    const render = () => {
+      store.set("qb", st);
+      const tp = data.topics.find(t => t.id === st.topic);
+      const list = filtered(st.topic).sort((a, b) => b.year - a.year || a.paper.localeCompare(b.paper) || a.q - b.q || (a.part || "").localeCompare(b.part || ""));
+      box.innerHTML = `
+        <aside class="qb-topics" aria-label="Topics">
+          <label class="qb-select"><span>Year</span><select id="qb-year">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
+          ${groups.map(([g, name]) => `<div class="qb-group"><div class="qb-gname">${name}</div>${data.topics.filter(t => t.group === g).map(t => {
+            const n = filtered(t.id).length;
+            return `<button class="qb-topic ${t.id === st.topic ? "on" : ""}" data-qb-topic="${t.id}" ${n ? "" : "disabled"}><span>${esc(t.name)}</span><small>${n}</small></button>`;
+          }).join("")}</div>`).join("")}
+        </aside>
+        <section class="qb-main">
+          <div class="qb-mobile"><label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
+          <label class="qb-select"><span>Topic</span><select id="qb-topic">${groups.map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
+          <div class="qb-head"><h2>${esc(tp.name)}</h2><span>${list.length} question${list.length === 1 ? "" : "s"}</span></div>
+          ${list.length ? list.map(i => qbCard(i, data)).join("") : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`}
+        </section>`;
+      qbObserve(box, data);
+    };
+    box.onclick = e => {
+      const tb = e.target.closest("[data-qb-topic]");
+      if (tb) { st.topic = tb.dataset.qbTopic; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+      const act = e.target.closest("[data-qb-open]");
+      if (act) {
+        const it = data.items.find(x => x.id === act.dataset.qbId);
+        const name = `${it.series} · ${it.paper} · Q${it.q}`;
+        if (act.dataset.qbOpen === "ms") window.Viewer.open({ src: it.ms, title: `${name} mark scheme`, desc: `Mark scheme · Edexcel A Level Maths 9MA0`, page: it.msPage || 1 });
+        else window.Viewer.open({ src: it.src, title: name, desc: `Question paper · Edexcel A Level Maths 9MA0`, ms: it.ms || "", page: it.segs[0] ? it.segs[0][0] : 1 });
+      }
+    };
+    box.onchange = e => {
+      if (e.target.id === "qb-year" || e.target.id === "qb-year-m") { st.year = e.target.value; render(); }
+      if (e.target.id === "qb-topic") { st.topic = e.target.value; render(); }
+    };
+    render();
+  }
+  function qbCard(i, data) {
+    const topicName = id => (data.topics.find(t => t.id === id) || {}).name || "";
+    const others = i.partTopics ? [...new Set(Object.values(i.partTopics))].filter(t => t !== i.topic).map(topicName) : [];
+    return `<article class="qb-card" data-qb-card="${i.id}">
+      <header class="qb-card-head">
+        <div class="qb-title"><b>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` <span class="qb-part">part (${i.part})</span>` : ""}</b>
+          <small>${i.part ? "Shown with the question's opening lines" : others.length ? `Also covers ${esc(others.join(", "))}` : ""}</small></div>
+        ${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}
+      </header>
+      <div class="qb-snip" data-qb-snip="${i.id}" style="--ar:${qbAspect(i, data)}"></div>
+      <footer class="qb-card-foot">
+        ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
+        <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open paper</button>
+      </footer>
+    </article>`;
+  }
+  function qbAspect(i, data) {
+    const m = data.pdfs[i.src]; const w = (m.x1 || m.W * 0.905) - (m.x0 || m.W * 0.092);
+    const h = i.segs.reduce((a, s) => a + (s[2] - s[1]), 0) + 4 * Math.max(0, i.segs.length - 1);
+    return (w / Math.max(h, 1)).toFixed(4);
+  }
+  let qbObs = null;
+  function qbObserve(box, data) {
+    qbObs?.disconnect();
+    qbObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { qbObs.unobserve(e.target); qbRender(e.target, data); } }), { rootMargin: "800px 0px" });
+    box.querySelectorAll("[data-qb-snip]").forEach(el => qbObs.observe(el));
+  }
+  async function qbRender(el, data) {
+    const it = data.items.find(x => x.id === el.dataset.qbSnip); if (!it || !window.Viewer?.getDoc) return;
+    const m = data.pdfs[it.src], x0 = m.x0 || m.W * 0.092, x1 = m.x1 || m.W * 0.905, cx = m.cx || 0, cy = m.cy || 0;
+    try {
+      const doc = await window.Viewer.getDoc(it.src);
+      const cssW = el.clientWidth || 700, dpr = Math.min(window.devicePixelRatio || 1, 2.5), scale = cssW / (x1 - x0);
+      const frag = document.createDocumentFragment();
+      for (const [pn, y0, y1] of it.segs) {
+        const page = await doc.getPage(pn);
+        const cv = document.createElement("canvas");
+        const vp = page.getViewport({ scale: scale * dpr, offsetX: -(x0 - cx) * scale * dpr, offsetY: -(y0 - cy) * scale * dpr });
+        cv.width = Math.round((x1 - x0) * scale * dpr); cv.height = Math.round((y1 - y0) * scale * dpr);
+        cv.style.width = cssW + "px"; cv.style.height = (y1 - y0) * scale + "px";
+        await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
+        frag.appendChild(cv);
+      }
+      el.replaceChildren(frag); el.classList.add("ready"); el.style.removeProperty("--ar");
+    } catch (e) { el.innerHTML = `<p class="qb-err">This question couldn't load. <button class="qb-btn" data-qb-open="paper" data-qb-id="${it.id}">Open paper</button></p>`; }
   }
 
   function byLevel(fn) {
@@ -284,7 +405,7 @@
       if (q.get("src")) window.Viewer?.open({ src: q.get("src"), title: q.get("title") || "Paper", ms: q.get("ms") || "" });
       return;
     }
-    const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers };
+    const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers, qbank: vQbank };
     page.style.animation = "none"; void page.offsetWidth; page.style.animation = "";
     page.innerHTML = views[r.kind] ? views[r.kind](r) : vTool(r.kind);
   }
