@@ -37,7 +37,7 @@
   const LEGACY = { red: "#d93025", blue: "#1a64d6" };
   const colorOf = (c, dark) => PALETTE[c] ? PALETTE[c][dark ? "dark" : "light"] : (LEGACY[c] || (/^#[0-9a-f]{6}$/i.test(c || "") ? c : PALETTE.ink[dark ? "dark" : "light"]));
   const RECENT_KEY = "gsh-pv-colors";
-  const WIDTH = { pen: 0.0022, highlighter: 0.016 };
+  const WIDTH = { pen: 0.0025, highlighter: 0.016 };
   const TEXT_SIZE = 0.02;
 
   /* ---------- Bookmarks (shared with the sidebar) ---------- */
@@ -263,11 +263,30 @@
         ctx.globalAlpha = hl ? (dark ? 0.32 : 0.38) : 1;
         const col = colorOf(it.c, dark);
         ctx.strokeStyle = hl && PALETTE[it.c] && !dark ? PALETTE[it.c].dark.replace("#f3f3ef", "#ffe14d") : col;
-        ctx.lineWidth = it.w * w; ctx.lineCap = hl ? "butt" : "round"; ctx.lineJoin = "round";
-        ctx.beginPath();
-        it.p.forEach(([x, y], k) => k ? ctx.lineTo(x * w, y * h) : ctx.moveTo(x * w, y * h));
-        if (it.p.length === 1) ctx.lineTo(it.p[0][0] * w + 0.1, it.p[0][1] * h);
-        ctx.stroke();
+        ctx.lineCap = hl ? "butt" : "round"; ctx.lineJoin = "round";
+        const pts = it.p, n = pts.length, X = k => pts[k][0] * w, Y = k => pts[k][1] * h;
+        const hasP = !hl && n > 2 && pts[0].length > 2;
+        if (n < 3) {
+          ctx.lineWidth = it.w * w; ctx.beginPath(); ctx.moveTo(X(0), Y(0));
+          if (n === 1) ctx.lineTo(X(0) + 0.1, Y(0)); else ctx.lineTo(X(1), Y(1));
+          ctx.stroke();
+        } else if (!hasP) {
+          /* smooth curve through the midpoints of the sampled points */
+          ctx.lineWidth = it.w * w; ctx.beginPath(); ctx.moveTo(X(0), Y(0));
+          for (let k = 1; k < n - 1; k++) ctx.quadraticCurveTo(X(k), Y(k), (X(k) + X(k + 1)) / 2, (Y(k) + Y(k + 1)) / 2);
+          ctx.lineTo(X(n - 1), Y(n - 1)); ctx.stroke();
+        } else {
+          /* Apple Pencil: same smooth curve, with line weight following pressure */
+          let px = X(0), py = Y(0);
+          for (let k = 1; k < n - 1; k++) {
+            const mx = (X(k) + X(k + 1)) / 2, my = (Y(k) + Y(k + 1)) / 2, pr = pts[k][2];
+            ctx.lineWidth = it.w * w * (0.55 + 0.9 * pr);
+            ctx.beginPath(); ctx.moveTo(px, py); ctx.quadraticCurveTo(X(k), Y(k), mx, my); ctx.stroke();
+            px = mx; py = my;
+          }
+          ctx.lineWidth = it.w * w * (0.55 + 0.9 * pts[n - 1][2]);
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(X(n - 1), Y(n - 1)); ctx.stroke();
+        }
       }
       ctx.globalAlpha = 1;
     }
@@ -310,7 +329,7 @@
         }
         e.preventDefault(); try { p.ink.setPointerCapture(e.pointerId); } catch (err) {}
         if (this.tool === "eraser") { this.snapshot(); erasing = true; this.eraseAt(p, i, x, y); return; }
-        cur = { t: this.tool, c: this.color, w: WIDTH[this.tool], p: [[x, y]] };
+        cur = { t: this.tool, c: this.color, w: WIDTH[this.tool], p: [e.pointerType === "pen" && this.tool === "pen" ? [x, y, +(e.pressure || 0.5).toFixed(2)] : [x, y]] };
         this.drawInk(p, i, cur);
       });
       p.ink.addEventListener("pointermove", e => {
@@ -321,11 +340,16 @@
         }
         if (erasing) { const [x, y] = pos(e); this.eraseAt(p, i, x, y); return; }
         if (!cur) return;
-        const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+        const evs = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
+        const withP = cur.p[0].length > 2, minD = 0.35 / p.w;   /* ignore sub-pixel jitter */
         for (const ev of evs) {
           let [x, y] = pos(ev);
           if (cur.t === "highlighter" && e.shiftKey) y = cur.p[0][1];
-          cur.p.push([+x.toFixed(4), +y.toFixed(4)]);
+          const last = cur.p[cur.p.length - 1];
+          if (Math.abs(x - last[0]) < minD && Math.abs(y - last[1]) * p.h / p.w < minD) continue;
+          const pt = [+x.toFixed(5), +y.toFixed(5)];
+          if (withP) pt.push(+((ev.pressure || 0.5) * 0.7 + last[2] * 0.3).toFixed(2));   /* smooth pressure changes */
+          cur.p.push(pt);
         }
         this.drawInk(p, i, cur);
       });
