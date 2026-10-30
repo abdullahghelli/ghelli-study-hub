@@ -450,7 +450,7 @@
 
     const $ = s => root.querySelector(s);
     /* Viewer dark mode: starts in the website's mode each time; the toggle applies to this window only. */
-    const siteDark = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const siteDark = () => { const t = (document.documentElement.dataset.theme || "").replace(/"/g, ""); return t === "dark" || (t !== "light" && matchMedia("(prefers-color-scheme: dark)").matches); };
     const applyDark = on => { root.querySelector(".pv").classList.toggle("dark-pages", on); const b = root.querySelector('[data-do="dark"]'); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); };
     applyDark(siteDark());
     const st = { info: { src, title, desc, ms }, root, annotating: false, lastFocus: document.activeElement };
