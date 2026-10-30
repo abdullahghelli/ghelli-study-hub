@@ -77,7 +77,7 @@ window.SITE = {
     },
 
     {
-      id: "a-level", name: "A Level and International A Level", short: "A Level & IAL", blurb: "AS, A2 and IAL",
+      id: "a-level", name: "A Level & International A Level", short: "A Level & IAL", blurb: "AS, A2 and IAL",
       groups: [
         { name: "A Level", tracks: ["aqa", "edexcel"] },
         { name: "International A Level", tracks: ["edexcel-ial", "cambridge"] },
@@ -119,7 +119,7 @@ window.SITE = {
     },
 
     {
-      id: "ib", name: "IB Diploma Programme", short: "IB Diploma", blurb: "Higher and Standard Level",
+      id: "ib", name: "IB DP", short: "IB DP", blurb: "Higher and Standard Level",
       groups: [
         { name: "IB Diploma", tracks: ["hl", "sl"] },
       ],
