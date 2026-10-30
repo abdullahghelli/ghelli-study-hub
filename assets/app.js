@@ -311,8 +311,14 @@
       if (act) {
         const it = data.items.find(x => x.id === act.dataset.qbId);
         const name = `${it.series} · ${it.paper} · Q${it.q}`;
-        if (act.dataset.qbOpen === "ms") window.Viewer.open({ src: it.ms, title: `${name} mark scheme`, desc: `Mark scheme · Edexcel A Level Maths 9MA0`, page: it.msPage || 1 });
-        else window.Viewer.open({ src: it.src, title: name, desc: `Question paper · Edexcel A Level Maths 9MA0`, ms: it.ms || "", page: it.segs[0] ? it.segs[0][0] : 1 });
+        const part = it.part ? ` part (${it.part})` : "";
+        if (act.dataset.qbOpen === "ms") window.Viewer.open({ src: it.ms, title: `${name}${part} mark scheme`, desc: `Mark scheme · Edexcel A Level Maths 9MA0`, page: it.msPage || 1, y: it.msY || 0 });
+        else {
+          /* open the paper at the question, with the mark scheme (if shown) at the same question */
+          const m = data.pdfs[it.src] || {}, s0 = it.segs[0];
+          const y = s0 && m.H ? Math.max(0, (s0[1] - (m.cy || 0) - 18) / (m.H - 2 * (m.cy || 0))) : 0;
+          window.Viewer.open({ src: it.src, title: name, desc: `Question paper · Edexcel A Level Maths 9MA0`, ms: it.ms || "", page: s0 ? s0[0] : 1, y, msPage: it.msPage || 1, msY: it.msY || 0 });
+        }
       }
     };
     box.onchange = e => {

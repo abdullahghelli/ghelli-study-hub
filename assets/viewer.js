@@ -87,9 +87,9 @@
 
   /* ---------- One scrollable PDF ---------- */
   class Pane {
-    constructor(el, { src, title, annotate, startPage, onChange }) {
+    constructor(el, { src, title, annotate, startPage, startY, onChange }) {
       Object.assign(this, { el, src, title, annotate, onChange });
-      this.startPage = startPage || 1;
+      this.startPage = startPage || 1; this.startY = startY || 0;
       this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "green"; this.dark = false;
       this.pages = []; this.bytes = null; this.current = 1;
       this.key = "gsh-ann:" + src;
@@ -156,7 +156,7 @@
       });
       this.layout();
       this.setTool(this.tool);
-      if (this.startPage > 1) this.goToPage(this.startPage, false);
+      if (this.startPage > 1 || this.startY) this.scrollToPos({ page: this.startPage, y: this.startY });
       this.onChange?.();
     }
 
@@ -164,7 +164,7 @@
 
     layout() {
       if (!this.pages.length) return;
-      const keepPage = this.current;
+      const keep = this.scrollPos();
       const w = Math.max(240, this.fitWidth() * this.zoom);
       this.pages.forEach((p, i) => {
         const h = w * p.base.height / p.base.width;
@@ -173,7 +173,7 @@
         p.el.style.width = w + "px"; p.el.style.height = h + "px";
         for (const c of [p.pdf, p.ink, p.live]) { c.style.width = w + "px"; c.style.height = h + "px"; }
       });
-      this.goToPage(keepPage, false);
+      this.scrollToPos(keep);
       const R = this.el.getBoundingClientRect();
       this.pages.forEach((p, i) => { const r = p.el.getBoundingClientRect(); if (r.bottom > R.top - 900 && r.top < R.bottom + 900) this.renderPage(i); });
     }
@@ -222,12 +222,27 @@
       if (!this.pages.length) return 1;
       const mark = this.el.scrollTop + this.el.clientHeight * 0.35;
       let n = 1;
-      for (let i = 0; i < this.pages.length; i++) if (this.pages[i].el.offsetTop <= mark) n = i + 1;
+      for (let i = 0; i < this.pages.length; i++) if (this.top(this.pages[i]) <= mark) n = i + 1;
       return n;
+    }
+    /* a page's distance from the top of the scrolling area (offsetTop can be measured from an outer box) */
+    top(p) { return this.wrap ? p.el.offsetTop - this.wrap.offsetTop : p.el.offsetTop; }
+    /* where the reader is: page number and how far down it (0–1), so resizing or zooming keeps the place */
+    scrollPos() {
+      const top = this.el.scrollTop + 12;
+      let k = 0;
+      for (let i = 0; i < this.pages.length; i++) if (this.top(this.pages[i]) <= top) k = i;
+      const p = this.pages[k];
+      return { page: k + 1, y: p.h ? Math.max(0, (top - this.top(p)) / p.h) : 0 };
+    }
+    scrollToPos({ page, y = 0 }) {
+      const p = this.pages[Math.min(Math.max(page, 1), this.pages.length) - 1]; if (!p) return;
+      this.el.scrollTop = this.top(p) - 12 + y * (p.h || 0);
+      this.current = this.currentPage(); this.onChange?.();
     }
     goToPage(n, smooth = true) {
       const p = this.pages[Math.min(Math.max(n, 1), this.pages.length) - 1]; if (!p) return;
-      this.el.scrollTo({ top: p.el.offsetTop - 12, behavior: smooth ? "smooth" : "auto" });
+      this.el.scrollTo({ top: this.top(p) - 12, behavior: smooth ? "smooth" : "auto" });
       this.current = this.pages.indexOf(p) + 1; this.onChange?.();
     }
 
@@ -357,7 +372,7 @@
       const cur = this.matches[this.matchIdx];
       if (scroll && cur) {
         const p = this.pages[cur.page];
-        this.el.scrollTo({ top: p.el.offsetTop + cur.it.y * p.h - this.el.clientHeight * 0.35, behavior: "smooth" });
+        this.el.scrollTo({ top: this.top(p) + cur.it.y * p.h - this.el.clientHeight * 0.35, behavior: "smooth" });
       }
       this.onChange?.();
     }
@@ -626,7 +641,7 @@
 
   function open(info) {
     close();
-    const { src, title = "Paper", desc = "", ms = "", page = 1 } = info || {};
+    const { src, title = "Paper", desc = "", ms = "", page = 1, y = 0, msPage = 1, msY = 0 } = info || {};
     if (!src) return;
     const root = document.createElement("div");
     root.className = "pv-scrim";
@@ -721,7 +736,7 @@
       const q = $("#pv-find-input").value.trim();
       $("[data-count]").textContent = !q ? "" : p.matches.length ? `${p.matchIdx + 1} of ${p.matches.length}` : "No matches";
     };
-    st.main = new Pane($(".vw-pane.main"), { src, title, annotate: true, startPage: page, onChange: sync });
+    st.main = new Pane($(".vw-pane.main"), { src, title, annotate: true, startPage: page, startY: y, onChange: sync });
     applyDark(siteDark());
     sync();
 
@@ -732,7 +747,7 @@
     const toggleMs = btn => {
       const pane = $(".vw-pane.ms"), body = $(".vw-body");
       const show = pane.hidden; pane.hidden = !show; body.classList.toggle("split", show); btn.classList.toggle("on", show);
-      if (show && !st.ms) { st.ms = new Pane(pane.querySelector(".vw-pane-inner"), { src: ms, title: "Mark scheme", annotate: false }); st.ms.dark = st.dark; }
+      if (show && !st.ms) { st.ms = new Pane(pane.querySelector(".vw-pane-inner"), { src: ms, title: "Mark scheme", annotate: false, startPage: msPage, startY: msY }); st.ms.dark = st.dark; }
       setTimeout(() => { st.main.layout(); st.ms?.layout(); }, 0);
     };
     const openFind = () => { $(".pv-find").hidden = false; const i = $("#pv-find-input"); i.focus(); i.select(); };

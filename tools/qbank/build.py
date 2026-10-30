@@ -112,21 +112,35 @@ def best(text, group, fallback=None):
     return max(sc.items(), key=lambda kv: (kv[1], ORDER[kv[0]]))[0]
 
 def ms_pages(ms_path, nq):
-    pages = {}
+    """Find where each question and part starts in a mark scheme.
+    Question labels sit in the left 'Question' column in bold (e.g. "15(a)", or "15" then "(b)").
+    Returns {(q, part or None): (page, y as a fraction of page height)} using the first occurrence."""
+    at = {}
     try:
         with pdfplumber.open(ms_path) as pdf:
-            start = 3
-            for q in range(1, nq + 1):
-                for pn in range(start, len(pdf.pages)):
-                    ws = pdf.pages[pn].extract_words()
-                    hit = [w for w in ws if w["x0"] < 95 and re.fullmatch(rf"{q}(\s?\([a-z]\).*)?", w["text"])]
-                    if hit:
-                        pages[q] = pn + 1
-                        start = pn
-                        break
+            cur = 0
+            for pn in range(2, len(pdf.pages)):
+                pg = pdf.pages[pn]
+                H = float(pg.height)
+                ws = [w for w in pg.extract_words(extra_attrs=["fontname"]) if w["x0"] < 150 and "Bold" in w["fontname"]]
+                ws.sort(key=lambda w: (round(w["top"] / 3), w["x0"]))
+                for w in ws:
+                    t = w["text"].replace(" ", "")
+                    pos = (pn + 1, round(max(0, w["top"] - 14) / H, 4))
+                    m = re.fullmatch(r"(\d{1,2})(?:\(([a-z])\)(?:\([ivx]+\))?)?", t)
+                    if m:
+                        n = int(m.group(1))
+                        if cur < n <= min(cur + 2, nq) or (n == cur and m.group(2)):
+                            cur = n
+                            at.setdefault((n, None), pos)
+                            if m.group(2): at.setdefault((n, m.group(2)), pos)
+                        continue
+                    m = re.fullmatch(r"\(([a-z])\)(?:\([ivx]+\))?", t)
+                    if m and cur:
+                        at.setdefault((cur, m.group(1)), pos)
     except Exception:
         pass
-    return pages
+    return at
 
 SERIES = {"jun": "June", "nov": "November"}
 
@@ -164,7 +178,7 @@ def main():
             qtopic_fallback = best(q["text"], g, fallback={"pure": "algebra", "stats": "data", "mech": "kin"}[g])
             if g == "mech" and score(q["text"], "mech").get("moments", 0) >= 8:
                 qtopic_fallback = "moments"  # rods, beams, planks and ladders in equilibrium are moments questions
-            base = dict(series=series, year=int(yr), paper=paper_label, ptype=ptype, q=q["q"], src=src, ms=ms, msPage=msp.get(q["q"]))
+            base = dict(series=series, year=int(yr), paper=paper_label, ptype=ptype, q=q["q"], src=src, ms=ms, msAt=msp.get((q["q"], None)))
             parts = q.get("parts") or []
             if parts:
                 stem_t = q.get("stem_text", "")
@@ -183,10 +197,18 @@ def main():
                                   partTopics={p["label"]: t for p, t in zip(parts, ptags)}, text=clean(q["text"])[:400]))
                 for p, t in zip(parts, ptags):
                     if ORDER[t] < ORDER[top]:
-                        items.append(dict(base, id=f"{f[:-4]}-q{q['q']}{p['label']}", part=p["label"], topic=t, marks=p["marks"],
+                        lab = re.sub(r"[^a-z]", "", p["label"])[:1]
+                        items.append(dict(base, msAt=msp.get((q["q"], lab)) or base["msAt"], id=f"{f[:-4]}-q{q['q']}{p['label']}", part=p["label"], topic=t, marks=p["marks"],
                                           segs=q.get("stem", []) + p["segs"], text=clean(stem_t + " " + p["text"])[:400]))
             else:
                 items.append(dict(base, id=f"{f[:-4]}-q{q['q']}", part=None, topic=qtopic_fallback, marks=q["marks"], segs=q["segs"], text=clean(q["text"])[:400]))
+    for it in items:   # not found: start at the previous question's mark scheme instead of page 1
+        if not it.get("msAt") and it.get("ms"):
+            prev = [o["msAt"] for o in items if o.get("ms") == it["ms"] and o["q"] < it["q"] and o.get("msAt")]
+            if prev: it["msAt"] = max(prev)
+    for it in items:   # page + position for the viewer; keep msPage for older code
+        a = it.pop("msAt", None)
+        if a: it["msPage"], it["msY"] = a
     out_data = dict(spec="9MA0", topics=[dict(id=t[0], name=t[1], group=t[2]) for t in TOPICS], pdfs=pdfs, items=items)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(out_data, open(out, "w"), separators=(",", ":"))
