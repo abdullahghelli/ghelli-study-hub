@@ -301,6 +301,7 @@ window.SITE = {
   /* Question banks: questions snipped from the past papers, grouped by spec topic. Key: "level/track/subject" */
   qbanks: {
     "a-level/edexcel/maths": "/assets/qbank/9ma0.json",
+    "a-level/edexcel/chemistry": "/assets/qbank/9ch0.json",
   },
 
   /* Formula sheets / data booklets. Key: "level/track/subject" → link */

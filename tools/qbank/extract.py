@@ -17,7 +17,7 @@ DPI = 100
 K = DPI / 72.0
 QNUM = re.compile(r"^(\d{1,2})(\.?)$")
 PART = re.compile(r"^\(([a-h])\)$")
-TOTAL = re.compile(r"\(Total for Question (\d+) is (\d+) marks?\)", re.I)
+TOTAL = re.compile(r"\(?Total for Question (\d+) (?:is |= ?)?(\d+) marks?\)", re.I)
 MARK = re.compile(r"^\((\d{1,2})\)$")
 
 
@@ -25,8 +25,9 @@ def page_words(pdf_path, pdf, pn, ocr_dir):
     pg = pdf.pages[pn]
     W, H = float(pg.width), float(pg.height)
     words = []
-    for w in pg.extract_words(extra_attrs=["fontname"], keep_blank_chars=False):
-        if "Myriad" in w["fontname"]:  # rotated "DO NOT WRITE IN THIS AREA" margin text
+    for w in pg.extract_words(extra_attrs=["fontname", "upright"], keep_blank_chars=False):
+        # rotated "DO NOT WRITE IN THIS AREA" margin text (maths papers set it in Myriad; chemistry papers use Myriad for everything)
+        if not w.get("upright", True) or ("Myriad" in w["fontname"] and w["x0"] > 0.9 * float(pg.width)):
             continue
         words.append(dict(text=w["text"], x0=w["x0"], x1=w["x1"], top=w["top"], bottom=w["bottom"],
                           bold="Bold" in w["fontname"]))
@@ -44,12 +45,12 @@ def page_words(pdf_path, pdf, pn, ocr_dir):
             if not t:
                 continue
             x, y, w, h = d["left"][i] * s, d["top"][i] * s, d["width"][i] * s, d["height"][i] * s
-            words.append(dict(text=t, x0=x, x1=x + w, top=y, bottom=y + h, bold=False))
+            words.append(dict(text=t, x0=x, x1=x + w, top=y, bottom=y + h, bold=False, ocr=True))
     return words, W, H
 
 
 def in_body(w, W, H):
-    return 0.05 * W < w["x0"] < 0.93 * W and 0.06 * H < w["top"] < 0.935 * H
+    return 0.05 * W < w["x0"] < 0.93 * W and 0.06 * H < w["top"] < (0.975 if w.get("ocr") else 0.955) * H
 
 
 def render_page(pdf_path, pn, tmp):
@@ -58,13 +59,16 @@ def render_page(pdf_path, pn, tmp):
     return np.array(Image.open(out + ".png").convert("L"))
 
 
-def content_rows(img, W, H, xl, xr):
+def content_rows(img, W, H, xl, xr, scanned=False):
     """Boolean per pixel-row: True where the page has real content (not blank, not a ruled answer line)."""
     h, w = img.shape
     x0, x1 = int(xl * K), int(xr * K)
     band = img[:, x0:x1] < 150
     ink = band.sum(axis=1)
     rows = ink > 0
+    if scanned:
+        # scans: keep everything with ink (answer-line removal cuts through scanned text)
+        return ink > 2
     width = x1 - x0
     # answer lines: a row (or 1-3 rows) that is mostly one long dark run, with blank rows around it
     for y in range(h):
@@ -135,14 +139,14 @@ def parse_paper(pdf_path):
             first = ws[0]
             text = " ".join(w["text"] for w in ws)
             m = QNUM.match(first["text"])
-            if m and first["x0"] < 0.135 * W and (m.group(2) or first["bold"]) and first["top"] < 0.9 * H:
+            if m and first["x0"] < 0.135 * W and (m.group(2) or first["bold"] or (first.get("ocr") and len(ws) > 2 and ws[1]["text"][:1].isupper())) and first["top"] < 0.9 * H:
                 events.append(("q", int(m.group(1)), pn, first["top"], first["x0"]))
             mp = PART.match(first["text"])
             if mp and first["x0"] < 0.16 * W:
                 events.append(("part", mp.group(1), pn, first["top"]))
             mt = TOTAL.search(text)
             if mt:
-                events.append(("total", (int(mt.group(1)), int(mt.group(2))), pn, max(w["bottom"] for w in ws)))
+                events.append(("total", (int(mt.group(1)), int(mt.group(2))), pn, min(0.93 * H, max(w["bottom"] for w in ws))))
             for w in ws:
                 mm = MARK.match(w["text"])
                 if mm and w["x0"] > 0.72 * W:
@@ -156,7 +160,8 @@ def parse_paper(pdf_path):
     rows = {}
     def rows_for(pn):
         if pn not in rows:
-            rows[pn] = content_rows(render_page(pdf_path, pn, tmp), W, H, xl + 6, xr - 2)
+            rows[pn] = content_rows(render_page(pdf_path, pn, tmp), W, H, xl + 6, xr - 2,
+                                    scanned=any(w.get("ocr") for w in pages[pn]["words"]))
         return rows[pn]
 
     questions = []
@@ -204,7 +209,8 @@ def parse_paper(pdf_path):
         """Content segments from position a=(page,y) to b=(page,y)."""
         out = []
         for pn in range(a[0], b[0] + 1):
-            y0 = a[1] if pn == a[0] else H * 0.08
+            scanned = any(w.get("ocr") for w in pages[pn]["words"])
+            y0 = a[1] if pn == a[0] else H * (0.05 if scanned else 0.08)   # scans sit higher on the page
             y1 = b[1] if pn == b[0] else H * 0.915
             if pn != a[0]:
                 # skip the "Question N continued" header
