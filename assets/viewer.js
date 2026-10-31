@@ -3,7 +3,8 @@
 (() => {
   /* Bundled libraries (pdf.js 6.2.108 Apache-2.0, pdf-lib 1.17.1 MIT), served from this site. */
   const PDFJS = "/assets/vendor/pdf.min.mjs";
-  const WORKER = "/assets/vendor/pdf.worker.min.mjs";
+  const COMPAT = "/assets/vendor/pdf-compat.mjs";            /* fills in new built-ins older browsers (Safari 17) lack */
+  const WORKER = "/assets/vendor/pdf.worker.compat.mjs";     /* compat + pdf.worker.min.mjs */
   const PDFLIB = "/assets/vendor/pdf-lib.min.js";
 
   const scripts = {};
@@ -14,6 +15,7 @@
   let lib = null;
   async function pdfjs() {
     if (lib) return lib;
+    await import(COMPAT);
     lib = await import(PDFJS);
     lib.GlobalWorkerOptions.workerSrc = WORKER;
     return lib;
