@@ -24,6 +24,17 @@ MARK = re.compile(r"^\((\d{1,2})\)$")
 def page_words(pdf_path, pdf, pn, ocr_dir):
     pg = pdf.pages[pn]
     W, H = float(pg.width), float(pg.height)
+    # some papers embed fonts without a character map, so text comes out as "(cid:N)" glyph numbers;
+    # for these Times New Roman subsets glyph N is character N + 29
+    by_font = {}
+    for c in pg.chars:
+        by_font.setdefault(c["fontname"], []).append(c)
+    for cs in by_font.values():
+        cids = [c for c in cs if c["text"].startswith("(cid:")]
+        if len(cids) > 0.5 * len(cs):
+            for c in cids:
+                n = int(re.fullmatch(r"\(cid:(\d+)\)", c["text"]).group(1))
+                c["text"] = chr(n + 29) if 3 <= n < 98 else "?"
     words = []
     for w in pg.extract_words(extra_attrs=["fontname", "upright"], keep_blank_chars=False):
         # rotated "DO NOT WRITE IN THIS AREA" margin text (maths papers set it in Myriad; chemistry papers use Myriad for everything)
