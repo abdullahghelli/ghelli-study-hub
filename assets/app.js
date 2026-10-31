@@ -287,7 +287,18 @@
     const render = () => {
       store.set("qb", st);
       const tp = data.topics.find(t => t.id === st.topic);
-      const list = filtered(st.topic).sort((a, b) => b.year - a.year || a.paper.localeCompare(b.paper) || a.q - b.q || (a.part || "").localeCompare(b.part || ""));
+      const inTopic = filtered(st.topic).sort((a, b) => b.year - a.year || a.paper.localeCompare(b.paper) || a.q - b.q || (a.part || "").localeCompare(b.part || ""));
+      /* spec checklist for this topic: tick points to show only questions that cover them */
+      const pts = Object.entries((data.points || {})[tp.group] || {}).filter(([c]) => tp.num && c.split(".")[0] === String(tp.num))
+        .sort((a, b) => +a[0].split(".")[1] - +b[0].split(".")[1]);
+      st.specs = st.specs || {};
+      const picked = (st.specs[st.topic] || []).filter(c => pts.some(([p]) => p === c));
+      const list = picked.length ? inTopic.filter(i => (i.spec || []).some(c => picked.includes(c))) : inTopic;
+      const specBox = pts.length ? `<fieldset class="qb-specfilter"><legend>Spec points${picked.length ? ` <button type="button" class="qb-clear" data-qb-clear>Show all</button>` : ""}</legend>
+          <div class="qb-speclist">${pts.map(([c, name]) => {
+            const n = inTopic.filter(i => (i.spec || []).includes(c)).length;
+            return `<label class="qb-specopt ${n ? "" : "none"}"><input type="checkbox" id="qb-spec-${c.replace(".", "-")}" data-qb-spec="${c}" ${picked.includes(c) ? "checked" : ""} ${n ? "" : "disabled"}><b>${c}</b><span>${esc(name)}</span><small>${n}</small></label>`;
+          }).join("")}</div></fieldset>` : "";
       box.innerHTML = `
         <aside class="qb-topics" aria-label="Topics">
           <label class="qb-select"><span>Year</span><select id="qb-year">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
@@ -299,7 +310,8 @@
         <section class="qb-main">
           <div class="qb-mobile"><label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
           <label class="qb-select"><span>Topic</span><select id="qb-topic">${groups.map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
-          <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${list.length} question${list.length === 1 ? "" : "s"}</span></div>
+          <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${list.length}${picked.length ? ` of ${inTopic.length}` : ""} question${list.length === 1 ? "" : "s"}</span></div>
+          ${specBox}
           ${list.length ? list.map(i => qbCard(i, data)).join("") : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`}
         </section>`;
       qbObserve(box, data);
@@ -307,6 +319,7 @@
     box.onclick = e => {
       const tb = e.target.closest("[data-qb-topic]");
       if (tb) { st.topic = tb.dataset.qbTopic; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+      if (e.target.closest("[data-qb-clear]")) { st.specs[st.topic] = []; render(); return; }
       const act = e.target.closest("[data-qb-open]");
       if (act) {
         const it = data.items.find(x => x.id === act.dataset.qbId);
@@ -324,6 +337,12 @@
     box.onchange = e => {
       if (e.target.id === "qb-year" || e.target.id === "qb-year-m") { st.year = e.target.value; render(); }
       if (e.target.id === "qb-topic") { st.topic = e.target.value; render(); }
+      if (e.target.dataset.qbSpec) {
+        const keep = window.scrollY;
+        st.specs[st.topic] = [...box.querySelectorAll("[data-qb-spec]:checked")].map(x => x.dataset.qbSpec);
+        render(); window.scrollTo(0, keep);
+        $("#qb-spec-" + e.target.dataset.qbSpec.replace(".", "-"))?.focus({ preventScroll: true });
+      }
     };
     render();
   }
