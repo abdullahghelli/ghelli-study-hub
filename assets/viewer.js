@@ -61,30 +61,25 @@
   };
 
   /* Variable-width stroke outline (smooth edges, round ends). pts: [[x, y, pressure], ...] in pixels */
-  function strokeOutline(pts, width) {
-    const n = pts.length, L = [], R = [];
-    // light smoothing of pressure along the stroke
+  /* Apple Pencil stroke: a round-capped line whose width follows pressure. Runs of segments with the
+     same (rounded) width are drawn as one polyline, so the ink is one solid union: no holes, specks
+     or seams, and only a handful of draw calls per stroke. */
+  function drawPressure(ctx, pts, width) {
+    const n = pts.length;
     const pr = pts.map((q, k) => (pts[Math.max(0, k - 1)][2] + 2 * q[2] + pts[Math.min(n - 1, k + 1)][2]) / 4);
-    for (let k = 0; k < n; k++) {
-      const a = pts[Math.max(0, k - 1)], b = pts[Math.min(n - 1, k + 1)];
-      let dx = b[0] - a[0], dy = b[1] - a[1]; const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
-      // taper the first and last few points slightly for a natural pen look
-      const taper = Math.min(1, (k + 1) / 3, (n - k) / 3) * 0.35 + 0.65;
-      const r = (width / 2) * (0.7 + 0.6 * pr[k]) * taper;
-      L.push([pts[k][0] - dy * r, pts[k][1] + dx * r]);
-      R.push([pts[k][0] + dy * r, pts[k][1] - dx * r]);
+    /* taper the first and last few points slightly for a natural pen look */
+    const wid = pts.map((q, k) => width * (0.7 + 0.6 * pr[k]) * (Math.min(1, (k + 1) / 3, (n - k) / 3) * 0.35 + 0.65));
+    const step = Math.max(0.08, width * 0.06);
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    let k = 0;
+    while (k < n - 1) {
+      const lw = Math.round((wid[k] + wid[k + 1]) / 2 / step) * step;
+      ctx.beginPath(); ctx.moveTo(pts[k][0], pts[k][1]);
+      let j = k;
+      while (j < n - 1 && Math.round((wid[j] + wid[j + 1]) / 2 / step) * step === lw) { j++; ctx.lineTo(pts[j][0], pts[j][1]); }
+      ctx.lineWidth = lw; ctx.stroke();
+      k = j;
     }
-    const path = new Path2D(), ring = L.concat(R.reverse());
-    const rEnd = (width / 2) * (0.7 + 0.6 * pr[n - 1]) * 0.65, rStart = (width / 2) * (0.7 + 0.6 * pr[0]) * 0.65;
-    path.moveTo((ring[0][0] + ring[1][0]) / 2, (ring[0][1] + ring[1][1]) / 2);
-    for (let k = 1; k < ring.length; k++) {
-      const c = ring[k], d = ring[(k + 1) % ring.length];
-      path.quadraticCurveTo(c[0], c[1], (c[0] + d[0]) / 2, (c[1] + d[1]) / 2);
-    }
-    path.closePath();
-    path.moveTo(pts[n - 1][0] + rEnd, pts[n - 1][1]); path.arc(pts[n - 1][0], pts[n - 1][1], rEnd, 0, Math.PI * 2);
-    path.moveTo(pts[0][0] + rStart, pts[0][1]); path.arc(pts[0][0], pts[0][1], rStart, 0, Math.PI * 2);
-    return path;
   }
 
   /* ---------- One scrollable PDF ---------- */
@@ -149,6 +144,12 @@
       this.el.innerHTML = `<div class="vw-pages"></div>`;
       this.wrap = this.el.firstChild;
       this.bindPinch();
+      /* iPad Safari waits after each Pencil lift to see if it is a double-tap or Scribble handwriting,
+         which swallows the start of a quick next stroke. Claiming Pencil touches while a writing tool
+         is on stops that wait, so strokes can follow each other immediately. */
+      const pencil = e => this.tool !== "hand" && this.tool !== "text" && [...e.changedTouches].some(t => t.touchType === "stylus");
+      for (const type of ["touchstart", "touchmove", "touchend"])
+        this.el.addEventListener(type, e => { if (pencil(e) && e.cancelable) e.preventDefault(); }, { passive: false });
       this.pages.forEach((p, i) => {
         const pg = document.createElement("div"); pg.className = "pg"; pg._i = i;
         pg.innerHTML = `<canvas class="pdf"></canvas><div class="hl"></div><canvas class="live"></canvas><canvas class="ink"></canvas>`;
@@ -440,10 +441,8 @@
           for (let k = 1; k < n - 1; k++) ctx.quadraticCurveTo(X(k), Y(k), (X(k) + X(k + 1)) / 2, (Y(k) + Y(k + 1)) / 2);
           ctx.lineTo(X(n - 1), Y(n - 1)); ctx.stroke();
         } else {
-          /* Apple Pencil: draw the stroke as one filled outline whose width follows pressure,
-             so the edges stay smooth with no seams between segments. */
-          ctx.fillStyle = ctx.strokeStyle;
-          ctx.fill(strokeOutline(pts.map(q => [q[0] * w, q[1] * h, q[2]]), it.w * w));
+          /* Apple Pencil: width follows pressure */
+          drawPressure(ctx, pts.map(q => [q[0] * w, q[1] * h, q[2]]), it.w * w);
         }
       }
       ctx.globalAlpha = 1;
@@ -453,10 +452,22 @@
       this.alloc(p, this.pages.indexOf(p));
       const c = p.live, dpr = p.px, W = Math.round(p.w * dpr), H = Math.round(p.h * dpr);
       if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.width = p.w + "px"; c.style.height = p.h + "px"; }
-      const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, p.w, p.h);
-      if (it) this.drawItems(ctx, [it], p.w, p.h);
+      const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      /* wiping a whole full-resolution page on every Pencil move is slow on iPad: only clear where the stroke was */
+      const bb = p.liveBox;
+      if (bb) ctx.clearRect(bb[0], bb[1], bb[2] - bb[0], bb[3] - bb[1]); else ctx.clearRect(0, 0, p.w, p.h);
+      p.liveBox = null;
+      if (it) {
+        this.drawItems(ctx, [it], p.w, p.h);
+        if (it.p) {
+          let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+          for (const q of it.p) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; }
+          const m = it.w * p.w + 4;
+          p.liveBox = [x0 * p.w - m, y0 * p.h - m, x1 * p.w + m, y1 * p.h + m];
+        }
+      }
     }
-    clearLive(p) { const c = p.live; if (c.width) c.getContext("2d").clearRect(0, 0, c.width, c.height); }
+    clearLive(p) { const c = p.live; p.liveBox = null; if (c.width) c.getContext("2d").clearRect(0, 0, c.width, c.height); }
     addInk(p, it) {
       if (!p.px) return;
       this.drawItems(this.inkCtx(p), [it], p.w, p.h);
