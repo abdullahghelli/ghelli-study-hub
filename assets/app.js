@@ -409,12 +409,12 @@
   async function qbRender(el, data) {
     if (el._qb) return;
     const token = el._qb = Math.random();
-    const it = data.items.find(x => x.id === el.dataset.qbSnip); if (!it || !window.Viewer?.getDoc) return;
+    const it = data.items.find(x => x.id === el.dataset.qbSnip); if (!it || !window.Viewer?.withDoc) return;
     const m = data.pdfs[it.src], x0 = m.x0 || m.W * 0.092, x1 = m.x1 || m.W * 0.905, cx = m.cx || 0, cy = m.cy || 0;
     try {
-      const doc = await window.Viewer.getDoc(it.src);
       const cssW = el.clientWidth || 700, dpr = Math.min(window.devicePixelRatio || 1, 2), scale = cssW / (x1 - x0);
       const frag = document.createDocumentFragment();
+      const done = await window.Viewer.withDoc(it.src, async doc => {
       for (const [pn, y0, y1] of it.segs) {
         const page = await doc.getPage(pn);
         const cv = document.createElement("canvas");
@@ -424,9 +424,11 @@
         await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
         try { page.cleanup(); } catch (e) {}
         frag.appendChild(cv);
-        if (el._qb !== token) { frag.querySelectorAll("canvas").forEach(c => { c.width = 0; c.height = 0; }); return; }
+        if (el._qb !== token) { frag.querySelectorAll("canvas").forEach(c => { c.width = 0; c.height = 0; }); return false; }
       }
-      if (el._qb !== token) return;
+      return true;
+      });
+      if (!done || el._qb !== token) return;
       el.dataset.ar = el.style.getPropertyValue("--ar") || el.dataset.ar || "";
       el.replaceChildren(frag); el.classList.add("ready"); el.style.removeProperty("--ar");
     } catch (e) { if (el._qb !== token) return; el.innerHTML = `<p class="qb-err">This question couldn't load. <button class="qb-btn" data-qb-open="paper" data-qb-id="${it.id}">Open paper</button></p>`; }

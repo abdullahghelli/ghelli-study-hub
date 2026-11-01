@@ -918,9 +918,30 @@
     try { st.lastFocus?.focus({ preventScroll: true }); } catch (e) {}
   }
 
-  /* Shared PDF loading for other parts of the site (question bank snips). */
-  const docs = {};
-  const getDoc = src => docs[src] ||= pdfjs().then(L => L.getDocument({ url: src, disableAutoFetch: true }).promise);
+  /* Shared PDF loading for other parts of the site (question bank snips).
+     Only the few most recently used papers stay open: a long topic can draw on dozens of papers, and keeping
+     them all open runs a phone out of memory (Safari then reloads the tab, "A problem repeatedly occurred"). */
+  const docs = new Map(), KEEP_DOCS = 4;
+  function trimDocs(keep) {
+    const idle = [...docs.entries()].filter(([, d]) => !d.busy).sort((a, b) => a[1].t - b[1].t);
+    let n = docs.size;
+    for (const [src, d] of idle) {
+      if (n <= keep) break;
+      docs.delete(src); n--;
+      d.p.then(doc => doc.destroy()).catch(() => {});
+    }
+  }
+  async function withDoc(src, fn) {
+    let d = docs.get(src);
+    if (!d) {
+      d = { p: pdfjs().then(L => L.getDocument({ url: src, disableAutoFetch: true }).promise), busy: 0, t: 0 };
+      docs.set(src, d);
+      d.p.catch(() => docs.get(src) === d && docs.delete(src));
+    }
+    d.t = performance.now(); d.busy++;
+    try { return await fn(await d.p); }
+    finally { d.busy--; trimDocs(active ? 0 : KEEP_DOCS); }
+  }
 
-  window.Viewer = { open, close, Bookmarks, isOpen: () => !!active, getDoc };
+  window.Viewer = { open: info => { trimDocs(0); return open(info); }, close, Bookmarks, isOpen: () => !!active, withDoc, openDocs: () => docs.size };
 })();
