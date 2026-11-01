@@ -1,0 +1,8936 @@
+{
+ "_note": "Hand-checked against the mark schemes (exhaustive question bank check). topic = where the whole question goes; parts = parts also listed under an earlier topic.",
+ "4ma1-p1h-qp-jun2018-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q2": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.7"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q3": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4",
+   "2.7"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q4": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   },
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jun2018-q5": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q6": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q7": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q8": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q9": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q10": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q11": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q12": {
+  "topic": "a",
+  "spec": [
+   "2.6",
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q13": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q14": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q15": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q16": {
+  "topic": "g",
+  "spec": [
+   "4.10",
+   "4.11"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q17": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q18": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q19": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2018-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q1": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q2": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q3": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q4": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q5": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q6": {
+  "topic": "g",
+  "spec": [
+   "4.10",
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q7": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q8": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q9": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q10": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q11": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q12": {
+  "topic": "g",
+  "spec": [
+   "4.1",
+   "4.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q13": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q14": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q15": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q16": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q17": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q18": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q19": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q20": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q21": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   },
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jun2018-q22": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2018-q23": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q1": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q2": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q3": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q4": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q5": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q6": {
+  "topic": "g",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q7": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q8": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q9": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q10": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q11": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q12": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q13": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q14": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ],
+  "parts": {
+   "c": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p1hr-qp-jun2018-q15": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q16": {
+  "topic": "g",
+  "spec": [
+   "2.7",
+   "4.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q17": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q18": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q19": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q20": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q21": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q22": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2018-q23": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q2": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q3": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q4": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q5": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q6": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q7": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q8": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q9": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q11": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q12": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q13": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q14": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q15": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q16": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q17": {
+  "topic": "n",
+  "spec": [
+   "1.3",
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q18": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q19": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q20": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q22": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q23": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2018-q24": {
+  "topic": "f",
+  "spec": [
+   "2.2",
+   "2.7",
+   "3.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "a",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jan2019-q1": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q2": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q3": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q4": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q5": {
+  "topic": "g",
+  "spec": [
+   "2.4",
+   "4.1"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q6": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q7": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q8": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q9": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q11": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q12": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.4"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q13": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jan2019-q14": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q15": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q16": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q17": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q18": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q19": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q20": {
+  "topic": "s",
+  "spec": [
+   "2.7",
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2019-q21": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q1": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q2": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q3": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q4": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q5": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q6": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q7": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q8": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q9": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q10": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q11": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q12": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2",
+   "2.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jan2019-q13": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q14": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q15": {
+  "topic": "g",
+  "spec": [
+   "2.7",
+   "4.9"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jan2019-q16": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q17": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q18": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q19": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q20": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.7"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q22": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2019-q23": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q1": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q2": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q3": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q4": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q5": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q6": {
+  "topic": "g",
+  "spec": [
+   "2.4",
+   "4.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q7": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q8": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q9": {
+  "topic": "n",
+  "spec": [
+   "1.1",
+   "1.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q10": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q11": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q12": {
+  "topic": "f",
+  "spec": [
+   "2.2",
+   "3.1"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "4ma1-p1hr-qp-jan2019-q13": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q14": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q15": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q16": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q17": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q18": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q19": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q20": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q21": {
+  "topic": "g",
+  "spec": [
+   "2.7",
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q22": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2019-q23": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q2": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q3": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q4": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q5": {
+  "topic": "g",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q6": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q7": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q8": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q9": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q10": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3",
+   "2.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q11": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q12": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q13": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q14": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.6"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p2hr-qp-jan2019-q15": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q16": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p2hr-qp-jan2019-q17": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q18": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q19": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q20": {
+  "topic": "f",
+  "spec": [
+   "2.2",
+   "3.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "a",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "4ma1-p2hr-qp-jan2019-q21": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q22": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2019-q23": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q1": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q2": {
+  "topic": "f",
+  "spec": [
+   "1.10",
+   "3.3"
+  ],
+  "parts": {
+   "c": {
+    "topic": "n",
+    "spec": [
+     "1.10"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jun2019-q3": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q4": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q5": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q6": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q7": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q9": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q10": {
+  "topic": "n",
+  "spec": [
+   "1.1",
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q11": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q12": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2",
+   "2.4"
+  ],
+  "parts": {
+   "c": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jun2019-q13": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q14": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q15": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q16": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q17": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q18": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q19": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q20": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q21": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q22": {
+  "topic": "f",
+  "spec": [
+   "2.2",
+   "3.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jun2019-q23": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2019-q24": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q2": {
+  "topic": "g",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q3": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q4": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q5": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q6": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q7": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q8": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q9": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q10": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.8"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jun2019-q11": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.9"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q12": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q13": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q14": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q15": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q16": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q17": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q18": {
+  "topic": "g",
+  "spec": [
+   "3.4",
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q19": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q20": {
+  "topic": "a",
+  "spec": [
+   "2.6",
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q21": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q22": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q23": {
+  "topic": "s",
+  "spec": [
+   "2.7",
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2019-q24": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q1": {
+  "topic": "g",
+  "spec": [
+   "4.4",
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q2": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q3": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q4": {
+  "topic": "a",
+  "spec": [
+   "2.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q5": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q6": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q7": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q8": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q9": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q10": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q11": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q12": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q13": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q14": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q15": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q16": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q17": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q18": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q19": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q20": {
+  "topic": "n",
+  "spec": [
+   "1.4",
+   "1.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q22": {
+  "topic": "a",
+  "spec": [
+   "2.6",
+   "2.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q23": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q24": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2019-q25": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q1": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q2": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q3": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q4": {
+  "topic": "g",
+  "spec": [
+   "4.4",
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q5": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q6": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q7": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q8": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q9": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q10": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q11": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q12": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q13": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2",
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q14": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ],
+  "parts": {
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p2hr-qp-jun2019-q15": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q16": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q17": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q18": {
+  "topic": "f",
+  "spec": [
+   "3.2",
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q19": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q20": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q21": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q22": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q23": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2019-q24": {
+  "topic": "s",
+  "spec": [
+   "2.7",
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q1": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q2": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q3": {
+  "topic": "g",
+  "spec": [
+   "2.4",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q4": {
+  "topic": "s",
+  "spec": [
+   "6.2",
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q5": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.7"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q6": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q7": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2",
+   "2.4"
+  ],
+  "parts": {
+   "c": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jan2020-q8": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q9": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q10": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q11": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q12": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q13": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q14": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q15": {
+  "topic": "g",
+  "spec": [
+   "2.2",
+   "3.4",
+   "4.10"
+  ],
+  "parts": {
+   "b": {
+    "topic": "f",
+    "spec": [
+     "3.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jan2020-q16": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q17": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jan2020-q18": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q19": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q21": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2020-q22": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q1": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q2": {
+  "topic": "g",
+  "spec": [
+   "4.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q3": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q4": {
+  "topic": "g",
+  "spec": [
+   "2.4",
+   "4.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q5": {
+  "topic": "g",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q6": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q7": {
+  "topic": "a",
+  "spec": [
+   "2.7",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q9": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q10": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q11": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q12": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q13": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q14": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q15": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q16": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q17": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q18": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q19": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q20": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q22": {
+  "topic": "a",
+  "spec": [
+   "2.6",
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q23": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q24": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q25": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2020-q26": {
+  "topic": "g",
+  "spec": [
+   "4.9",
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q1": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q2": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q3": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q4": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q5": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q6": {
+  "topic": "a",
+  "spec": [
+   "2.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q7": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q8": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q9": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q10": {
+  "topic": "g",
+  "spec": [
+   "2.4",
+   "4.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q11": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q12": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q13": {
+  "topic": "n",
+  "spec": [
+   "1.3",
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q14": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q15": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q16": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q17": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q18": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q19": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q20": {
+  "topic": "g",
+  "spec": [
+   "4.10",
+   "4.11"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q21": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q22": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2020-q23": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q1": {
+  "topic": "n",
+  "spec": [
+   "1.1",
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q2": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q3": {
+  "topic": "a",
+  "spec": [
+   "2.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q4": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q5": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q6": {
+  "topic": "g",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q7": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q9": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q10": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q11": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q12": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q13": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q14": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q15": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q16": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q17": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q18": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q19": {
+  "topic": "a",
+  "spec": [
+   "2.4",
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q20": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q21": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ],
+  "parts": {
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p2hr-qp-jan2020-q22": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q23": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q24": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q25": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2020-q26": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q1": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   },
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-nov2020-q2": {
+  "topic": "s",
+  "spec": [
+   "1.10",
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q3": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q4": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q5": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q6": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q7": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4",
+   "2.7"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q8": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q9": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q10": {
+  "topic": "n",
+  "spec": [
+   "1.1",
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q11": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q12": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q13": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q14": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q15": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q16": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q17": {
+  "topic": "n",
+  "spec": [
+   "1.8",
+   "1.10"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q18": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q19": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q20": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q21": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q22": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q23": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.4"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q24": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2020-q25": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q1": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q2": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q3": {
+  "topic": "g",
+  "spec": [
+   "4.1",
+   "4.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q4": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q5": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q6": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q7": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q8": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q9": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q10": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q11": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q12": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q13": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q14": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q15": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q16": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q17": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q18": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q19": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q20": {
+  "topic": "s",
+  "spec": [
+   "2.7",
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2020-q21": {
+  "topic": "f",
+  "spec": [
+   "2.2",
+   "3.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "a",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "4ma1-p1hr-qp-nov2020-q1": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q2": {
+  "topic": "g",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q3": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3",
+   "2.4"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q4": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q5": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q6": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q7": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q9": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q10": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q11": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q12": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q13": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q14": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q15": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.7"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q16": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q17": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q18": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q19": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q21": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q22": {
+  "topic": "g",
+  "spec": [
+   "4.2",
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-nov2020-q23": {
+  "topic": "s",
+  "spec": [
+   "2.7",
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q1": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q2": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q3": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q4": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q5": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q6": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q7": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q8": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q9": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q10": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q11": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q12": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q13": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q14": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q15": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q16": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q17": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q18": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q19": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q20": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q21": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q22": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q23": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q24": {
+  "topic": "f",
+  "spec": [
+   "2.2",
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q25": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2hr-qp-nov2020-q26": {
+  "topic": "g",
+  "spec": [
+   "1.4",
+   "4.6"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q1": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.10"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q2": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q3": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q4": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q5": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q6": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q7": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q8": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q9": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q11": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q12": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q13": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q14": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q15": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q16": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q17": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q18": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q19": {
+  "topic": "a",
+  "spec": [
+   "2.6",
+   "2.7"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q20": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q22": {
+  "topic": "f",
+  "spec": [
+   "2.2",
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q23": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1h-qp-jan2021-q24": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q1": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q2": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q3": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q4": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.8"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jan2021-q5": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q6": {
+  "topic": "n",
+  "spec": [
+   "1.4",
+   "1.9"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q7": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q8": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q9": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q10": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q11": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q12": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q13": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q14": {
+  "topic": "a",
+  "spec": [
+   "2.3",
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q15": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q16": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   },
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jan2021-q17": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q18": {
+  "topic": "g",
+  "spec": [
+   "3.3",
+   "4.8"
+  ],
+  "parts": {
+   "a": {
+    "topic": "f",
+    "spec": [
+     "3.3"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jan2021-q19": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q20": {
+  "topic": "g",
+  "spec": [
+   "4.2",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q21": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2021-q22": {
+  "topic": "g",
+  "spec": [
+   "2.7",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q1": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q2": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q3": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q4": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q5": {
+  "topic": "g",
+  "spec": [
+   "4.4",
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q6": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q7": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q8": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q9": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q11": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q12": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ],
+  "parts": {
+   "c": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p1hr-qp-jan2021-q13": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q14": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q15": {
+  "topic": "n",
+  "spec": [
+   "1.3",
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q16": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q17": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q18": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q19": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q20": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q21": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2021-q22": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q1": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q2": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q3": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q4": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q5": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q6": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q7": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q8": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q9": {
+  "topic": "a",
+  "spec": [
+   "2.7"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q10": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q11": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q12": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q13": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q14": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q15": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q16": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p2hr-qp-jan2021-q17": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q18": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q19": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q20": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q21": {
+  "topic": "s",
+  "spec": [
+   "2.7",
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2021-q22": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q1": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q2": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q3": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q4": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q5": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q6": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q7": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q8": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q9": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q10": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q11": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q12": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q13": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q14": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q15": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q16": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q17": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q18": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q19": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q20": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q21": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q22": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q23": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q24": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q25": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2021-q26": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q1": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q2": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q3": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q4": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q5": {
+  "topic": "g",
+  "spec": [
+   "4.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q6": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q7": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q8": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q9": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q11": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q12": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q13": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q14": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q15": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q16": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q17": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q18": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q19": {
+  "topic": "a",
+  "spec": [
+   "2.6",
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q20": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q21": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q22": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2021-q23": {
+  "topic": "s",
+  "spec": [
+   "2.7",
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q1": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q2": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q3": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q4": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q5": {
+  "topic": "a",
+  "spec": [
+   "2.4",
+   "2.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q6": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q7": {
+  "topic": "n",
+  "spec": [
+   "1.1",
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q9": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q10": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q11": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q12": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q13": {
+  "topic": "g",
+  "spec": [
+   "1.8",
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q14": {
+  "topic": "v",
+  "spec": [
+   "4.11",
+   "5.1"
+  ],
+  "parts": {
+   "b": {
+    "topic": "g",
+    "spec": [
+     "4.11"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-nov2021-q15": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q16": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   },
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-nov2021-q17": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3",
+   "2.7"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q18": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2021-q19": {
+  "topic": "g",
+  "spec": [
+   "3.4",
+   "4.9"
+  ],
+  "parts": {
+   "b": {
+    "topic": "f",
+    "spec": [
+     "3.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-nov2021-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q1": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q2": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q3": {
+  "topic": "s",
+  "spec": [
+   "6.2",
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q4": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q5": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q6": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q7": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q8": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q9": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q11": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q12": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-nov2021-q13": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q14": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q15": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q16": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q17": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q18": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q19": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q20": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2021-q22": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q1": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q2": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q3": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q4": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.10"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q5": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q6": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7",
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q7": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q8": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q9": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q10": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q11": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q12": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q13": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q14": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q15": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q16": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q17": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q18": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q19": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q20": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "a",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-jan2022-q21": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q22": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q23": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2022-q24": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q1": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q2": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q3": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q4": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q5": {
+  "topic": "g",
+  "spec": [
+   "1.7",
+   "4.5"
+  ],
+  "parts": {
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.7"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jan2022-q6": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q7": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q9": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q10": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q11": {
+  "topic": "g",
+  "spec": [
+   "4.2",
+   "4.7"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q12": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q13": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q14": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q15": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q16": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q17": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q18": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q19": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q20": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q21": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q22": {
+  "topic": "a",
+  "spec": [
+   "2.7",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q23": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q24": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q25": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2022-q26": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q1": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q2": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q3": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q4": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q5": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q6": {
+  "topic": "n",
+  "spec": [
+   "1.1",
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q7": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q8": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q9": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q10": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q11": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q12": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q13": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q14": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q15": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q16": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q17": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q18": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q19": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.7"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p1hr-qp-jan2022-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q21": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q22": {
+  "topic": "g",
+  "spec": [
+   "1.8",
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q23": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2022-q24": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q1": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q2": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q3": {
+  "topic": "a",
+  "spec": [
+   "2.4",
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q4": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q5": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q6": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q7": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.8"
+    ]
+   }
+  }
+ },
+ "4ma1-p2hr-qp-jan2022-q8": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q9": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q10": {
+  "topic": "n",
+  "spec": [
+   "1.9",
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q11": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q12": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q13": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q14": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q15": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q16": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q17": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q18": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q19": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q20": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q21": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q22": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2022-q23": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q1": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q2": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q3": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q4": {
+  "topic": "g",
+  "spec": [
+   "2.4",
+   "4.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q5": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q6": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q7": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q8": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q9": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q11": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q12": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q13": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q14": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q15": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q16": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q17": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q18": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q19": {
+  "topic": "g",
+  "spec": [
+   "2.7",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q21": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q22": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q23": {
+  "topic": "g",
+  "spec": [
+   "3.1",
+   "4.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2022-q24": {
+  "topic": "a",
+  "spec": [
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q2": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.8"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jun2022-q3": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q4": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q5": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q6": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q7": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q8": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q9": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q10": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q11": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q12": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q13": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q14": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q15": {
+  "topic": "a",
+  "spec": [
+   "2.4",
+   "2.7",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q16": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   },
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jun2022-q17": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q18": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q19": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q20": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q21": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q22": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q23": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2022-q24": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q1": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q2": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q3": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q4": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q5": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q6": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q7": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q9": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q10": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q11": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q12": {
+  "topic": "n",
+  "spec": [
+   "1.1",
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q13": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q14": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q15": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q16": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q17": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q18": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q19": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q20": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q21": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q22": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q23": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "a",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "4ma1-p1hr-qp-jun2022-q24": {
+  "topic": "s",
+  "spec": [
+   "2.7",
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2022-q25": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q1": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q2": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q3": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q4": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q5": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q6": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q7": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q9": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q10": {
+  "topic": "g",
+  "spec": [
+   "4.2",
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q11": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q12": {
+  "topic": "g",
+  "spec": [
+   "2.7",
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q13": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q14": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q15": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q16": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q17": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q18": {
+  "topic": "n",
+  "spec": [
+   "1.8",
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q19": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q21": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q22": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q23": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q24": {
+  "topic": "g",
+  "spec": [
+   "4.10",
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2022-q25": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q2": {
+  "topic": "a",
+  "spec": [
+   "2.4"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q3": {
+  "topic": "g",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q4": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q5": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q6": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q7": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q8": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q9": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q10": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q11": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q12": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q13": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q14": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q15": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q16": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q17": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q18": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q19": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q20": {
+  "topic": "g",
+  "spec": [
+   "3.4",
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q21": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q22": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q23": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jan2023-q24": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q1": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q2": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q3": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q4": {
+  "topic": "a",
+  "spec": [
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q5": {
+  "topic": "n",
+  "spec": [
+   "1.8",
+   "1.11"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q6": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q7": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q9": {
+  "topic": "f",
+  "spec": [
+   "2.2",
+   "3.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "a",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.2"
+    ]
+   },
+   "c": {
+    "topic": "a",
+    "spec": [
+     "2.2"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jan2023-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q11": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q12": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q13": {
+  "topic": "a",
+  "spec": [
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q14": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q15": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q16": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q17": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q18": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q19": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q20": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q21": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q22": {
+  "topic": "a",
+  "spec": [
+   "2.7",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q23": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q24": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q25": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.2"
+  ]
+ },
+ "4ma1-p2h-qp-jan2023-q26": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q2": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q3": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q4": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q5": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q6": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q7": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q8": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q9": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q11": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q12": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q13": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q14": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q15": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q16": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q17": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q18": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q19": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q21": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q22": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q23": {
+  "topic": "f",
+  "spec": [
+   "3.3",
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jan2023-q24": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q1": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q2": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q3": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q4": {
+  "topic": "g",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q5": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q6": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q7": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q8": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q9": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q10": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q11": {
+  "topic": "g",
+  "spec": [
+   "4.1",
+   "4.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q12": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q13": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q14": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q15": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q16": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q17": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q18": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q19": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q20": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q22": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q23": {
+  "topic": "g",
+  "spec": [
+   "2.7",
+   "4.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q24": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q25": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jan2023-q26": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q1": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q2": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q3": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q4": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q5": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q6": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q7": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q8": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q9": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q10": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q11": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q12": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q13": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q14": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q15": {
+  "topic": "n",
+  "spec": [
+   "1.4",
+   "1.6",
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q16": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q17": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q18": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q19": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q20": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q22": {
+  "topic": "g",
+  "spec": [
+   "4.2",
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2023-q23": {
+  "topic": "g",
+  "spec": [
+   "4.10",
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q1": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q2": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q3": {
+  "topic": "g",
+  "spec": [
+   "2.4",
+   "4.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q4": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q5": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q6": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q7": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q9": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q10": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q11": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q12": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q13": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q14": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q15": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q16": {
+  "topic": "a",
+  "spec": [
+   "1.6",
+   "2.5"
+  ],
+  "parts": {
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.6"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jun2023-q17": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q18": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q19": {
+  "topic": "a",
+  "spec": [
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q20": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q21": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q22": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q23": {
+  "topic": "g",
+  "spec": [
+   "1.4",
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q24": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2023-q25": {
+  "topic": "g",
+  "spec": [
+   "1.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q1": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q2": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q3": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q4": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q5": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q6": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q7": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q8": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q9": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q10": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q11": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q12": {
+  "topic": "s",
+  "spec": [
+   "2.6",
+   "6.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.6"
+    ]
+   }
+  }
+ },
+ "4ma1-p1hr-qp-jun2023-q13": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q14": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q15": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q16": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q17": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q18": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q19": {
+  "topic": "v",
+  "spec": [
+   "4.8",
+   "5.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q21": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q22": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q23": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q24": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2023-q25": {
+  "topic": "g",
+  "spec": [
+   "2.7",
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q1": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q2": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q3": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q4": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q5": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q6": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q7": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q8": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q9": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q10": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q11": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q12": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q13": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q14": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q15": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q16": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q17": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q18": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q19": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q20": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q21": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q22": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q23": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q24": {
+  "topic": "g",
+  "spec": [
+   "4.10",
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q25": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2023-q26": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q1": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q2": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q3": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q4": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q5": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q6": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q7": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q8": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q9": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q11": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q12": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q13": {
+  "topic": "s",
+  "spec": [
+   "1.6",
+   "6.1"
+  ],
+  "parts": {
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.6"
+    ]
+   }
+  }
+ },
+ "4ma1-p1h-qp-nov2023-q14": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q15": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q16": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q17": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q18": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q19": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q20": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q21": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q22": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q23": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1h-qp-nov2023-q24": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q2": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q3": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q4": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q5": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q6": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q7": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q8": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q9": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q10": {
+  "topic": "g",
+  "spec": [
+   "2.4",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q11": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q12": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-nov2023-q13": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q14": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q15": {
+  "topic": "n",
+  "spec": [
+   "1.3",
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q16": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q17": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q18": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q19": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q20": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q21": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q22": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q23": {
+  "topic": "g",
+  "spec": [
+   "4.10",
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-nov2023-q24": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q1": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q2": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q3": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q4": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q5": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q6": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q7": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q8": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q9": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q10": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q11": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q12": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q13": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q14": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.7"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q15": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q16": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q17": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q18": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q19": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q20": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q22": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q23": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q24": {
+  "topic": "g",
+  "spec": [
+   "3.1",
+   "4.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2024-q25": {
+  "topic": "a",
+  "spec": [
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q2": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.8"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jun2024-q3": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q4": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q5": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q6": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q7": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q8": {
+  "topic": "n",
+  "spec": [
+   "1.2",
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q9": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q10": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q11": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q12": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q13": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q14": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q15": {
+  "topic": "a",
+  "spec": [
+   "2.3",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q16": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   },
+   "c": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   },
+   "d": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jun2024-q17": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q18": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q19": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q20": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q21": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q22": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q23": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q24": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2024-q25": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q2": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q3": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q4": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q5": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q6": {
+  "topic": "g",
+  "spec": [
+   "1.10",
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q7": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7",
+   "2.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q8": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q9": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q10": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q11": {
+  "topic": "n",
+  "spec": [
+   "1.1",
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q12": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q13": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q14": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q15": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q16": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q17": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q18": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q19": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q20": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "a",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "4ma1-p1hr-qp-jun2024-q21": {
+  "topic": "s",
+  "spec": [
+   "2.7",
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q22": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2024-q23": {
+  "topic": "f",
+  "spec": [
+   "3.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q1": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q2": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q3": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q4": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q5": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q6": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q7": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q8": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q9": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q11": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q12": {
+  "topic": "g",
+  "spec": [
+   "2.4",
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q13": {
+  "topic": "g",
+  "spec": [
+   "2.3",
+   "4.9"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q14": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q15": {
+  "topic": "g",
+  "spec": [
+   "4.2",
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q16": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q17": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q18": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q19": {
+  "topic": "n",
+  "spec": [
+   "1.8",
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q20": {
+  "topic": "a",
+  "spec": [
+   "2.7",
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q22": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q23": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q24": {
+  "topic": "g",
+  "spec": [
+   "4.10",
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q25": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2024-q26": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q2": {
+  "topic": "g",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q3": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q4": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q5": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q6": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q7": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q8": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7",
+   "2.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q9": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q10": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q11": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q12": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q13": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q14": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q15": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q16": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q17": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q18": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q19": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q20": {
+  "topic": "f",
+  "spec": [
+   "3.3",
+   "3.4"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q21": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q22": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q23": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q24": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1h-qp-nov2024-q25": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q1": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q2": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q3": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q4": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q5": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q6": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q7": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.3"
+  ],
+  "parts": {
+   "b": {
+    "topic": "a",
+    "spec": [
+     "2.8"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-nov2024-q8": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q9": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q10": {
+  "topic": "s",
+  "spec": [
+   "2.4",
+   "6.1"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q11": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q12": {
+  "topic": "a",
+  "spec": [
+   "2.3",
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q13": {
+  "topic": "s",
+  "spec": [
+   "6.1",
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q14": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q15": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q16": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q17": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q18": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q19": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q20": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q21": {
+  "topic": "a",
+  "spec": [
+   "1.5",
+   "2.4"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q22": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q23": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q24": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-nov2024-q25": {
+  "topic": "g",
+  "spec": [
+   "4.6",
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q2": {
+  "topic": "n",
+  "spec": [
+   "1.6",
+   "1.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q3": {
+  "topic": "g",
+  "spec": [
+   "4.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q4": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q5": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q6": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4",
+   "2.7"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q7": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q8": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q9": {
+  "topic": "g",
+  "spec": [
+   "4.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q10": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q11": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q12": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q13": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q14": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q15": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q16": {
+  "topic": "f",
+  "spec": [
+   "2.8",
+   "3.2"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q17": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q18": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q19": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q20": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q21": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q22": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q23": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q24": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.1"
+  ]
+ },
+ "4ma1-p1h-qp-jun2025-q25": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q1": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q2": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q3": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q4": {
+  "topic": "g",
+  "spec": [
+   "4.5"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q5": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q6": {
+  "topic": "n",
+  "spec": [
+   "1.7"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q7": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q8": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q9": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q10": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q11": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q12": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q13": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q14": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q15": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q16": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q17": {
+  "topic": "f",
+  "spec": [
+   "3.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q18": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q19": {
+  "topic": "a",
+  "spec": [
+   "2.7",
+   "2.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q20": {
+  "topic": "s",
+  "spec": [
+   "1.5",
+   "6.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   },
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.5"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jun2025-q21": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q22": {
+  "topic": "g",
+  "spec": [
+   "1.8",
+   "4.9"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q23": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q24": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2h-qp-jun2025-q25": {
+  "topic": "f",
+  "spec": [
+   "2.7",
+   "3.3"
+  ],
+  "parts": {
+   "a": {
+    "topic": "a",
+    "spec": [
+     "2.7"
+    ]
+   }
+  }
+ },
+ "4ma1-p2h-qp-jun2025-q26": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q1": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q2": {
+  "topic": "n",
+  "spec": [
+   "1.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q3": {
+  "topic": "n",
+  "spec": [
+   "1.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q4": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q5": {
+  "topic": "n",
+  "spec": [
+   "1.5"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q6": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q7": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q8": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.7"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q9": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q10": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q11": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q12": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q13": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q14": {
+  "topic": "n",
+  "spec": [
+   "1.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q15": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.4"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q16": {
+  "topic": "n",
+  "spec": [
+   "1.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q17": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q18": {
+  "topic": "a",
+  "spec": [
+   "2.5"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q19": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q20": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q21": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q22": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q23": {
+  "topic": "g",
+  "spec": [
+   "2.6",
+   "4.6"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q24": {
+  "topic": "f",
+  "spec": [
+   "2.6",
+   "3.1"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q25": {
+  "topic": "g",
+  "spec": [
+   "4.9"
+  ]
+ },
+ "4ma1-p1hr-qp-jun2025-q26": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q1": {
+  "topic": "a",
+  "spec": [
+   "2.2",
+   "2.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q2": {
+  "topic": "n",
+  "spec": [
+   "1.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q3": {
+  "topic": "a",
+  "spec": [
+   "2.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q4": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q5": {
+  "topic": "v",
+  "spec": [
+   "5.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q6": {
+  "topic": "a",
+  "spec": [
+   "1.4",
+   "2.2"
+  ],
+  "parts": {
+   "a": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   },
+   "b": {
+    "topic": "n",
+    "spec": [
+     "1.4"
+    ]
+   }
+  }
+ },
+ "4ma1-p2hr-qp-jun2025-q7": {
+  "topic": "n",
+  "spec": [
+   "1.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q8": {
+  "topic": "s",
+  "spec": [
+   "6.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q9": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q10": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q11": {
+  "topic": "g",
+  "spec": [
+   "4.11"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q12": {
+  "topic": "n",
+  "spec": [
+   "1.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q13": {
+  "topic": "a",
+  "spec": [
+   "2.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q14": {
+  "topic": "s",
+  "spec": [
+   "6.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q15": {
+  "topic": "g",
+  "spec": [
+   "4.6"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q16": {
+  "topic": "n",
+  "spec": [
+   "1.4"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q17": {
+  "topic": "a",
+  "spec": [
+   "2.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q18": {
+  "topic": "v",
+  "spec": [
+   "5.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q19": {
+  "topic": "f",
+  "spec": [
+   "3.2"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q20": {
+  "topic": "s",
+  "spec": [
+   "6.1"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q21": {
+  "topic": "a",
+  "spec": [
+   "2.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q22": {
+  "topic": "g",
+  "spec": [
+   "3.4",
+   "4.10"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q23": {
+  "topic": "g",
+  "spec": [
+   "4.8"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q24": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q25": {
+  "topic": "f",
+  "spec": [
+   "3.3"
+  ]
+ },
+ "4ma1-p2hr-qp-jun2025-q26": {
+  "topic": "g",
+  "spec": [
+   "4.10"
+  ]
+ }
+}
