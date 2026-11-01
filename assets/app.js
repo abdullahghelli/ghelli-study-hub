@@ -38,6 +38,7 @@
     paper: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2.5h7l3.5 3.5v11.5H5Z"/><path d="M12 2.5V6h3.5M7.5 10h5M7.5 13h5"/></svg>',
     sigma: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 4H5l5 6-5 6h10"/></svg>',
     clock: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 2"/></svg>',
+    bank: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3.5" y="3" width="13" height="14" rx="2"/><path d="m6.5 7.5 1.2 1.2 2.3-2.4M6.5 12.5l1.2 1.2 2.3-2.4M12 8h2M12 13h2"/></svg>',
   };
 
   /* Attributes for a link that opens a PDF in the pop-up viewer (plain link still works with Ctrl/Cmd-click). */
@@ -74,7 +75,7 @@
     const p = path.replace(/\/+$/, "").split("/").filter(Boolean);
     if (!p.length) return { kind: "home" };
     if (p[0] === "viewer") return { kind: "viewer" };
-    if (p.length === 1 && ["past-papers", "formula-sheets", "exam-dates"].includes(p[0])) return { kind: p[0] };
+    if (p.length === 1 && ["past-papers", "question-banks", "formula-sheets", "exam-dates"].includes(p[0])) return { kind: p[0] };
     if (p[0] === "past-papers" && level(p[1]) && p.length <= 3) {
       if (p.length === 3 && !track(p[1], p[2])) return { kind: "notfound" };
       return { kind: "level", l: p[1], t: p[2], mode: "papers" };
@@ -115,6 +116,7 @@
       h += `</div></div>`;
     }
     h += `<div class="side-label">Exam prep</div>
+      <a class="nav ${path === "/question-banks" ? "on" : ""}" href="/question-banks">${icon.bank}Question bank</a>
       <a class="nav ${path === "/past-papers" || path.startsWith("/past-papers/") ? "on" : ""}" href="/past-papers">${icon.paper}Past papers</a>
       <a class="nav ${path === "/formula-sheets" ? "on" : ""}" href="/formula-sheets">${icon.sigma}Formula sheets</a>
       <a class="nav ${path === "/exam-dates" ? "on" : ""}" href="/exam-dates">${icon.clock}Exam dates</a>
@@ -147,6 +149,19 @@
         </a>`).join("") + `</div>`;
   const paperCount = (l, t, s) => Object.keys(S.papers[K(l, t, s)] || {}).length;
 
+  /* one card per subject that has a question bank */
+  function qbankCards() {
+    return `<div class="qbk-grid">` + Object.keys(S.qbanks || {}).map(k => {
+      const [l, t, s] = k.split("/"), c = course(l, t, s); if (!c) return "";
+      return `<a class="qbk s-${subj(s).color}-q" href="${url.qbank(l, t, s)}">
+        <span class="qbk-ic">${icon.bank}</span>
+        <span class="qbk-name">${esc(subj(s).name)} <span class="qbk-code">${esc(c.code)}</span></span>
+        <span class="qbk-sub">${esc(track(l, t).full)}</span>
+        ${icon.arrow}
+      </a>`;
+    }).join("") + `</div>`;
+  }
+
   function vHome() {
     crumbs([{ t: "Home" }]); setTitle();
     return `<div class="home">
@@ -158,8 +173,11 @@
           <span class="lvl-boards">${L.groups.flatMap(g => g.tracks.map(t => esc(L.tracks[t].name))).join(" · ")}</span>
           ${icon.arrow}
         </a>`).join("") + `</div>
+      <div class="subj-tiles home-tiles">
+        ${Object.keys(S.qbanks || {}).length ? `<a class="subj-tile primary" href="/question-banks">${icon.bank}<span><b>Question bank</b><small>Past paper questions by spec topic</small></span>${icon.arrow}</a>` : ""}
+        <a class="subj-tile" href="/past-papers">${icon.paper}<span><b>Past papers</b><small>Question papers and mark schemes</small></span>${icon.arrow}</a>
+      </div>
       <div class="home-links">
-        <a href="/past-papers">${icon.paper}Past papers</a>
         <a href="/formula-sheets">${icon.sigma}Formula sheets</a>
         <a href="/exam-dates">${icon.clock}Exam dates</a>
         <button data-act="search">${icon.search}Search a topic<kbd>⌘K</kbd></button>
@@ -197,7 +215,11 @@
     crumbs([...trackCrumbs(l, t), { t: subj(s).name }]); setTitle(name);
     const nDone = c.topics.filter((_, i) => done[K(l, t, s, i + 1)]).length;
     return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span></h1>
-      <div class="facts"><span>${esc(T.full)}</span><span><b>${c.topics.length}</b> topics</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a>${(S.qbanks || {})[K(l, t, s)] ? `<a href="${url.qbank(l, t, s)}" class="link">Question bank →</a>` : ""}</div>
+      <div class="facts"><span>${esc(T.full)}</span><span><b>${c.topics.length}</b> topics</span></div>
+      <div class="subj-tiles">
+        ${(S.qbanks || {})[K(l, t, s)] ? `<a class="subj-tile primary" href="${url.qbank(l, t, s)}">${icon.bank}<span><b>Question bank</b><small>Past paper questions by spec topic</small></span>${icon.arrow}</a>` : ""}
+        <a class="subj-tile" href="${url.papers(l, t, s)}">${icon.paper}<span><b>Past papers</b><small>Question papers and mark schemes</small></span>${icon.arrow}</a>
+      </div>
       <div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(nDone / c.topics.length) * 100}%"></i></div><span>${nDone}/${c.topics.length} done</span></div>
       <h2>Topics</h2><div class="list">` +
       c.topics.map((tp, i) => {
@@ -418,6 +440,10 @@
     if (kind === "past-papers") {
       crumbs([{ t: "Past papers" }]); setTitle("Past papers");
       return `<div class="home"><h1>Past papers</h1><p class="lede">Question papers and mark schemes for every series, opened right here to annotate.</p>${levelCards(url.ppLevel)}</div>`;
+    }
+    if (kind === "question-banks") {
+      crumbs([{ t: "Question bank" }]); setTitle("Question bank");
+      return `<div class="home"><h1>Question bank</h1><p class="lede">Every past paper question, sorted by spec topic and checked against its mark scheme. Choose a subject.</p>${qbankCards()}</div>`;
     }
     if (kind === "formula-sheets") {
       crumbs([{ t: "Formula sheets" }]); setTitle("Formula sheets");

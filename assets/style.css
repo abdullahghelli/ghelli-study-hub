@@ -536,3 +536,32 @@ html.side-hidden .side{display:none}
 /* nothing in the viewer gets selected by fast Pencil strokes or long presses; typing fields still work */
 .pv,.pv *{-webkit-user-select:none;user-select:none}
 .pv input,.pv textarea,.pv [contenteditable]{-webkit-user-select:text;user-select:text}
+
+/* Question banks: home section, /question-banks page and subject page tiles */
+.s-math-q{--sc:var(--math);--ss:var(--math-s)} .s-chem-q{--sc:var(--chem);--ss:var(--chem-s)}
+.s-phys-q{--sc:var(--phys);--ss:var(--phys-s)} .s-bio-q{--sc:var(--bio);--ss:var(--bio-s)}
+.qbk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:32px}
+.subj-tiles.home-tiles{margin-top:80px}
+.qbk{position:relative;display:flex;flex-direction:column;gap:3px;padding:18px 20px 18px;border-radius:16px;background:var(--ss,var(--side));
+  box-shadow:inset 0 0 0 1px transparent;transition:box-shadow .15s,transform .15s}
+.qbk:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--sc) 45%,transparent);transform:translateY(-2px)}
+.qbk-ic{display:flex;width:34px;height:34px;align-items:center;justify-content:center;border-radius:10px;margin-bottom:12px;
+  background:color-mix(in srgb,var(--sc) 16%,transparent);color:var(--sc)}
+.qbk-ic svg{width:20px;height:20px}
+.qbk-name{font-size:19px;font-weight:650;letter-spacing:-.02em;color:var(--fg);padding-right:26px}
+.qbk-code{color:var(--sc);font-weight:600}
+.qbk-sub{font-size:13px;color:var(--muted)}
+.qbk .arrow{position:absolute;right:18px;top:20px;width:18px;height:18px;color:var(--sc)}
+.subj-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:22px}
+.subj-tile{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;background:var(--side);
+  box-shadow:inset 0 0 0 1px var(--line);transition:box-shadow .15s,background .15s}
+.subj-tile:hover{background:var(--hover)}
+.subj-tile>svg:first-child{width:24px;height:24px;flex:none;color:var(--accent)}
+.subj-tile span{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.subj-tile b{font-size:16px;font-weight:600;color:var(--fg)}
+.subj-tile small{font-size:13px;color:var(--muted)}
+.subj-tile .arrow{width:18px;height:18px;flex:none;color:var(--muted)}
+.subj-tile.primary{background:var(--accent-soft);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 35%,transparent)}
+.subj-tile.primary b,.subj-tile.primary .arrow{color:var(--accent)}
+.subj-tile.primary:hover{box-shadow:inset 0 0 0 1px var(--accent)}
+@media (max-width:760px){.qbk-grid,.subj-tiles{grid-template-columns:1fr}}
