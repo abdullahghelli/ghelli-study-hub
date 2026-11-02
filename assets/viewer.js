@@ -916,6 +916,7 @@
     st.root.remove();
     document.body.classList.remove("pv-open");
     try { st.lastFocus?.focus({ preventScroll: true }); } catch (e) {}
+    window.dispatchEvent(new Event("gsh-viewer-close"));
   }
 
   /* Shared PDF loading for other parts of the site (question bank snips).
@@ -943,5 +944,5 @@
     finally { d.busy--; trimDocs(active ? 0 : KEEP_DOCS); }
   }
 
-  window.Viewer = { open: info => { trimDocs(0); return open(info); }, close, Bookmarks, isOpen: () => !!active, withDoc, openDocs: () => docs.size };
+  window.Viewer = { open: info => { const r = open(info); window.dispatchEvent(new Event("gsh-viewer-open")); trimDocs(0); return r; }, close, Bookmarks, isOpen: () => !!active, withDoc, openDocs: () => docs.size };
 })();

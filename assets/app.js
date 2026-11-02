@@ -392,9 +392,10 @@
     const h = i.segs.reduce((a, s) => a + (s[2] - s[1]), 0) + 4 * Math.max(0, i.segs.length - 1);
     return (w / Math.max(h, 1)).toFixed(4);
   }
-  let qbObs = null;
+  let qbObs = null, qbBox = null, qbData = null;
   function qbObserve(box, data) {
-    qbObs?.disconnect();
+    qbObs?.disconnect(); qbQueue.length = 0;
+    qbBox = box; qbData = data;
     /* draw snips as they come near the screen and free the ones far away, so long topics stay light on memory */
     qbObs = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? qbRender(e.target, data) : qbRelease(e.target)), { rootMargin: "1200px 0px" });
     box.querySelectorAll("[data-qb-snip]").forEach(el => qbObs.observe(el));
@@ -402,37 +403,67 @@
   function qbRelease(el) {
     if (!el._qb) return;
     el._qb = 0;
+    try { el._task?.cancel(); } catch (e) {}
+    el._task = null;
     el.querySelectorAll("canvas").forEach(c => { c.width = 0; c.height = 0; });
     if (el.dataset.ar) el.style.setProperty("--ar", el.dataset.ar);
     el.replaceChildren(); el.classList.remove("ready");
   }
-  async function qbRender(el, data) {
+  /* Snips are drawn two at a time from a queue. A fast scroll passes many questions: the ones already scrolled
+     past are dropped from the queue instead of all being drawn at once (which ran phones out of memory). */
+  const qbQueue = [], QB_PARALLEL = 2;
+  let qbRunning = 0;
+  function qbRender(el, data) {
     if (el._qb) return;
     const token = el._qb = Math.random();
+    qbQueue.push([el, data, token]); qbPump();
+  }
+  function qbPump() {
+    while (qbRunning < QB_PARALLEL && qbQueue.length && !window.Viewer?.isOpen()) {
+      const [el, data, token] = qbQueue.shift();
+      if (el._qb !== token || !el.isConnected) continue;
+      qbRunning++;
+      qbDraw(el, data, token).finally(() => { qbRunning--; qbPump(); });
+    }
+  }
+  async function qbDraw(el, data, token) {
     const it = data.items.find(x => x.id === el.dataset.qbSnip); if (!it || !window.Viewer?.withDoc) return;
     const m = data.pdfs[it.src], x0 = m.x0 || m.W * 0.092, x1 = m.x1 || m.W * 0.905, cx = m.cx || 0, cy = m.cy || 0;
+    const frag = document.createDocumentFragment();
+    const drop = () => frag.querySelectorAll("canvas").forEach(c => { c.width = 0; c.height = 0; });
     try {
       const cssW = el.clientWidth || 700, dpr = Math.min(window.devicePixelRatio || 1, 2), scale = cssW / (x1 - x0);
-      const frag = document.createDocumentFragment();
       const done = await window.Viewer.withDoc(it.src, async doc => {
-      for (const [pn, y0, y1] of it.segs) {
-        const page = await doc.getPage(pn);
-        const cv = document.createElement("canvas");
-        const vp = page.getViewport({ scale: scale * dpr, offsetX: -(x0 - cx) * scale * dpr, offsetY: -(y0 - cy) * scale * dpr });
-        cv.width = Math.round((x1 - x0) * scale * dpr); cv.height = Math.round((y1 - y0) * scale * dpr);
-        cv.style.width = cssW + "px"; cv.style.height = (y1 - y0) * scale + "px";
-        await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
-        try { page.cleanup(); } catch (e) {}
-        frag.appendChild(cv);
-        if (el._qb !== token) { frag.querySelectorAll("canvas").forEach(c => { c.width = 0; c.height = 0; }); return false; }
-      }
-      return true;
+        for (const [pn, y0, y1] of it.segs) {
+          if (el._qb !== token) return false;
+          const page = await doc.getPage(pn);
+          const cv = document.createElement("canvas");
+          const vp = page.getViewport({ scale: scale * dpr, offsetX: -(x0 - cx) * scale * dpr, offsetY: -(y0 - cy) * scale * dpr });
+          cv.width = Math.round((x1 - x0) * scale * dpr); cv.height = Math.round((y1 - y0) * scale * dpr);
+          cv.style.width = cssW + "px"; cv.style.height = (y1 - y0) * scale + "px";
+          frag.appendChild(cv);
+          el._task = page.render({ canvasContext: cv.getContext("2d"), viewport: vp });
+          try { await el._task.promise; } finally { el._task = null; try { page.cleanup(); } catch (e) {} }
+        }
+        return el._qb === token;
       });
-      if (!done || el._qb !== token) return;
+      if (!done || el._qb !== token) { drop(); return; }
       el.dataset.ar = el.style.getPropertyValue("--ar") || el.dataset.ar || "";
       el.replaceChildren(frag); el.classList.add("ready"); el.style.removeProperty("--ar");
-    } catch (e) { if (el._qb !== token) return; el.innerHTML = `<p class="qb-err">This question couldn't load. <button class="qb-btn" data-qb-open="paper" data-qb-id="${it.id}">Open paper</button></p>`; }
+    } catch (e) {
+      drop();
+      if (el._qb !== token) return;
+      el.innerHTML = `<p class="qb-err">This question couldn't load. <button class="qb-btn" data-qb-open="paper" data-qb-id="${it.id}">Open paper</button></p>`;
+    }
   }
+  /* While a paper is open, the question bank behind it lets go of everything; it redraws when the paper closes. */
+  window.addEventListener("gsh-viewer-open", () => {
+    qbQueue.length = 0;
+    document.querySelectorAll("[data-qb-snip]").forEach(qbRelease);
+  });
+  window.addEventListener("gsh-viewer-close", () => {
+    if (qbBox?.isConnected && qbData) qbObserve(qbBox, qbData);
+  });
 
   function byLevel(fn) {
     return S.levels.map(L => `<h2>${esc(L.name)}</h2><div class="list">` +
