@@ -20,6 +20,13 @@
     lib.GlobalWorkerOptions.workerSrc = WORKER;
     return lib;
   }
+  /* One PDF worker for the whole site. Without it pdf.js starts a new worker (a whole copy of its engine on
+     another thread) for every PDF opened; the question bank opens many, and iPads ran out of memory. */
+  let sharedWorker = null;
+  const worker = L => {
+    if (!sharedWorker || sharedWorker.destroyed) sharedWorker = new L.PDFWorker();
+    return sharedWorker;
+  };
 
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const store = {
@@ -134,7 +141,7 @@
     async open(L, buf) {
       this.el.ondragover = this.el.ondrop = this.el.ondragleave = null;
       this.bytes = buf.slice(0);
-      try { this.doc = await L.getDocument({ data: new Uint8Array(buf) }).promise; }
+      try { this.doc = await L.getDocument({ data: new Uint8Array(buf), worker: worker(L) }).promise; }
       catch (e) { this.status(`<p>That file isn't a readable PDF.</p>`); return; }
       this.pages = [];
       for (let i = 1; i <= this.doc.numPages; i++) {
@@ -450,6 +457,8 @@
     /* the stroke being written lives on its own layer so the rest of the page isn't redrawn on every move */
     drawLive(p, it) {
       this.alloc(p, this.pages.indexOf(p));
+      /* only the page being written on keeps a full-size stroke layer */
+      for (const q of this.pages) if (q !== p && q.live.width) { q.live.width = 0; q.live.height = 0; q.liveBox = null; }
       const c = p.live, dpr = p.px, W = Math.round(p.w * dpr), H = Math.round(p.h * dpr);
       if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.width = p.w + "px"; c.style.height = p.h + "px"; }
       const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -935,7 +944,7 @@
   async function withDoc(src, fn) {
     let d = docs.get(src);
     if (!d) {
-      d = { p: pdfjs().then(L => L.getDocument({ url: src, disableAutoFetch: true }).promise), busy: 0, t: 0 };
+      d = { p: pdfjs().then(L => L.getDocument({ url: src, disableAutoFetch: true, worker: worker(L) }).promise), busy: 0, t: 0 };
       docs.set(src, d);
       d.p.catch(() => docs.get(src) === d && docs.delete(src));
     }
