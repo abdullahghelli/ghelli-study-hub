@@ -394,7 +394,7 @@
   }
   let qbObs = null, qbBox = null, qbData = null;
   function qbObserve(box, data) {
-    qbObs?.disconnect(); qbQueue.length = 0;
+    qbObs?.disconnect(); qbDropQueue();
     qbBox = box; qbData = data;
     /* draw snips as they come near the screen and free the ones far away, so long topics stay light on memory */
     qbObs = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? qbRender(e.target, data) : qbRelease(e.target)), { rootMargin: "1200px 0px" });
@@ -418,9 +418,18 @@
     const token = el._qb = Math.random();
     qbQueue.push([el, data, token]); qbPump();
   }
+  /* queued snips that won't be drawn after all are unmarked, so they get drawn when they're next in view */
+  function qbDropQueue() {
+    for (const [el, , token] of qbQueue) if (el._qb === token) el._qb = 0;
+    qbQueue.length = 0;
+  }
+  /* distance of a snip from the middle of the screen: the question being looked at is drawn first */
+  const qbDist = el => { const r = el.getBoundingClientRect(); return r.bottom < 0 ? -r.bottom : r.top > innerHeight ? r.top - innerHeight : 0; };
   function qbPump() {
     while (qbRunning < QB_PARALLEL && qbQueue.length && !window.Viewer?.isOpen()) {
-      const [el, data, token] = qbQueue.shift();
+      let k = 0, best = Infinity;
+      qbQueue.forEach(([el], i) => { const d = qbDist(el); if (d < best) { best = d; k = i; } });
+      const [el, data, token] = qbQueue.splice(k, 1)[0];
       if (el._qb !== token || !el.isConnected) continue;
       qbRunning++;
       qbDraw(el, data, token).finally(() => { qbRunning--; qbPump(); });
@@ -443,7 +452,7 @@
           cv.style.width = cssW + "px"; cv.style.height = (y1 - y0) * scale + "px";
           frag.appendChild(cv);
           el._task = page.render({ canvasContext: cv.getContext("2d"), viewport: vp });
-          try { await el._task.promise; } finally { el._task = null; try { page.cleanup(); } catch (e) {} }
+          try { await el._task.promise; } finally { el._task = null; }
         }
         return el._qb === token;
       });
@@ -456,10 +465,11 @@
       el.innerHTML = `<p class="qb-err">This question couldn't load. <button class="qb-btn" data-qb-open="paper" data-qb-id="${it.id}">Open paper</button></p>`;
     }
   }
-  /* While a paper is open, the question bank behind it lets go of everything; it redraws when the paper closes. */
+  /* While a paper is open the question bank stops drawing (questions already drawn stay, so closing is instant)
+     and picks up again when the paper closes. */
   window.addEventListener("gsh-viewer-open", () => {
-    qbQueue.length = 0;
-    document.querySelectorAll("[data-qb-snip]").forEach(qbRelease);
+    qbDropQueue();
+    document.querySelectorAll("[data-qb-snip]").forEach(el => { if (el._task) qbRelease(el); });
   });
   window.addEventListener("gsh-viewer-close", () => {
     if (qbBox?.isConnected && qbData) qbObserve(qbBox, qbData);

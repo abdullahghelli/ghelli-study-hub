@@ -931,20 +931,25 @@
   /* Shared PDF loading for other parts of the site (question bank snips).
      Only the few most recently used papers stay open: a long topic can draw on dozens of papers, and keeping
      them all open runs a phone out of memory (Safari then reloads the tab, "A problem repeatedly occurred"). */
-  const docs = new Map(), KEEP_DOCS = 4;
+  const docs = new Map(), KEEP_DOCS = 6;
   function trimDocs(keep) {
     const idle = [...docs.entries()].filter(([, d]) => !d.busy).sort((a, b) => a[1].t - b[1].t);
     let n = docs.size;
     for (const [src, d] of idle) {
       if (n <= keep) break;
       docs.delete(src); n--;
+      try { d.ac?.abort(); } catch (e) {}   /* a paper still downloading for the question bank stops, so it doesn't slow the one being opened */
       d.p.then(doc => doc.destroy()).catch(() => {});
     }
   }
   async function withDoc(src, fn) {
     let d = docs.get(src);
     if (!d) {
-      d = { p: pdfjs().then(L => L.getDocument({ url: src, disableAutoFetch: true, worker: worker(L) }).promise), busy: 0, t: 0 };
+      /* fetch the whole paper in one request (papers are ~1 MB): one round trip instead of many small range
+         requests, and the browser keeps the file, so reopening it (or opening it in full) is quick */
+      const ac = new AbortController();
+      d = { p: Promise.all([pdfjs(), fetch(src, { signal: ac.signal }).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })])
+              .then(([L, buf]) => L.getDocument({ data: new Uint8Array(buf), worker: worker(L) }).promise), busy: 0, t: 0, ac };
       docs.set(src, d);
       d.p.catch(() => docs.get(src) === d && docs.delete(src));
     }
