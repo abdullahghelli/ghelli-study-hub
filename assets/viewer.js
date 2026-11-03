@@ -78,12 +78,28 @@
     const wid = pts.map((q, k) => width * (0.7 + 0.6 * pr[k]) * (Math.min(1, (k + 1) / 3, (n - k) / 3) * 0.35 + 0.65));
     const step = Math.max(0.08, width * 0.06);
     ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (n < 3) {
+      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); ctx.lineTo(pts[n - 1][0], pts[n - 1][1]);
+      ctx.lineWidth = Math.round((wid[0] + wid[n - 1]) / 2 / step) * step; ctx.stroke(); return;
+    }
+    /* smooth curve through the Pencil's points (each point is the control of a curve between the midpoints
+       either side of it), so fast writing has no corners where the points are far apart */
+    const mid = k => [(pts[k][0] + pts[k + 1][0]) / 2, (pts[k][1] + pts[k + 1][1]) / 2];
+    const lwAt = k => Math.round(wid[k] / step) * step;
+    /* piece k runs from midpoint k-1 to midpoint k around point k; the first starts at the first point and the last ends at the last */
     let k = 0;
-    while (k < n - 1) {
-      const lw = Math.round((wid[k] + wid[k + 1]) / 2 / step) * step;
-      ctx.beginPath(); ctx.moveTo(pts[k][0], pts[k][1]);
+    while (k < n) {
+      const lw = lwAt(k);
+      ctx.beginPath();
+      const s = k === 0 ? pts[0] : mid(k - 1);
+      ctx.moveTo(s[0], s[1]);
       let j = k;
-      while (j < n - 1 && Math.round((wid[j] + wid[j + 1]) / 2 / step) * step === lw) { j++; ctx.lineTo(pts[j][0], pts[j][1]); }
+      while (j < n && lwAt(j) === lw) {
+        if (j === 0) { const m = mid(0); ctx.lineTo(m[0], m[1]); }
+        else if (j === n - 1) ctx.lineTo(pts[j][0], pts[j][1]);
+        else { const m = mid(j); ctx.quadraticCurveTo(pts[j][0], pts[j][1], m[0], m[1]); }
+        j++;
+      }
       ctx.lineWidth = lw; ctx.stroke();
       k = j;
     }
