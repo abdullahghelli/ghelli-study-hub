@@ -47,6 +47,9 @@
   const colorOf = (c, dark) => PALETTE[c] ? PALETTE[c][dark ? "dark" : "light"] : (LEGACY[c] || (/^#[0-9a-f]{6}$/i.test(c || "") ? c : PALETTE.ink[dark ? "dark" : "light"]));
   const RECENT_KEY = "gsh-pv-colors";
   const WIDTH = { pen: 0.0025, highlighter: 0.016 };
+  /* thickness choices (times the normal width), remembered separately for the pen and the highlighter */
+  const SIZES = [[0.6, "Thin"], [1, "Medium"], [1.6, "Thick"], [2.4, "Extra thick"]];
+  const SIZE_KEY = "gsh-pen-size", SIZE_DOT = [3, 5, 8, 12];
   const TEXT_SIZE = 0.02;
 
   /* ---------- Bookmarks (shared with the sidebar) ---------- */
@@ -111,6 +114,7 @@
       Object.assign(this, { el, src, title, annotate, onChange });
       this.startPage = startPage || 1; this.startY = startY || 0;
       this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "green"; this.dark = false;
+      this.size = Object.assign({ pen: 1, highlighter: 1 }, store.get(SIZE_KEY) || {});
       this.pages = []; this.bytes = null; this.current = 1;
       this.key = "gsh-ann:" + src;
       this.ann = (annotate && store.get(this.key)) || {};
@@ -543,7 +547,7 @@
         }
         e.preventDefault(); try { p.ink.setPointerCapture(e.pointerId); } catch (err) {}
         if (this.tool === "eraser") { this.snapshotPage(i); erasing = true; this.inking = true; this.eraseAt(p, i, x, y); return; }
-        cur = { t: this.tool, c: this.color, w: WIDTH[this.tool], p: [e.pointerType === "pen" && this.tool === "pen" ? [x, y, +(e.pressure || 0.5).toFixed(2)] : [x, y]] };
+        cur = { t: this.tool, c: this.color, w: +(WIDTH[this.tool] * (this.size[this.tool] || 1)).toFixed(5), p: [e.pointerType === "pen" && this.tool === "pen" ? [x, y, +(e.pressure || 0.5).toFixed(2)] : [x, y]] };
         if (e.pointerType === "touch") Object.defineProperty(cur, "touch", { value: true });
         this.inking = true; this.drawLive(p, cur);
       });
@@ -720,10 +724,15 @@
         ${Object.keys(PALETTE).map(c => `<button class="vw-color" data-color="${c}" title="${PALETTE[c].name}" aria-label="${PALETTE[c].name}"><i></i></button>`).join("")}
         <button class="vw-color wheel" data-do="wheel" title="More colours" aria-label="More colours" aria-haspopup="dialog"><i></i></button>
         <span class="vw-sep"></span>
+        <button class="vw-size" data-do="sizes" title="Line thickness" aria-label="Line thickness" aria-haspopup="true"><i></i></button>
+        <span class="vw-sep"></span>
         <button class="vw-ico" data-do="undo" title="Undo (Ctrl+Z)" aria-label="Undo">${svg("undo")}</button>
         <button class="vw-ico" data-do="redo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">${svg("redo")}</button>
         <button class="vw-ico" data-do="clear" title="Clear all notes" aria-label="Clear all notes">${svg("trash")}</button>
         <span class="pv-saved" data-save></span>
+      </div>
+      <div class="pv-sizes" hidden role="menu" aria-label="Line thickness">
+        ${SIZES.map(([m, name], k) => `<button class="vw-size" data-size="${m}" role="menuitemradio" title="${name}" aria-label="${name}" style="--d:${SIZE_DOT[k]}px"><i></i></button>`).join("")}
       </div>
       <div class="pv-wheel" hidden role="dialog" aria-label="Pick a colour">
         <canvas width="200" height="200" aria-label="Colour wheel"></canvas>
@@ -763,6 +772,10 @@
       $('[data-do="annotate"]').disabled = !n;
       $(".pv-tools").hidden = !st.annotating;
       root.querySelectorAll("[data-tool]").forEach(b => b.classList.toggle("on", b.dataset.tool === p.tool));
+      const sizeFor = p.drawTool === "highlighter" ? "highlighter" : "pen";
+      const cur = p.size[sizeFor] || 1, k = Math.max(0, SIZES.findIndex(([m]) => m === cur));
+      root.querySelectorAll("[data-size]").forEach(b => { b.classList.toggle("on", +b.dataset.size === cur); b.setAttribute("aria-checked", +b.dataset.size === cur); });
+      const sb = $('[data-do="sizes"]'); sb.style.setProperty("--d", SIZE_DOT[k] + "px"); sb.title = `Line thickness: ${SIZES[k][1]}`;
       root.querySelectorAll("[data-color]").forEach(b => { b.classList.toggle("on", b.dataset.color === p.color); b.firstElementChild.style.background = colorOf(b.dataset.color, st.dark); });
       const custom = !PALETTE[p.color], wb = $('[data-do="wheel"]');
       wb.classList.toggle("on", custom); wb.classList.toggle("has", custom); wb.firstElementChild.style.setProperty("--c", custom ? p.color : "transparent");
@@ -851,6 +864,11 @@
     })();
 
     root.addEventListener("pointerdown", e => {
+      const sz = $(".pv-sizes");
+      if (!sz.hidden && !e.target.closest('.pv-sizes,[data-do="sizes"]')) {
+        sz.hidden = true;
+        if (e.target.closest(".pg")) { e.stopPropagation(); e.preventDefault(); return; }  /* this tap only closes the menu */
+      }
       if (wheel.isOpen() && !e.target.closest(".pv-wheel,[data-do=\"wheel\"]")) {
         wheel.hide();
         if (e.target.closest(".pg")) { e.stopPropagation(); e.preventDefault(); }  /* this tap only closes the wheel */
@@ -862,7 +880,24 @@
       const p = st.main;
       if (b.dataset.tool) p.setTool(b.dataset.tool);
       if (b.dataset.color) { p.color = b.dataset.color; wheel.hide(); if (p.tool === "eraser") p.setTool("pen"); else sync(); }
-      if (b.dataset.do === "wheel") { wheel.toggle(b); return; }
+      if (b.dataset.size) {
+        /* applies to the pen, or to the highlighter when that's the tool in use */
+        const t = p.drawTool === "highlighter" ? "highlighter" : "pen";
+        p.size[t] = +b.dataset.size; store.set(SIZE_KEY, p.size);
+        $(".pv-sizes").hidden = true;
+        if (p.tool !== t) p.setTool(t); else sync();
+        return;
+      }
+      if (b.dataset.do === "sizes") {
+        const box = $(".pv-sizes"); wheel.hide();
+        if (!box.hidden) { box.hidden = true; return; }
+        box.hidden = false;
+        const r = b.getBoundingClientRect(), pv = $(".pv").getBoundingClientRect();
+        box.style.left = Math.max(8, Math.min(r.left - pv.left - (box.offsetWidth - r.width) / 2, pv.width - box.offsetWidth - 8)) + "px";
+        box.style.top = (r.bottom - pv.top + 8) + "px";
+        return;
+      }
+      if (b.dataset.do === "wheel") { $(".pv-sizes").hidden = true; wheel.toggle(b); return; }
       if (b.dataset.pick) { wheel.choose(b.dataset.pick); return; }
       switch (b.dataset.do) {
         case "close": close(); break;
@@ -903,7 +938,7 @@
     st.onKey = e => {
       if (active !== st) return;
       const typing = /INPUT|TEXTAREA/.test(document.activeElement.tagName);
-      if (e.key === "Escape" && !typing) { e.preventDefault(); e.stopImmediatePropagation(); if (wheel.isOpen()) wheel.hide(); else if (!$(".pv-find").hidden) closeFind(); else close(); return; }
+      if (e.key === "Escape" && !typing) { e.preventDefault(); e.stopImmediatePropagation(); if (wheel.isOpen()) wheel.hide(); else if (!$(".pv-sizes").hidden) $(".pv-sizes").hidden = true; else if (!$(".pv-find").hidden) closeFind(); else close(); return; }
       const p = st.main, k = e.key.toLowerCase();
       if ((e.metaKey || e.ctrlKey) && k === "f") { e.preventDefault(); e.stopImmediatePropagation(); openFind(); return; }
       if ((e.metaKey || e.ctrlKey) && k === "k") { e.stopImmediatePropagation(); e.preventDefault(); return; }
