@@ -342,6 +342,9 @@ body.pv-open{overflow:hidden}
 .pv.dark-pages .vw-pane{background:#0f1110}
 .pv.dark-pages .pg{background:#1b1d1c;box-shadow:0 0 0 1px rgba(255,255,255,.06)}
 .pv.dark-pages .pg canvas.pdf{filter:invert(.9) hue-rotate(180deg)}
+/* ink blends into the page like real ink: highlighter colours the paper but text under it stays crisp */
+.pg canvas.ink,.pg canvas.live{mix-blend-mode:multiply}
+.pv.dark-pages .pg canvas.ink,.pv.dark-pages .pg canvas.live{mix-blend-mode:screen}
 .pv.dark-pages .vw-text{border-color:#888}
 
 /* Swatches and colour wheel */

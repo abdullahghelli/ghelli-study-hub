@@ -70,43 +70,76 @@
     },
   };
 
-  /* Variable-width stroke outline (smooth edges, round ends). pts: [[x, y, pressure], ...] in pixels */
-  /* Apple Pencil stroke: a round-capped line whose width follows pressure. Runs of segments with the
-     same (rounded) width are drawn as one polyline, so the ink is one solid union: no holes, specks
-     or seams, and only a handful of draw calls per stroke. */
-  function drawPressure(ctx, pts, width) {
+  /* Apple Pencil stroke, drawn the way note-taking apps do: one solid shape whose width flows with pressure.
+     The Pencil's points are first joined by a smooth curve and sampled densely; each short step between two
+     samples is the hull of two circles (radius from pressure). All the hulls go in one path and are filled once,
+     so the ink is a single union: smooth edges, no seams, specks or width steps, and round joins at any angle.
+     Ends taper over a set length, so the stroke looks the same however fast it was written.
+     pts: [[x, y, pressure], ...] in CSS pixels; width: the stroke's normal width; live: still being written */
+  function inkGeom(pts, width, live = false) {
     const n = pts.length;
     const pr = pts.map((q, k) => (pts[Math.max(0, k - 1)][2] + 2 * q[2] + pts[Math.min(n - 1, k + 1)][2]) / 4);
-    /* taper the first and last few points slightly for a natural pen look */
-    const wid = pts.map((q, k) => width * (0.7 + 0.6 * pr[k]) * (Math.min(1, (k + 1) / 3, (n - k) / 3) * 0.35 + 0.65));
-    const step = Math.max(0.08, width * 0.06);
-    ctx.lineCap = "round"; ctx.lineJoin = "round";
-    if (n < 3) {
-      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); ctx.lineTo(pts[n - 1][0], pts[n - 1][1]);
-      ctx.lineWidth = Math.round((wid[0] + wid[n - 1]) / 2 / step) * step; ctx.stroke(); return;
-    }
-    /* smooth curve through the Pencil's points (each point is the control of a curve between the midpoints
-       either side of it), so fast writing has no corners where the points are far apart */
-    const mid = k => [(pts[k][0] + pts[k + 1][0]) / 2, (pts[k][1] + pts[k + 1][1]) / 2];
-    const lwAt = k => Math.round(wid[k] / step) * step;
-    /* piece k runs from midpoint k-1 to midpoint k around point k; the first starts at the first point and the last ends at the last */
-    let k = 0;
-    while (k < n) {
-      const lw = lwAt(k);
-      ctx.beginPath();
-      const s = k === 0 ? pts[0] : mid(k - 1);
-      ctx.moveTo(s[0], s[1]);
-      let j = k;
-      while (j < n && lwAt(j) === lw) {
-        if (j === 0) { const m = mid(0); ctx.lineTo(m[0], m[1]); }
-        else if (j === n - 1) ctx.lineTo(pts[j][0], pts[j][1]);
-        else { const m = mid(j); ctx.quadraticCurveTo(pts[j][0], pts[j][1], m[0], m[1]); }
-        j++;
+    /* 1. dense samples along the curve through the midpoints of the points; starts[k] = first sample of piece k */
+    const d = [], starts = [];
+    const add = (x, y, p) => { const l = d[d.length - 1]; if (!l || Math.hypot(x - l[0], y - l[1]) > 0.25) d.push([x, y, p]); };
+    const seg = (x0, y0, cx, cy, x1, y1, p0, p1) => {
+      starts.push(d.length);
+      const len = Math.hypot(cx - x0, cy - y0) + Math.hypot(x1 - cx, y1 - cy), m = Math.max(1, Math.ceil(len / 1.2));
+      for (let i = 1; i <= m; i++) {
+        const t = i / m, u = 1 - t;
+        add(u * u * x0 + 2 * u * t * cx + t * t * x1, u * u * y0 + 2 * u * t * cy + t * t * y1, p0 + (p1 - p0) * t);
       }
-      ctx.lineWidth = lw; ctx.stroke();
-      k = j;
+    };
+    add(pts[0][0], pts[0][1], pr[0]);
+    if (n === 2) seg(pts[0][0], pts[0][1], (pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2, pts[1][0], pts[1][1], pr[0], pr[1]);
+    else if (n > 2) {
+      const mx = k => (pts[k][0] + pts[k + 1][0]) / 2, my = k => (pts[k][1] + pts[k + 1][1]) / 2, mp = k => (pr[k] + pr[k + 1]) / 2;
+      seg(pts[0][0], pts[0][1], (pts[0][0] + mx(0)) / 2, (pts[0][1] + my(0)) / 2, mx(0), my(0), pr[0], mp(0));
+      for (let k = 1; k < n - 1; k++) seg(mx(k - 1), my(k - 1), pts[k][0], pts[k][1], mx(k), my(k), mp(k - 1), mp(k));
+      seg(mx(n - 2), my(n - 2), (mx(n - 2) + pts[n - 1][0]) / 2, (my(n - 2) + pts[n - 1][1]) / 2, pts[n - 1][0], pts[n - 1][1], mp(n - 2), pr[n - 1]);
+    }
+    /* 2. radius at each sample: pressure (gentle curve), with tapered ends measured by length */
+    const dist = [0]; for (let i = 1; i < d.length; i++) dist.push(dist[i - 1] + Math.hypot(d[i][0] - d[i - 1][0], d[i][1] - d[i - 1][1]));
+    const total = dist[dist.length - 1], tIn = width * 3, tOut = width * 2.5;
+    /* dots and very short marks keep their full size; tapering grows in as the stroke gets longer.
+       While writing, the start taper uses a fixed length so finished parts of the stroke never change. */
+    const tw = live ? 1 : Math.max(0, Math.min(1, (total - width) / (width * 4)));
+    const rad = d.map((q, i) => {
+      let r = width / 2 * (0.5 + 0.95 * Math.pow(Math.max(0, Math.min(1, q[2])), 0.85));
+      r *= 1 - tw * (1 - Math.min(1, 0.5 + 0.5 * dist[i] / tIn));
+      if (!live) r *= 1 - tw * (1 - Math.min(1, 0.45 + 0.55 * (total - dist[i]) / tOut));
+      return Math.max(0.3, r);
+    });
+    return { d, rad, starts };
+  }
+  /* 3. hulls i0..i1-1 (hull i joins samples i-1 and i) added to the current path, all wound the same way */
+  function inkHulls(ctx, g, i0, i1) {
+    const { d, rad } = g;
+    if (d.length === 1 && i0 <= 0) { ctx.moveTo(d[0][0] + rad[0], d[0][1]); ctx.arc(d[0][0], d[0][1], rad[0], 0, Math.PI * 2); return; }
+    for (let i = Math.max(1, i0); i < i1; i++) {
+      const [ax, ay] = d[i - 1], [bx, by] = d[i], ra = rad[i - 1], rb = rad[i];
+      const dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy);
+      if (L <= Math.abs(ra - rb) + 1e-6) {   /* one circle holds the other */
+        const [cx, cy, r] = ra > rb ? [ax, ay, ra] : [bx, by, rb];
+        ctx.moveTo(cx + r, cy); ctx.arc(cx, cy, r, 0, Math.PI * 2); continue;
+      }
+      const th = Math.atan2(dy, dx), ph = Math.asin((ra - rb) / L), H = Math.PI / 2;
+      ctx.moveTo(ax + ra * Math.cos(th + H + ph), ay + ra * Math.sin(th + H + ph));
+      ctx.arc(ax, ay, ra, th + H + ph, th + 3 * H - ph);
+      ctx.arc(bx, by, rb, th + 3 * H - ph, th + 5 * H + ph);
+      ctx.closePath();
     }
   }
+  function drawPressure(ctx, pts, width, live = false) {
+    if (!pts.length) return;
+    const g = inkGeom(pts, width, live);
+    ctx.beginPath(); inkHulls(ctx, g, 0, g.d.length); ctx.fill("nonzero");
+  }
+  const LIVE = new WeakMap();   /* drawing state of the stroke being written */
+  const hullBox = (g, i, m) => {   /* bounding box of hull i (samples i-1 and i) */
+    const a = g.d[Math.max(0, i - 1)], b = g.d[i], r = Math.max(g.rad[Math.max(0, i - 1)], g.rad[i]) + m;
+    return [Math.min(a[0], b[0]) - r, Math.min(a[1], b[1]) - r, Math.max(a[0], b[0]) + r, Math.max(a[1], b[1]) + r];
+  };
 
   /* ---------- One scrollable PDF ---------- */
   class Pane {
@@ -452,9 +485,10 @@
           continue;
         }
         const hl = it.t === "highlighter";
-        ctx.globalAlpha = hl ? (dark ? 0.32 : 0.38) : 1;
+        ctx.globalAlpha = hl ? (dark ? 0.36 : 0.5) : 1;   /* ink blends into the page, so text under a highlight stays crisp */
         const col = colorOf(it.c, dark);
         ctx.strokeStyle = hl && PALETTE[it.c] && !dark ? PALETTE[it.c].dark.replace("#f3f3ef", "#ffe14d") : col;
+        ctx.fillStyle = col;
         ctx.lineCap = hl ? "butt" : "round"; ctx.lineJoin = "round";
         const pts = it.p, n = pts.length, X = k => pts[k][0] * w, Y = k => pts[k][1] * h;
         const hasP = !hl && n > 2 && pts[0].length > 2;
@@ -469,7 +503,10 @@
           ctx.lineTo(X(n - 1), Y(n - 1)); ctx.stroke();
         } else {
           /* Apple Pencil: width follows pressure */
-          drawPressure(ctx, pts.map(q => [q[0] * w, q[1] * h, q[2]]), it.w * w);
+          const pp = pts.map(q => [q[0] * w, q[1] * h, q[2]]);
+          /* while writing, also draw where the Pencil is about to be (if the browser predicts it), so ink keeps up with the tip */
+          if (it._pred) for (const q of it._pred) pp.push([q[0] * w, q[1] * h, q[2]]);
+          drawPressure(ctx, pp, it.w * w, !!it._live);
         }
       }
       ctx.globalAlpha = 1;
@@ -482,6 +519,7 @@
       const c = p.live, dpr = p.px, W = Math.round(p.w * dpr), H = Math.round(p.h * dpr);
       if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.width = p.w + "px"; c.style.height = p.h + "px"; }
       const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (it && it.t === "pen" && it.p.length > 2 && it.p[0].length > 2) return this.drawLivePencil(p, it, ctx, dpr);
       /* wiping a whole full-resolution page on every Pencil move is slow on iPad: only clear where the stroke was */
       const bb = p.liveBox;
       if (bb) ctx.clearRect(bb[0], bb[1], bb[2] - bb[0], bb[3] - bb[1]); else ctx.clearRect(0, 0, p.w, p.h);
@@ -490,11 +528,48 @@
         this.drawItems(ctx, [it], p.w, p.h);
         if (it.p) {
           let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
-          for (const q of it.p) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; }
+          for (const q of it._pred ? it.p.concat(it._pred) : it.p) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; }
           const m = it.w * p.w + 4;
           p.liveBox = [x0 * p.w - m, y0 * p.h - m, x1 * p.w + m, y1 * p.h + m];
         }
       }
+    }
+    /* Pencil stroke while it's being written. Parts of the stroke that can no longer change are drawn once;
+       only the end near the tip (which still moves with the next points) is wiped and redrawn on each move,
+       so a long line of writing costs no more per move than a short one. */
+    drawLivePencil(p, it, ctx, dpr) {
+      let st = LIVE.get(it);
+      if (!st || st.page !== p || st.w !== p.w) {
+        ctx.clearRect(0, 0, p.w, p.h); p.liveBox = null;
+        st = { page: p, w: p.w, done: 1, boxes: [], tail: null }; LIVE.set(it, st);
+      }
+      const raw = it.p.map(q => [q[0] * p.w, q[1] * p.h, q[2]]), n = raw.length;
+      const pred = (it._pred || []).map(q => [q[0] * p.w, q[1] * p.h, q[2]]);
+      const g = inkGeom(raw.concat(pred), it.w * p.w, true), N = g.d.length;
+      const lim = Math.min(N, Math.max(st.done, g.starts[n - 2] ?? 1));   /* hulls before this are final */
+      ctx.globalAlpha = 1; ctx.fillStyle = colorOf(it.c, this.dark);
+      const hit = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
+      if (st.tail) {
+        const t = st.tail;
+        ctx.clearRect(t[0], t[1], t[2] - t[0], t[3] - t[1]);
+        ctx.save(); ctx.beginPath(); ctx.rect(t[0], t[1], t[2] - t[0], t[3] - t[1]); ctx.clip();
+        ctx.beginPath(); let any = false;
+        for (let i = 1; i < st.done; i++) if (hit(st.boxes[i], t)) { inkHulls(ctx, g, i, i + 1); any = true; }
+        if (any) ctx.fill("nonzero");
+        ctx.restore();
+      }
+      if (lim > st.done) {
+        ctx.beginPath(); inkHulls(ctx, g, st.done, lim); ctx.fill("nonzero");
+        for (let i = st.done; i < lim; i++) st.boxes[i] = hullBox(g, i, 1);
+        st.done = lim;
+      }
+      if (N > st.done || N === 1) {
+        ctx.beginPath(); inkHulls(ctx, g, N === 1 ? 0 : st.done, N); ctx.fill("nonzero");
+        let b = [Infinity, Infinity, -Infinity, -Infinity];
+        for (let i = Math.max(1, st.done); i < N; i++) { const h = hullBox(g, i, 2); b = [Math.min(b[0], h[0]), Math.min(b[1], h[1]), Math.max(b[2], h[2]), Math.max(b[3], h[3])]; }
+        /* snap to whole device pixels so the wipe and redraw leave no seam */
+        st.tail = isFinite(b[0]) ? [Math.floor(b[0] * dpr) / dpr, Math.floor(b[1] * dpr) / dpr, Math.ceil(b[2] * dpr) / dpr, Math.ceil(b[3] * dpr) / dpr] : null;
+      } else st.tail = null;
     }
     clearLive(p) { const c = p.live; p.liveBox = null; if (c.width) c.getContext("2d").clearRect(0, 0, c.width, c.height); }
     addInk(p, it) {
@@ -549,6 +624,9 @@
         if (this.tool === "eraser") { this.snapshotPage(i); erasing = true; this.inking = true; this.eraseAt(p, i, x, y); return; }
         cur = { t: this.tool, c: this.color, w: +(WIDTH[this.tool] * (this.size[this.tool] || 1)).toFixed(5), p: [e.pointerType === "pen" && this.tool === "pen" ? [x, y, +(e.pressure || 0.5).toFixed(2)] : [x, y]] };
         if (e.pointerType === "touch") Object.defineProperty(cur, "touch", { value: true });
+        /* not saved with the note: whether it's still being written, and the Pencil's predicted next points */
+        Object.defineProperty(cur, "_live", { value: true, writable: true });
+        Object.defineProperty(cur, "_pred", { value: null, writable: true });
         this.inking = true; this.drawLive(p, cur);
       });
       p.ink.addEventListener("pointermove", e => {
@@ -572,6 +650,10 @@
           if (withP) pt.push(+((ev.pressure || 0.5) * 0.35 + last[2] * 0.65).toFixed(3));   /* smooth pressure changes */
           cur.p.push(pt);
         }
+        if (withP && e.getPredictedEvents) {
+          const last = cur.p[cur.p.length - 1];
+          cur._pred = e.getPredictedEvents().slice(0, 3).map(ev => { const [x, y] = pos(ev); return [x, y, last[2]]; });
+        }
         this.drawLive(p, cur);
       });
       const end = e => {
@@ -583,6 +665,7 @@
           const [x, y] = pos(e), last = cur.p[cur.p.length - 1];
           if (Math.hypot(x - last[0], y - last[1]) > 0.3 / p.w) cur.p.push([+x.toFixed(5), +y.toFixed(5), last[2]]);
         }
+        cur._live = false; cur._pred = null;
         this.snapshotPage(i); (this.ann[i] ||= []).push(cur);
         this.addInk(p, cur); this.clearLive(p); cur = null; this.inking = false;
         this.save();
@@ -636,7 +719,7 @@
         const ctx = c.getContext("2d"); ctx.scale(k, k);
         this.drawItems(ctx, items, width, height, false);
         const png = await doc.embedPng(c.toDataURL("image/png"));
-        page.drawImage(png, { x: 0, y: 0, width, height });
+        page.drawImage(png, { x: 0, y: 0, width, height, ...(window.PDFLib.BlendMode ? { blendMode: window.PDFLib.BlendMode.Multiply } : {}) });
       }
       const blob = new Blob([await doc.save()], { type: "application/pdf" });
       const a = document.createElement("a");
