@@ -104,13 +104,20 @@
     /* dots and very short marks keep their full size; tapering grows in as the stroke gets longer.
        While writing, the start taper uses a fixed length so finished parts of the stroke never change. */
     const tw = live ? 1 : Math.max(0, Math.min(1, (total - width) / (width * 4)));
+    /* width from pressure, averaged along the stroke: the Pencil's pressure flickers slightly from sample to
+       sample, which made the edge wobble (a grainy outline); averaging over a few pen-widths keeps real
+       pressure changes but irons out the flicker */
+    const base = d.map(q => width / 2 * (0.5 + 0.95 * Math.pow(Math.max(0, Math.min(1, q[2])), 0.85)));
+    const K = Math.max(2, Math.round(width * 2.5 / 1.2)), N = d.length, pre = [0];
+    for (let i = 0; i < N; i++) pre.push(pre[i] + base[i]);
     const rad = d.map((q, i) => {
-      let r = width / 2 * (0.5 + 0.95 * Math.pow(Math.max(0, Math.min(1, q[2])), 0.85));
+      const a = Math.max(0, i - K), b = Math.min(N - 1, i + K);
+      let r = (pre[b + 1] - pre[a]) / (b - a + 1);
       r *= 1 - tw * (1 - Math.min(1, 0.5 + 0.5 * dist[i] / tIn));
       if (!live) r *= 1 - tw * (1 - Math.min(1, 0.45 + 0.55 * (total - dist[i]) / tOut));
       return Math.max(0.3, r);
     });
-    return { d, rad, starts };
+    return { d, rad, starts, K };
   }
   /* 3. hulls i0..i1-1 (hull i joins samples i-1 and i) added to the current path, all wound the same way */
   function inkHulls(ctx, g, i0, i1) {
@@ -130,10 +137,55 @@
       ctx.closePath();
     }
   }
+  /* The stroke's outline as one closed shape: down the left edge, round the end, back up the right edge and
+     round the start. Browsers smooth the edge of one clean shape properly; a union of hundreds of small
+     overlapping pieces gets coarse, stepped edge smoothing (a grainy outline). Sharp turns get round joins. */
+  function inkOutline(ctx, g) {
+    const { d, rad } = g, N = d.length;
+    if (N < 2) return;
+    const nx = [], ny = [];
+    for (let i = 0; i < N; i++) {
+      const a = d[Math.max(0, i - 1)], b = d[Math.min(N - 1, i + 1)];
+      let tx = b[0] - a[0], ty = b[1] - a[1]; const L = Math.hypot(tx, ty) || 1; tx /= L; ty /= L;
+      nx.push(-ty); ny.push(tx);
+    }
+    const L = [], R = [];
+    for (let i = 0; i < N; i++) {
+      const [x, y] = d[i], r = rad[i];
+      if (i > 0) {
+        /* sharp turn: fill the outer corner with a round join */
+        const a0 = Math.atan2(ny[i - 1], nx[i - 1]), a1 = Math.atan2(ny[i], nx[i]);
+        let da = a1 - a0; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+        if (Math.abs(da) > 0.3) {
+          const steps = Math.ceil(Math.abs(da) / 0.25);
+          for (let k = 1; k < steps; k++) {
+            const t = a0 + da * k / steps;
+            L.push([x + Math.cos(t) * r, y + Math.sin(t) * r]); R.push([x - Math.cos(t) * r, y - Math.sin(t) * r]);
+          }
+        }
+      }
+      L.push([x + nx[i] * r, y + ny[i] * r]); R.push([x - nx[i] * r, y - ny[i] * r]);
+    }
+    const [ex, ey] = d[N - 1], [sx, sy] = d[0];
+    ctx.moveTo(L[0][0], L[0][1]);
+    for (let i = 1; i < L.length; i++) ctx.lineTo(L[i][0], L[i][1]);
+    const ea = Math.atan2(ny[N - 1], nx[N - 1]);
+    ctx.arc(ex, ey, rad[N - 1], ea, ea + Math.PI, true);        /* round end */
+    for (let i = R.length - 1; i >= 0; i--) ctx.lineTo(R[i][0], R[i][1]);
+    const sa = Math.atan2(ny[0], nx[0]);
+    ctx.arc(sx, sy, rad[0], sa + Math.PI, sa + 2 * Math.PI, true); /* round start */
+    ctx.closePath();
+  }
   function drawPressure(ctx, pts, width, live = false) {
     if (!pts.length) return;
     const g = inkGeom(pts, width, live);
-    ctx.beginPath(); inkHulls(ctx, g, 0, g.d.length); ctx.fill("nonzero");
+    if (g.d.length < 2) { ctx.beginPath(); inkHulls(ctx, g, 0, 1); ctx.fill(); return; }
+    /* 1. the outline, with smooth edges */
+    ctx.beginPath(); inkOutline(ctx, g); ctx.fill("nonzero");
+    /* 2. the same stroke a little thinner, filling any gap the outline leaves where it folds on a very tight
+          turn; it sits inside the outline, so its rougher edges never show */
+    const inset = { d: g.d, rad: g.rad.map(r => Math.max(0.15, r - 0.75)) };
+    ctx.beginPath(); inkHulls(ctx, inset, 0, inset.d.length); ctx.fill("nonzero");
   }
   const LIVE = new WeakMap();   /* drawing state of the stroke being written */
   const hullBox = (g, i, m) => {   /* bounding box of hull i (samples i-1 and i) */
@@ -587,7 +639,8 @@
       const raw = it.p.map(q => [q[0] * p.w, q[1] * p.h, q[2]]), n = raw.length;
       const pred = (it._pred || []).map(q => [q[0] * p.w, q[1] * p.h, q[2]]);
       const g = inkGeom(raw.concat(pred), it.w * p.w, true), N = g.d.length;
-      const lim = Math.min(N, Math.max(st.done, g.starts[n - 2] ?? 1));   /* hulls before this are final */
+      /* hulls before this are final: their points can't move, and neither can the width averaged over the next K samples */
+      const lim = Math.min(N, Math.max(st.done, (g.starts[n - 2] ?? 1) - g.K));
       ctx.globalAlpha = 1; ctx.fillStyle = colorOf(it.c, this.dark);
       const hit = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
       if (st.tail) {
