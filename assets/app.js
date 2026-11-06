@@ -347,14 +347,15 @@
         const it = data.items.find(x => x.id === act.dataset.qbId);
         const name = `${it.series} · ${it.paper} · Q${it.q}`;
         const part = it.part ? ` part (${it.part})` : "";
-        if (act.dataset.qbOpen === "ms") window.Viewer.open({ src: it.ms, title: `${name}${part} mark scheme`, desc: `Mark scheme · ${data.label || "Edexcel A Level Maths 9MA0"}`, page: it.msPage || 1, y: it.msY || 0 });
+        const msPages = qbMsPages(it, data);
+        if (act.dataset.qbOpen === "ms") window.Viewer.open({ src: it.ms, title: `${name}${part} mark scheme`, desc: `Mark scheme · ${data.label || "Edexcel A Level Maths 9MA0"}`, page: it.msPage || 1, y: it.msY || 0, pages: msPages, wholeLabel: "Whole mark scheme" });
         else {
           /* open the paper at the question, with the mark scheme (if shown) at the same question */
           const m = data.pdfs[it.src] || {}, s0 = it.segs[0];
           const y = s0 && m.H ? Math.max(0, (s0[1] - (m.cy || 0) - 18) / (m.H - 2 * (m.cy || 0))) : 0;
           /* opens just the page(s) the question is on; "Whole paper" in the viewer shows the rest */
           const pages = [...new Set(it.segs.map(sg => sg[0]))];
-          window.Viewer.open({ src: it.src, title: `${name}${part}`, desc: `Question · ${data.label || "Edexcel A Level Maths 9MA0"}`, ms: it.ms || "", page: s0 ? s0[0] : 1, y, msPage: it.msPage || 1, msY: it.msY || 0, pages });
+          window.Viewer.open({ src: it.src, title: `${name}${part}`, desc: `Question · ${data.label || "Edexcel A Level Maths 9MA0"}`, ms: it.ms || "", page: s0 ? s0[0] : 1, y, msPage: it.msPage || 1, msY: it.msY || 0, pages, msPages });
         }
       }
     };
@@ -369,6 +370,14 @@
       }
     };
     render();
+  }
+  /* The mark scheme pages for a question: from where it starts to where the next question starts
+     (the page before, if the next question begins at the top of its page). The last question runs to the end. */
+  function qbMsPages(it, data) {
+    if (!it.ms || !it.msPage) return null;
+    const next = data.items.filter(x => x.src === it.src && !x.part && x.q > it.q && x.msPage).sort((a, b) => a.q - b.q)[0];
+    const start = it.msPage, end = next ? Math.max(start, next.msY < 0.15 ? next.msPage - 1 : next.msPage) : start + 60;
+    return Array.from({ length: end - start + 1 }, (_, k) => start + k);
   }
   /* Pure and Paper 3 reuse the same numbers (8.4 is integration in Pure, forces in Mechanics) */
   const GROUP_OF = (i, data) => (data.topics.find(t => t.id === i.topic) || {}).group || "pure";

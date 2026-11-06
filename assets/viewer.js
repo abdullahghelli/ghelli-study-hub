@@ -808,7 +808,7 @@
 
   function open(info) {
     close();
-    const { src, title = "Paper", desc = "", ms = "", page = 1, y = 0, msPage = 1, msY = 0, pages = null } = info || {};
+    const { src, title = "Paper", desc = "", ms = "", page = 1, y = 0, msPage = 1, msY = 0, pages = null, msPages = null, wholeLabel = "Whole paper" } = info || {};
     if (!src) return;
     const root = document.createElement("div");
     root.className = "pv-scrim";
@@ -833,7 +833,7 @@
           <span data-pages>–</span>
           <button class="vw-ico" data-do="next" title="Next page" aria-label="Next page">${svg("down")}</button>
         </div>
-        ${pages && pages.length ? `<button class="pv-pill" data-do="whole" title="Show every page of this paper">${svg("pages")}<span>Whole paper</span></button>` : ""}
+        ${pages && pages.length ? `<button class="pv-pill" data-do="whole" title="Show every page">${svg("pages")}<span>${esc(wholeLabel)}</span></button>` : ""}
         <button class="pv-pill" data-do="bookmark">${svg("bookmark")}<span>Bookmark</span></button>
         <button class="pv-pill" data-do="annotate">${svg("annotate")}<span>Annotate</span></button>
         ${ms ? `<button class="pv-pill" data-do="ms">${svg("ms")}<span>Mark scheme</span></button>` : ""}
@@ -869,7 +869,7 @@
       <div class="vw-confirm" hidden><span>Clear every note on this paper?</span><button class="vw-btn sm danger" data-do="clear-yes">Clear notes</button><button class="vw-btn sm" data-do="clear-no">Cancel</button></div>
       <div class="vw-body">
         <div class="vw-pane main"></div>
-        ${ms ? `<div class="vw-pane ms" hidden><div class="vw-pane-label">Mark scheme <a href="${esc(ms)}" target="_blank" rel="noopener">original ↗</a></div><div class="vw-pane-inner"></div></div>` : ""}
+        ${ms ? `<div class="vw-pane ms" hidden><div class="vw-pane-label">Mark scheme ${msPages && msPages.length ? `<button class="pv-ms-whole" data-do="ms-whole">Whole mark scheme</button>` : ""}<a href="${esc(ms)}" target="_blank" rel="noopener">original ↗</a></div><div class="vw-pane-inner"></div></div>` : ""}
       </div>
     </div>`;
     document.body.appendChild(root);
@@ -925,7 +925,7 @@
     const toggleMs = btn => {
       const pane = $(".vw-pane.ms"), body = $(".vw-body");
       const show = pane.hidden; pane.hidden = !show; body.classList.toggle("split", show); btn.classList.toggle("on", show);
-      if (show && !st.ms) { st.ms = new Pane(pane.querySelector(".vw-pane-inner"), { src: ms, title: "Mark scheme", annotate: false, startPage: msPage, startY: msY }); st.ms.dark = st.dark; }
+      if (show && !st.ms) { st.ms = new Pane(pane.querySelector(".vw-pane-inner"), { src: ms, title: "Mark scheme", annotate: false, startPage: msPage, startY: msY, only: msPages }); st.ms.dark = st.dark; }
       setTimeout(() => { st.main.layout(); st.ms?.layout(); }, 0);
     };
     const openFind = () => { $(".pv-find").hidden = false; const i = $("#pv-find-input"); i.focus(); i.select(); };
@@ -1033,6 +1033,7 @@
         case "next": p.goToPage(p.current + 1); break;
         case "bookmark": Bookmarks.toggle(st.info, p.current); sync(); break;
         case "whole": p.showAll(); break;
+        case "ms-whole": st.ms?.showAll(); b.hidden = true; break;
         case "annotate": setAnnotate(!st.annotating); break;
         case "ms": toggleMs(b); break;
         case "zoomin": p.setZoom(p.zoom + 0.2); break;

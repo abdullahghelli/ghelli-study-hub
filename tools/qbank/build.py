@@ -267,6 +267,13 @@ def main():
                           msPage=at[0] if at else it.get("msPage"), msY=at[1] if at else it.get("msY"))
                 items.append(pi); added += 1
         print(len(ov), "hand-checked questions;", added, "parts listed under earlier topics;", "not found:", missing)
+    # mark scheme positions corrected by hand after an audit (see ms_fixes_9ma0.json)
+    fx = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ms_fixes_9ma0.json")
+    if os.path.exists(fx):
+        fixes = {k: v for k, v in json.load(open(fx)).items() if not k.startswith("_")}
+        for it in items:
+            v = fixes.get(f"{it['ms'].split('/')[-1]}|{it['q']}{it['part'] or ''}") if it.get("ms") else None
+            if v: it["msPage"], it["msY"] = v
     out_data = dict(spec="9MA0", topics=[dict(id=t[0], num=NUM[t[0]], name=t[1], group=t[2]) for t in TOPICS],
                     points=NAMES, pdfs=pdfs, items=items)
     os.makedirs(os.path.dirname(out), exist_ok=True)
