@@ -143,8 +143,10 @@
 
   /* ---------- One scrollable PDF ---------- */
   class Pane {
-    constructor(el, { src, title, annotate, startPage, startY, onChange }) {
+    constructor(el, { src, title, annotate, startPage, startY, onChange, only }) {
       Object.assign(this, { el, src, title, annotate, onChange });
+      /* question view: only these page numbers are shown (notes still belong to the real page numbers) */
+      this.only = only && only.length ? only : null;
       this.startPage = startPage || 1; this.startY = startY || 0;
       this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "green"; this.dark = false;
       this.size = Object.assign({ pen: 1, highlighter: 1 }, store.get(SIZE_KEY) || {});
@@ -193,16 +195,24 @@
 
     async open(L, buf) {
       this.el.ondragover = this.el.ondrop = this.el.ondragleave = null;
-      this.bytes = buf.slice(0);
-      try { this.doc = await L.getDocument({ data: new Uint8Array(buf), worker: worker(L) }).promise; }
-      catch (e) { this.status(`<p>That file isn't a readable PDF.</p>`); return; }
+      this.L = L;
+      if (!this.doc) {
+        this.bytes = buf.slice(0);
+        try { this.doc = await L.getDocument({ data: new Uint8Array(buf), worker: worker(L) }).promise; }
+        catch (e) { this.status(`<p>That file isn't a readable PDF.</p>`); return; }
+      }
+      const only = this.only && new Set(this.only.filter(n => n >= 1 && n <= this.doc.numPages));
+      if (only && !only.size) this.only = null;
       this.pages = [];
       for (let i = 1; i <= this.doc.numPages; i++) {
+        if (this.only && !only.has(i)) { this.pages.push({ hidden: true }); continue; }
         const page = await this.doc.getPage(i);
         this.pages.push({ page, base: page.getViewport({ scale: 1 }) });
       }
       this.el.innerHTML = `<div class="vw-pages"></div>`;
       this.wrap = this.el.firstChild;
+      if (this._bound) { this.finishOpen(); return; }
+      this._bound = true;
       this.bindPinch();
       /* iPad Safari waits after each Pencil lift to see if it is a double-tap or Scribble handwriting,
          which swallows the start of a quick next stroke. Claiming Pencil touches while a writing tool
@@ -210,7 +220,11 @@
       const pencil = e => this.tool !== "hand" && this.tool !== "text" && [...e.changedTouches].some(t => t.touchType === "stylus");
       for (const type of ["touchstart", "touchmove", "touchend"])
         this.el.addEventListener(type, e => { if (pencil(e) && e.cancelable) e.preventDefault(); }, { passive: false });
+      this.finishOpen();
+    }
+    finishOpen() {
       this.pages.forEach((p, i) => {
+        if (p.hidden) return;
         const pg = document.createElement("div"); pg.className = "pg"; pg._i = i;
         pg.innerHTML = `<canvas class="pdf"></canvas><div class="hl"></div><canvas class="live"></canvas><canvas class="ink"></canvas>`;
         this.wrap.appendChild(pg); p.el = pg; p.pdf = pg.children[0]; p.hl = pg.children[1]; p.live = pg.children[2]; p.ink = pg.children[3];
@@ -223,6 +237,21 @@
       this.onChange?.();
     }
 
+    /* question view → whole paper, staying on the same page */
+    showAll() {
+      if (!this.only || !this.doc) return;
+      this.commitText(); this.flush();
+      const pos = this.scrollPos();
+      this.observer.disconnect();
+      this.pages.forEach((p, i) => this.release(i));
+      this.only = null; this.index = null; this.startPage = pos.page; this.startY = pos.y;
+      this.open(this.L, null);
+    }
+    /* shown pages (all of them, or the question's) as 0-based indexes */
+    shown() { const r = []; this.pages.forEach((p, i) => { if (!p.hidden) r.push(i); }); return r; }
+    hasPrev() { return this.shown().some(i => i + 1 < this.current); }
+    hasNext() { return this.shown().some(i => i + 1 > this.current); }
+
     fitWidth() { return Math.min(this.el.clientWidth - 32, 920); }
 
     layout() {
@@ -230,6 +259,7 @@
       const keep = this.scrollPos();
       const w = Math.max(240, this.fitWidth() * this.zoom);
       this.pages.forEach((p, i) => {
+        if (p.hidden) return;
         const h = w * p.base.height / p.base.width;
         this.release(i);
         p.w = w; p.h = h;
@@ -238,7 +268,7 @@
       });
       this.scrollToPos(keep);
       const R = this.el.getBoundingClientRect();
-      this.pages.forEach((p, i) => { const r = p.el.getBoundingClientRect(); if (r.bottom > R.top - 900 && r.top < R.bottom + 900) this.renderPage(i); });
+      this.pages.forEach((p, i) => { if (p.hidden) return; const r = p.el.getBoundingClientRect(); if (r.bottom > R.top - 900 && r.top < R.bottom + 900) this.renderPage(i); });
     }
 
     /* pixels per CSS pixel for a page: sharp on Retina, but capped so a zoomed page stays within iPad canvas limits */
@@ -256,7 +286,7 @@
       const ctx = c.getContext("2d"); ctx.setTransform(p.px, 0, 0, p.px, 0, 0); return ctx;
     }
     release(i) {
-      const p = this.pages[i]; if (!p) return;
+      const p = this.pages[i]; if (!p || p.hidden) return;
       if (p.task) { try { p.task.cancel(); } catch (e) {} p.task = null; }
       for (const c of [p.pdf, p.ink, p.live]) { c.width = 0; c.height = 0; }
       p.px = 0; p.rendered = false; p.rendering = false;
@@ -269,7 +299,7 @@
     }
 
     async renderPage(i) {
-      const p = this.pages[i]; if (!p) return;
+      const p = this.pages[i]; if (!p || p.hidden) return;
       this.alloc(p, i);
       if (p.rendered || p.rendering) return;
       p.rendering = true;
@@ -284,8 +314,8 @@
     currentPage() {
       if (!this.pages.length) return 1;
       const mark = this.el.scrollTop + this.el.clientHeight * 0.35;
-      let n = 1;
-      for (let i = 0; i < this.pages.length; i++) if (this.top(this.pages[i]) <= mark) n = i + 1;
+      const sh = this.shown(); let n = (sh[0] ?? 0) + 1;
+      for (const i of sh) if (this.top(this.pages[i]) <= mark) n = i + 1;
       return n;
     }
     /* a page's distance from the top of the scrolling area (offsetTop can be measured from an outer box) */
@@ -293,18 +323,27 @@
     /* where the reader is: page number and how far down it (0–1), so resizing or zooming keeps the place */
     scrollPos() {
       const top = this.el.scrollTop + 12;
-      let k = 0;
-      for (let i = 0; i < this.pages.length; i++) if (this.top(this.pages[i]) <= top) k = i;
+      const sh = this.shown(); let k = sh[0] ?? 0;
+      for (const i of sh) if (this.top(this.pages[i]) <= top) k = i;
       const p = this.pages[k];
       return { page: k + 1, y: p.h ? Math.max(0, (top - this.top(p)) / p.h) : 0 };
     }
+    /* the shown page nearest to page number n (in direction dir if it's hidden) */
+    nearest(n, dir = 0) {
+      const sh = this.shown(); if (!sh.length) return null;
+      n = Math.min(Math.max(n, 1), this.pages.length);
+      if (!this.pages[n - 1].hidden) return this.pages[n - 1];
+      const after = sh.find(i => i + 1 > n), before = [...sh].reverse().find(i => i + 1 < n);
+      const k = dir > 0 ? after : dir < 0 ? before : (after ?? before);
+      return k == null ? null : this.pages[k];
+    }
     scrollToPos({ page, y = 0 }) {
-      const p = this.pages[Math.min(Math.max(page, 1), this.pages.length) - 1]; if (!p) return;
+      const p = this.nearest(page); if (!p) return;
       this.el.scrollTop = this.top(p) - 12 + y * (p.h || 0);
       this.current = this.currentPage(); this.onChange?.();
     }
     goToPage(n, smooth = true) {
-      const p = this.pages[Math.min(Math.max(n, 1), this.pages.length) - 1]; if (!p) return;
+      const p = this.nearest(n, Math.sign(n - this.current)); if (!p) return;
       this.el.scrollTo({ top: this.top(p) - 12, behavior: smooth ? "smooth" : "auto" });
       this.current = this.pages.indexOf(p) + 1; this.onChange?.();
     }
@@ -316,6 +355,7 @@
       const cx = at ? at.x : R.left + R.width / 2, cy = at ? at.y : R.top + R.height / 2;
       let anchor = null;
       for (const p of this.pages) {
+        if (p.hidden) continue;
         const r = p.el?.getBoundingClientRect(); if (!r) continue;
         if (cy <= r.bottom + 8 || p === this.pages[this.pages.length - 1]) { anchor = { p, fx: (cx - r.left) / r.width, fy: (cy - r.top) / r.height }; break; }
       }
@@ -392,6 +432,7 @@
       const L = await pdfjs();
       this.index = [];
       for (let i = 0; i < this.pages.length; i++) {
+        if (this.pages[i].hidden) { this.index.push([]); continue; }   /* question view: search the question's pages */
         const { page, base } = this.pages[i];
         const tc = await page.getTextContent();
         const items = [];
@@ -515,7 +556,7 @@
     drawLive(p, it) {
       this.alloc(p, this.pages.indexOf(p));
       /* only the page being written on keeps a full-size stroke layer */
-      for (const q of this.pages) if (q !== p && q.live.width) { q.live.width = 0; q.live.height = 0; q.liveBox = null; }
+      for (const q of this.pages) if (q !== p && q.live?.width) { q.live.width = 0; q.live.height = 0; q.liveBox = null; }
       const c = p.live, dpr = p.px, W = Math.round(p.w * dpr), H = Math.round(p.h * dpr);
       if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.width = p.w + "px"; c.style.height = p.h + "px"; }
       const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -733,6 +774,7 @@
   /* ---------- Pop-up ---------- */
   const I = {
     file: '<path d="M5.5 2.5h6l3 3v12h-9Z"/><path d="M11.5 2.5v3h3"/>',
+    pages: '<path d="M7.5 4.5h6l2.5 2.5v10.5h-8.5Z"/><path d="M5 15.5V2.5h6"/>',
     pen: '<path d="M4 16l1-4 8.5-8.5a2.1 2.1 0 0 1 3 3L8 15Z"/><path d="M12 5l3 3"/>',
     highlighter: '<path d="m9 15-4 1 1-4 7.5-7.5 3 3Z"/><path d="M3 18h14" stroke-width="2.4" opacity=".45"/>',
     text: '<path d="M5 5h10M10 5v11M7.5 16h5"/>',
@@ -766,7 +808,7 @@
 
   function open(info) {
     close();
-    const { src, title = "Paper", desc = "", ms = "", page = 1, y = 0, msPage = 1, msY = 0 } = info || {};
+    const { src, title = "Paper", desc = "", ms = "", page = 1, y = 0, msPage = 1, msY = 0, pages = null } = info || {};
     if (!src) return;
     const root = document.createElement("div");
     root.className = "pv-scrim";
@@ -791,6 +833,7 @@
           <span data-pages>–</span>
           <button class="vw-ico" data-do="next" title="Next page" aria-label="Next page">${svg("down")}</button>
         </div>
+        ${pages && pages.length ? `<button class="pv-pill" data-do="whole" title="Show every page of this paper">${svg("pages")}<span>Whole paper</span></button>` : ""}
         <button class="pv-pill" data-do="bookmark">${svg("bookmark")}<span>Bookmark</span></button>
         <button class="pv-pill" data-do="annotate">${svg("annotate")}<span>Annotate</span></button>
         ${ms ? `<button class="pv-pill" data-do="ms">${svg("ms")}<span>Mark scheme</span></button>` : ""}
@@ -847,8 +890,9 @@
       if (active !== st) return;
       const p = st.main, n = p.pages.length;
       $("[data-pages]").textContent = n ? `${p.current} / ${n}` : "–";
-      $('[data-do="prev"]').disabled = !n || p.current <= 1;
-      $('[data-do="next"]').disabled = !n || p.current >= n;
+      $('[data-do="prev"]').disabled = !n || !p.hasPrev();
+      $('[data-do="next"]').disabled = !n || !p.hasNext();
+      const wb2 = $('[data-do="whole"]'); if (wb2) wb2.hidden = !p.only;
       const bm = n && Bookmarks.has(src, p.current), bb = $('[data-do="bookmark"]');
       bb.classList.toggle("on", !!bm); bb.innerHTML = `${svg("bookmark", bm)}<span>${bm ? "Bookmarked" : "Bookmark"}</span>`; bb.disabled = !n;
       $('[data-do="annotate"]').classList.toggle("on", st.annotating);
@@ -870,7 +914,7 @@
       const q = $("#pv-find-input").value.trim();
       $("[data-count]").textContent = !q ? "" : p.matches.length ? `${p.matchIdx + 1} of ${p.matches.length}` : "No matches";
     };
-    st.main = new Pane($(".vw-pane.main"), { src, title, annotate: true, startPage: page, startY: y, onChange: sync });
+    st.main = new Pane($(".vw-pane.main"), { src, title, annotate: true, startPage: page, startY: y, onChange: sync, only: pages });
     applyDark(siteDark());
     sync();
 
@@ -988,6 +1032,7 @@
         case "prev": p.goToPage(p.current - 1); break;
         case "next": p.goToPage(p.current + 1); break;
         case "bookmark": Bookmarks.toggle(st.info, p.current); sync(); break;
+        case "whole": p.showAll(); break;
         case "annotate": setAnnotate(!st.annotating); break;
         case "ms": toggleMs(b); break;
         case "zoomin": p.setZoom(p.zoom + 0.2); break;

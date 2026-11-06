@@ -352,7 +352,9 @@
           /* open the paper at the question, with the mark scheme (if shown) at the same question */
           const m = data.pdfs[it.src] || {}, s0 = it.segs[0];
           const y = s0 && m.H ? Math.max(0, (s0[1] - (m.cy || 0) - 18) / (m.H - 2 * (m.cy || 0))) : 0;
-          window.Viewer.open({ src: it.src, title: name, desc: `Question paper · ${data.label || "Edexcel A Level Maths 9MA0"}`, ms: it.ms || "", page: s0 ? s0[0] : 1, y, msPage: it.msPage || 1, msY: it.msY || 0 });
+          /* opens just the page(s) the question is on; "Whole paper" in the viewer shows the rest */
+          const pages = [...new Set(it.segs.map(sg => sg[0]))];
+          window.Viewer.open({ src: it.src, title: `${name}${part}`, desc: `Question · ${data.label || "Edexcel A Level Maths 9MA0"}`, ms: it.ms || "", page: s0 ? s0[0] : 1, y, msPage: it.msPage || 1, msY: it.msY || 0, pages });
         }
       }
     };
@@ -383,7 +385,7 @@
       <div class="qb-snip" data-qb-snip="${i.id}" style="--ar:${qbAspect(i, data)}"></div>
       <footer class="qb-card-foot">
         ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
-        <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open paper</button>
+        <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open question</button>
       </footer>
     </article>`;
   }
@@ -462,7 +464,7 @@
     } catch (e) {
       drop();
       if (el._qb !== token) return;
-      el.innerHTML = `<p class="qb-err">This question couldn't load. <button class="qb-btn" data-qb-open="paper" data-qb-id="${it.id}">Open paper</button></p>`;
+      el.innerHTML = `<p class="qb-err">This question couldn't load. <button class="qb-btn" data-qb-open="paper" data-qb-id="${it.id}">Open question</button></p>`;
     }
   }
   /* While a paper is open the question bank stops drawing (questions already drawn stay, so closing is instant)
