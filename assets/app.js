@@ -446,7 +446,24 @@
         const seg = it.segs.find(sg => sg[0] === ps[0]);
         const qp = placed[it.src + "|" + ps[0]];
         /* question positions are measured from the top of the full sheet; the visible page can be inset from it */
-        if (qp) { const m = qp.getMediaBox(), c = qp.getCropBox(); stamp(qp, k + 1, seg[1] - ((m.y + m.height) - (c.y + c.height)) + 7); }
+        if (qp) {
+          const m = qp.getMediaBox(), c = qp.getCropBox(), top = seg[1] - ((m.y + m.height) - (c.y + c.height));
+          stamp(qp, k + 1, top + 7);
+          /* where it's from, e.g. "June 2024 P2 Q8", goes in the page's top margin (drawn once all questions are in) */
+          (qp.gshLabels ||= []).push([k + 1, `${it.series} ${it.paper.replace(/^Paper\s*/, "P")} Q${it.q}${it.part ? `(${it.part})` : ""}`]);
+        }
+      }
+      for (const pg of Object.values(placed)) {
+        if (!pg.gshLabels) continue;
+        const c = pg.getCropBox(), y = c.y + c.height - 30, size = 9;
+        let x = c.x + 46;
+        for (const [num, label] of pg.gshLabels) {
+          const t = String(num), r = 7, ts = t.length > 1 ? 7 : 8;
+          pg.drawCircle({ x: x + r, y: y + 3.2, size: r, color: rgb(1, 1, 1), borderColor: ink, borderWidth: 1 });
+          pg.drawText(t, { x: x + r - bold.widthOfTextAtSize(t, ts) / 2, y: y + 3.2 - ts * 0.36, size: ts, font: bold, color: ink });
+          pg.drawText(label, { x: x + 2 * r + 5, y, size, font: bold, color: ink });
+          x += 2 * r + 5 + bold.widthOfTextAtSize(label, size) + 16;
+        }
       }
       const withMs = items.filter(it => it.ms && it.msPage);
       if (withMs.length) {
