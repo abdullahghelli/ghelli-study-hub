@@ -425,14 +425,14 @@
         if (want.length) (await out.copyPages(doc, want.map(p => p - 1))).forEach((pg, k) => { out.addPage(pg); placed[src + "|" + want[k]] = pg; });
       };
       const font = await out.embedFont(StandardFonts.Helvetica), bold = await out.embedFont(StandardFonts.HelveticaBold);
-      const red = rgb(0.89, 0.27, 0.13);
+      const ink = rgb(0.11, 0.12, 0.12);
       /* the worksheet number in a circle in the left margin; top = distance from the top of the visible page */
       const stamp = (pg, num, top) => {
         if (!pg) return;
         const c = pg.getCropBox(), r = 11, t = String(num), size = t.length > 1 ? 10.5 : 12;
         const cx = c.x + 19, cy = Math.min(c.y + c.height - r - 4, Math.max(c.y + r + 4, c.y + c.height - top));
-        pg.drawCircle({ x: cx, y: cy, size: r, color: rgb(1, 1, 1), borderColor: red, borderWidth: 1.6 });
-        pg.drawText(t, { x: cx - bold.widthOfTextAtSize(t, size) / 2, y: cy - size * 0.36, size, font: bold, color: red });
+        pg.drawCircle({ x: cx, y: cy, size: r, color: rgb(1, 1, 1), borderColor: ink, borderWidth: 1.3 });
+        pg.drawText(t, { x: cx - bold.widthOfTextAtSize(t, size) / 2, y: cy - size * 0.36, size, font: bold, color: ink });
       };
       /* a question's pages; for a whole question, a first page holding only a sliver of it (a stray "BLANK PAGE" line) is left out */
       const qPages = it => {
