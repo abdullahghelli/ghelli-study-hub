@@ -418,11 +418,21 @@
       const out = await PDFDocument.create(), cache = {}, used = new Set();
       const load = async src => cache[src] ||= PDFDocument.load(await (await fetch(src)).arrayBuffer(), { ignoreEncryption: true });
       /* copy pages (1-based) of src not already in the worksheet */
+      const placed = {};   /* "src|page" -> the copied page in the worksheet */
       const add = async (src, pages) => {
         const doc = await load(src), n = doc.getPageCount();
-        const want = pages.filter(p => p >= 1 && p <= n && !used.has(src + "|" + p));
-        want.forEach(p => used.add(src + "|" + p));
-        if (want.length) (await out.copyPages(doc, want.map(p => p - 1))).forEach(pg => out.addPage(pg));
+        const want = pages.filter(p => p >= 1 && p <= n && !placed[src + "|" + p]);
+        if (want.length) (await out.copyPages(doc, want.map(p => p - 1))).forEach((pg, k) => { out.addPage(pg); placed[src + "|" + want[k]] = pg; });
+      };
+      const font = await out.embedFont(StandardFonts.Helvetica), bold = await out.embedFont(StandardFonts.HelveticaBold);
+      const red = rgb(0.89, 0.27, 0.13);
+      /* the worksheet number in a circle in the left margin; top = distance from the top of the visible page */
+      const stamp = (pg, num, top) => {
+        if (!pg) return;
+        const c = pg.getCropBox(), r = 11, t = String(num), size = t.length > 1 ? 10.5 : 12;
+        const cx = c.x + 19, cy = Math.min(c.y + c.height - r - 4, Math.max(c.y + r + 4, c.y + c.height - top));
+        pg.drawCircle({ x: cx, y: cy, size: r, color: rgb(1, 1, 1), borderColor: red, borderWidth: 1.6 });
+        pg.drawText(t, { x: cx - bold.widthOfTextAtSize(t, size) / 2, y: cy - size * 0.36, size, font: bold, color: red });
       };
       /* a question's pages; for a whole question, a first page holding only a sliver of it (a stray "BLANK PAGE" line) is left out */
       const qPages = it => {
@@ -430,11 +440,17 @@
         const ps = Object.keys(h).map(Number).sort((a, b) => a - b);
         return !it.part && ps.length > 1 && h[ps[0]] < 25 ? ps.slice(1) : ps;
       };
-      for (const it of items) await add(it.src, qPages(it));
+      for (const [k, it] of items.entries()) {
+        const ps = qPages(it);
+        await add(it.src, ps);
+        const seg = it.segs.find(sg => sg[0] === ps[0]);
+        const qp = placed[it.src + "|" + ps[0]];
+        /* question positions are measured from the top of the full sheet; the visible page can be inset from it */
+        if (qp) { const m = qp.getMediaBox(), c = qp.getCropBox(); stamp(qp, k + 1, seg[1] - ((m.y + m.height) - (c.y + c.height)) + 7); }
+      }
       const withMs = items.filter(it => it.ms && it.msPage);
       if (withMs.length) {
         /* divider page listing the questions in order */
-        const font = await out.embedFont(StandardFonts.Helvetica), bold = await out.embedFont(StandardFonts.HelveticaBold);
         const pg = out.addPage([595.28, 841.89]);
         pg.drawText("Mark schemes", { x: 56, y: 760, size: 24, font: bold, color: rgb(0.1, 0.1, 0.1) });
         let y = 724;
@@ -443,9 +459,11 @@
           const name = `${k + 1}.  ${it.series} · ${it.paper} · Q${it.q}${it.part ? ` part (${it.part})` : ""}`;
           pg.drawText(name.replace(/·/g, "-"), { x: 56, y, size: 12, font, color: rgb(0.2, 0.2, 0.2) }); y -= 20;
         });
-        for (const it of withMs) {
-          const pages = qbMsPages(it, data) || [it.msPage];
-          await add(it.ms, pages);
+        for (const [k, it] of items.entries()) {
+          if (!it.ms || !it.msPage) continue;
+          await add(it.ms, qbMsPages(it, data) || [it.msPage]);
+          const mp = placed[it.ms + "|" + it.msPage];
+          if (mp) stamp(mp, k + 1, (it.msY || 0) * mp.getCropBox().height + 18);
         }
       }
       const blob = new Blob([await out.save()], { type: "application/pdf" });
