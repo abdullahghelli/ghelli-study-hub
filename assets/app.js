@@ -304,6 +304,8 @@
     const years = [...new Set(data.items.map(i => i.year))].sort((a, b) => b - a);
     const groups = data.groups || [["pure", "Pure"], ["stats", "Statistics"], ["mech", "Mechanics"]];
     const st = qbState;
+    qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)) };
+    qbWsBar();
     if (!st.topic || !data.topics.some(t => t.id === st.topic)) st.topic = data.topics[0].id;
     const filtered = topicId => data.items.filter(i => (!topicId || i.topic === topicId) && (st.year === "all" || i.year === +st.year));
     const render = () => {
@@ -339,6 +341,8 @@
       qbObserve(box, data);
     };
     box.onclick = e => {
+      const wb = e.target.closest("[data-qb-ws]");
+      if (wb) { qbWsToggle(wb.dataset.qbWs); return; }
       const tb = e.target.closest("[data-qb-topic]");
       if (tb) { st.topic = tb.dataset.qbTopic; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
       if (e.target.closest("[data-qb-clear]")) { st.specs[st.topic] = []; render(); return; }
@@ -371,6 +375,92 @@
     };
     render();
   }
+  /* ----- Worksheet builder: pick questions, then download one PDF with their pages and, at the back,
+     their mark scheme pages. Picks are kept per question bank in this browser. ----- */
+  let qbWs = { key: "", data: null, ids: [] };
+  const qbWsButton = id => {
+    const on = qbWs.ids.includes(id);
+    return `<button class="qb-btn wsb${on ? " on" : ""}" data-qb-ws="${id}" aria-pressed="${on}">${on ? "✓ On worksheet" : "+ Worksheet"}</button>`;
+  };
+  function qbWsToggle(id) {
+    const k = qbWs.ids.indexOf(id);
+    if (k >= 0) qbWs.ids.splice(k, 1); else qbWs.ids.push(id);
+    store.set(qbWs.key, qbWs.ids);
+    document.querySelectorAll(`[data-qb-ws="${CSS.escape(id)}"]`).forEach(b => b.outerHTML = qbWsButton(id));
+    qbWsBar();
+  }
+  function qbWsBar() {
+    let bar = $("#qb-ws-bar");
+    const n = qbWs.ids.length;
+    if (!n) { bar?.remove(); document.body.classList.remove("ws-on"); return; }
+    if (!bar) {
+      bar = document.createElement("div"); bar.id = "qb-ws-bar"; bar.className = "qb-ws-bar";
+      bar.onclick = e => {
+        const b = e.target.closest("button"); if (!b) return;
+        if (b.dataset.ws === "clear") { qbWs.ids = []; store.set(qbWs.key, []); document.querySelectorAll("[data-qb-ws]").forEach(x => x.outerHTML = qbWsButton(x.dataset.qbWs)); qbWsBar(); }
+        if (b.dataset.ws === "build") qbWsBuild(b);
+      };
+      document.body.appendChild(bar);
+    }
+    document.body.classList.add("ws-on");
+    const marks = qbWs.ids.reduce((a, id) => a + ((qbWs.data.items.find(i => i.id === id) || {}).marks || 0), 0);
+    bar.innerHTML = `<span><b>Worksheet</b> · ${n} question${n === 1 ? "" : "s"}${marks ? `<i class="wsm" style="font-style:normal"> · ${marks} marks</i>` : ""}</span>
+      <button class="qb-btn" data-ws="clear">Clear</button>
+      <button class="qb-btn primary" data-ws="build">Build PDF</button>`;
+  }
+  async function qbWsBuild(btn) {
+    const data = qbWs.data, items = qbWs.ids.map(id => data.items.find(i => i.id === id)).filter(Boolean);
+    if (!items.length) return;
+    btn.disabled = true; btn.textContent = "Building…";
+    try {
+      await window.Viewer.loadPdfLib();
+      const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+      const out = await PDFDocument.create(), cache = {}, used = new Set();
+      const load = async src => cache[src] ||= PDFDocument.load(await (await fetch(src)).arrayBuffer(), { ignoreEncryption: true });
+      /* copy pages (1-based) of src not already in the worksheet */
+      const add = async (src, pages) => {
+        const doc = await load(src), n = doc.getPageCount();
+        const want = pages.filter(p => p >= 1 && p <= n && !used.has(src + "|" + p));
+        want.forEach(p => used.add(src + "|" + p));
+        if (want.length) (await out.copyPages(doc, want.map(p => p - 1))).forEach(pg => out.addPage(pg));
+      };
+      /* a question's pages; for a whole question, a first page holding only a sliver of it (a stray "BLANK PAGE" line) is left out */
+      const qPages = it => {
+        const h = {}; it.segs.forEach(([p, y0, y1]) => h[p] = (h[p] || 0) + (y1 - y0));
+        const ps = Object.keys(h).map(Number).sort((a, b) => a - b);
+        return !it.part && ps.length > 1 && h[ps[0]] < 25 ? ps.slice(1) : ps;
+      };
+      for (const it of items) await add(it.src, qPages(it));
+      const withMs = items.filter(it => it.ms && it.msPage);
+      if (withMs.length) {
+        /* divider page listing the questions in order */
+        const font = await out.embedFont(StandardFonts.Helvetica), bold = await out.embedFont(StandardFonts.HelveticaBold);
+        const pg = out.addPage([595.28, 841.89]);
+        pg.drawText("Mark schemes", { x: 56, y: 760, size: 24, font: bold, color: rgb(0.1, 0.1, 0.1) });
+        let y = 724;
+        items.forEach((it, k) => {
+          if (y < 60) return;
+          const name = `${k + 1}.  ${it.series} · ${it.paper} · Q${it.q}${it.part ? ` part (${it.part})` : ""}`;
+          pg.drawText(name.replace(/·/g, "-"), { x: 56, y, size: 12, font, color: rgb(0.2, 0.2, 0.2) }); y -= 20;
+        });
+        for (const it of withMs) {
+          const pages = qbMsPages(it, data) || [it.msPage];
+          await add(it.ms, pages);
+        }
+      }
+      const blob = new Blob([await out.save()], { type: "application/pdf" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${(data.label || document.title.replace(/ question bank.*$/i, "") || data.spec).replace(/[^\w\s.-]+/g, " ").trim()} worksheet (${items.length} question${items.length === 1 ? "" : "s"}).pdf`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      btn.textContent = "Build PDF";
+    } catch (e) {
+      console.error(e); btn.textContent = "Couldn't build, try again";
+    }
+    btn.disabled = false;
+  }
+
   /* The mark scheme pages for a question: from where it starts to where the next question starts
      (the page before, if the next question begins at the top of its page). The last question runs to the end. */
   function qbMsPages(it, data) {
@@ -395,6 +485,7 @@
       <footer class="qb-card-foot">
         ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
         <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open question</button>
+        ${qbWsButton(i.id)}
       </footer>
     </article>`;
   }
@@ -518,6 +609,7 @@
     const r = parse(location.pathname);
     renderSide(r);
     $("#app").classList.remove("nav-open");
+    if (r.kind !== "qbank") { $("#qb-ws-bar")?.remove(); document.body.classList.remove("ws-on"); }
     const page = $("#page");
     if (r.kind === "viewer") {
       /* Old /viewer links from the previous version: go back to where they came from and pop the paper open. */

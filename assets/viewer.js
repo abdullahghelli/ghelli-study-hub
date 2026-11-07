@@ -1191,5 +1191,5 @@
     finally { d.busy--; trimDocs(active ? 0 : KEEP_DOCS); }
   }
 
-  window.Viewer = { open: info => { const r = open(info); window.dispatchEvent(new Event("gsh-viewer-open")); trimDocs(0); return r; }, close, Bookmarks, isOpen: () => !!active, withDoc, openDocs: () => docs.size };
+  window.Viewer = { open: info => { const r = open(info); window.dispatchEvent(new Event("gsh-viewer-open")); trimDocs(0); return r; }, close, Bookmarks, isOpen: () => !!active, withDoc, openDocs: () => docs.size, loadPdfLib: () => loadScript(PDFLIB) };
 })();

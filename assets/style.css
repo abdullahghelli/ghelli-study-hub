@@ -491,6 +491,17 @@ html.side-hidden .side{display:none}
 .qb-btn{height:32px;padding:0 12px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:inset 0 0 0 1px var(--line);color:var(--fg)}
 .qb-btn:hover{background:var(--hover)}
 .qb-btn.ms{background:var(--ms-s);color:var(--ms);box-shadow:none}
+.qb-btn.wsb{margin-left:auto;color:var(--muted)}
+.qb-btn.wsb.on{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.qb-btn.primary{background:var(--fg);color:var(--bg);box-shadow:none}
+.qb-btn:disabled{opacity:.6}
+/* worksheet bar along the bottom of the question bank */
+.qb-ws-bar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;border-radius:12px;background:var(--bg);box-shadow:var(--shadow),0 0 0 1px var(--line);font-size:14px;max-width:calc(100vw - 32px)}
+.qb-ws-bar span{margin-right:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.qb-ws-bar .qb-btn{white-space:nowrap;flex:none}
+@media (max-width:600px){.qb-ws-bar{left:12px;right:12px;transform:none;max-width:none;bottom:12px;padding-left:14px}.qb-ws-bar .wsm{display:none}}
+body.ws-on .qb{padding-bottom:72px}
+body.pv-open .qb-ws-bar{display:none}
 .qb-err{padding:16px;color:var(--muted);font-size:13.5px}
 .qb-cta{display:flex;flex-direction:column;gap:2px;margin-top:28px;padding:14px 16px;border-radius:12px;background:var(--accent-soft);color:var(--accent)}
 .qb-cta b{font-weight:600}
