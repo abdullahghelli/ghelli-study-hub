@@ -1,5 +1,5 @@
 """Pearson Edexcel A Level Further Mathematics (9FM0) specification topics and points, with short names.
-Covered so far: Core Pure (Papers 1 and 2), Further Statistics 1 (Paper 3B) and Further Mechanics 1 (Paper 3C).
+Covered so far: Core Pure (Papers 1 and 2), Further Statistics 1 (Paper 3B), Further Mechanics 1 (Paper 3C) and Decision Mathematics 1 (Paper 3D).
 Numbering follows the specification; each option restarts at topic 1, so points are keyed by group."""
 
 # (id, number, name, group) in spec order
@@ -26,8 +26,13 @@ TOPICS = [
     ("fm3", 3, "Elastic strings and springs", "fm"),
     ("fm4", 4, "Elastic collisions in one dimension", "fm"),
     ("fm5", 5, "Elastic collisions in two dimensions", "fm"),
+    ("fd1", 1, "Algorithms and graph theory", "fd"),
+    ("fd2", 2, "Algorithms on graphs", "fd"),
+    ("fd3", 3, "Algorithms on graphs II", "fd"),
+    ("fd4", 4, "Critical path analysis", "fd"),
+    ("fd5", 5, "Linear programming", "fd"),
 ]
-GROUPS = [("cp", "Core Pure (Papers 1 and 2)"), ("fs", "Further Statistics 1 (Paper 3B)"), ("fm", "Further Mechanics 1 (Paper 3C)")]
+GROUPS = [("cp", "Core Pure (Papers 1 and 2)"), ("fs", "Further Statistics 1 (Paper 3B)"), ("fm", "Further Mechanics 1 (Paper 3C)"), ("fd", "Decision Mathematics 1 (Paper 3D)")]
 
 NAMES = {
     "cp": {
@@ -113,5 +118,25 @@ NAMES = {
         "4.2": "Successive direct impacts",
         "5.1": "Oblique impacts with a surface or another sphere",
         "5.2": "Successive oblique impacts",
+    },
+    "fd": {
+        "1.1": "Algorithms: flow charts, text and order",
+        "1.2": "Bin packing, bubble sort and quick sort",
+        "1.3": "Graph theory: Eulerian, complete and isomorphic graphs",
+        "1.4": "Planarity algorithm",
+        "2.1": "Minimum spanning trees (Kruskal, Prim)",
+        "2.2": "Shortest paths (Dijkstra, Floyd)",
+        "3.1": "Route inspection",
+        "3.2": "Travelling salesman problem",
+        "4.1": "Activity networks from a precedence table",
+        "4.2": "Precedence table from an activity network",
+        "4.3": "Critical path: early and late times",
+        "4.4": "Total float and Gantt (cascade) charts",
+        "4.5": "Resource histograms and resource levelling",
+        "4.6": "Scheduling with the fewest workers",
+        "5.1": "Formulating linear programs (slack, surplus, artificial variables)",
+        "5.2": "Graphical solution: objective line and vertex methods",
+        "5.3": "Simplex algorithm",
+        "5.4": "Two-stage simplex and big-M methods",
     },
 }

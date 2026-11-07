@@ -17,7 +17,7 @@ from build_ch import clean
 HERE = os.path.dirname(os.path.abspath(__file__))
 SERIES = {"jun": "June", "nov": "November"}
 WEB = "/files/a-level/edexcel/further-maths/papers/"
-PAPER = {"1": ("Paper 1", "cp"), "2": ("Paper 2", "cp"), "3b": ("Paper 3B", "fs"), "3c": ("Paper 3C", "fm")}
+PAPER = {"1": ("Paper 1", "cp"), "2": ("Paper 2", "cp"), "3b": ("Paper 3B", "fs"), "3c": ("Paper 3C", "fm"), "3d": ("Paper 3D", "fd")}
 
 LABEL = re.compile(r"\*?(\d{1,2})\.?\*?(?:\([ivx]+\))?(?:\(?([a-z])\)?(?:\([ivx]+\))?)?(?:alt\w*)?")
 SUB = re.compile(r"\(([a-z])\)(?:\([ivx]+\))?(?:alt\w*)?")
@@ -37,11 +37,13 @@ def ms_pages(ms_path, nq):
                 pg = pdf.pages[pn]
                 H = float(pg.height)
                 ws = [w for w in pg.extract_words(extra_attrs=["fontname"]) if w["x0"] < 120]
-                heads = [w for w in ws if re.fullmatch(r"Q(?:u(?:es(?:tion)?)?)?", w["text"]) or re.fullmatch(r"Qu\d{1,2}", w["text"])]
+                heads = [w for w in ws if re.fullmatch(r"Q(?:u(?:es(?:ti(?:on)?)?)?|n)?", w["text"]) or re.fullmatch(r"Qu\d{1,2}", w["text"])]   # also "Questi"/"on" and "Qn" headings
                 if not hf:
                     lab1 = lambda w: (LABEL.fullmatch(w["text"].replace(" ", "")) or [None, None])[1] == "1"
-                    if not any(lab1(w) and 0 <= w["top"] - h["top"] < 70 for h in heads for w in ws):
+                    first = [w for h in heads for w in ws if lab1(w) and 0 <= w["top"] - h["top"] < 70]
+                    if not first:
                         continue
+                    hf |= {w["fontname"] for w in first}   # labels can be in their own font (e.g. June 2023 3D)
                 hf |= {w["fontname"] for w in heads}
                 if heads: hx = min(w["x0"] for w in heads)
                 ws = [w for w in ws if ("Bold" in w["fontname"] or w["fontname"] in hf) and w["x0"] <= hx + 30]
@@ -90,7 +92,7 @@ def main():
     group = {t[0]: t[3] for t in TOPICS}
     items, pdfs, missing = [], {}, []
     for f, r in sorted(data.items()):
-        m = re.match(r"9fm0-p(1|2|3b|3c)-qp-(jun|nov)(\d{4})\.pdf", f)
+        m = re.match(r"9fm0-p(1|2|3b|3c|3d)-qp-(jun|nov)(\d{4})\.pdf", f)
         pid, mon, yr = m.groups()
         paper, g = PAPER[pid]
         src = WEB + f
@@ -104,6 +106,15 @@ def main():
             right = max((w["x1"] for pg in pdf.pages[1:] for w in pg.extract_words(extra_attrs=["upright"])
                          if w.get("upright", True) and r["x0"] < w["x0"] and w["x1"] < 0.93 * r["W"]
                          and w["top"] < 0.92 * r["H"] and "_" not in w["text"] and re.search(r"[A-Za-z0-9]", w["text"])), default=0)
+            # lines of body text on each page (top, bottom), to stop a snip's top edge cutting through a line
+            body_lines = {}
+            for i, pg in enumerate(pdf.pages):
+                rows = {}
+                for w in pg.extract_words(extra_attrs=["upright"]):
+                    if w.get("upright", True) and r["x0"] - 25 < w["x0"] and w["x1"] < 0.93 * r["W"]:
+                        rows.setdefault(round(w["top"] / 3), []).append(w)
+                body_lines[i + 1] = [(min(w["top"] for w in ws), max(w["bottom"] for w in ws), " ".join(w["text"] for w in ws)) for ws in rows.values()]
+        HEADER = re.compile(r"Answer ALL|Write your answers|Question \d+ continued|DO NOT WRITE", re.I)
         x1 = r.get("x1")
         if x1 is None or abs(x1 - round(0.905 * r["W"], 1)) < 0.2:
             x1 = round(0.935 * r["W"], 1)
@@ -126,6 +137,15 @@ def main():
                     for sg in sl:
                         if sg[0] == s0[0] and abs(sg[1] - y_orig) < 0.01:
                             sg[1] = round(sg[1] - lift, 1)
+            # a segment that starts part-way through a line of text (e.g. the top of a page in the 2019 papers,
+            # where text sits higher than the extractor expects) starts at the top of that line instead
+            for sl in [q["segs"], q.get("stem") or []] + [p["segs"] for p in q.get("parts") or []]:
+                for sg in sl:
+                    cut = [(t, b, x) for t, b, x in body_lines.get(sg[0], []) if t < sg[1] < b - 1]
+                    if any(HEADER.search(x) for _, _, x in cut):   # a page heading: start below it instead
+                        sg[1] = round(max(b for _, b, x in cut if HEADER.search(x)) + 2, 1)
+                    elif cut:
+                        sg[1] = round(max(min(t for t, _, _ in cut) - 2, prev_end.get(sg[0], 0) + 1), 1)
             for sg in q["segs"]:
                 prev_end[sg[0]] = max(prev_end.get(sg[0], 0), sg[2])
 
