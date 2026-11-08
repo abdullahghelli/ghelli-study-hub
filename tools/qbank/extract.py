@@ -17,7 +17,7 @@ DPI = 100
 K = DPI / 72.0
 QNUM = re.compile(r"^(\d{1,2})(\.?)$")
 PART = re.compile(r"^\(([a-h])\)$")
-TOTAL = re.compile(r"\(?Total for Question (\d+) (?:is |= ?)?(\d+) marks?\)", re.I)
+TOTAL = re.compile(r"\(?Total (?:for Question (\d+) (?:is |= ?)?)?(\d+) marks?\)", re.I)   # older IAL papers: "(Total 8 marks)"
 MARK = re.compile(r"^\((\d{1,2})\)$")
 
 
@@ -157,7 +157,7 @@ def parse_paper(pdf_path):
                 events.append(("part", mp.group(1), pn, first["top"]))
             mt = TOTAL.search(text)
             if mt:
-                events.append(("total", (int(mt.group(1)), int(mt.group(2))), pn, min(0.93 * H, max(w["bottom"] for w in ws))))
+                events.append(("total", (int(mt.group(1)) if mt.group(1) else None, int(mt.group(2))), pn, min(0.93 * H, max(w["bottom"] for w in ws))))
             for w in ws:
                 mm = MARK.match(w["text"])
                 if mm and w["x0"] > 0.72 * W:
@@ -196,7 +196,7 @@ def parse_paper(pdf_path):
                 cur["parts"].append((e[1], e[2], e[3] - 4))
         elif cur and e[0] == "mark":
             cur["part_marks"].append((e[2], e[3], e[1]))
-        elif cur and e[0] == "total" and e[1][0] == cur["q"]:
+        elif cur and e[0] == "total" and e[1][0] in (cur["q"], None):
             cur["marks"] = e[1][1]
             cur["end"] = (e[2], e[3] + 4)
             questions.append(cur)
