@@ -195,6 +195,7 @@ def main():
                 items.append(pi)
 
     out_data = dict(spec="YMA01", label="Edexcel International A Level Maths YMA01",
+                    modular=True,   # units are sat as separate papers: the bank shows one unit at a time
                     groups=[list(x) for x in GROUPS],
                     topics=[dict(id=t[0], num=t[1], name=t[2], group=t[3]) for t in TOPICS],
                     points=NAMES, pdfs=pdfs, items=items)

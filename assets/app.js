@@ -307,6 +307,9 @@
     qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)) };
     qbWsBar();
     if (!st.topic || !data.topics.some(t => t.id === st.topic)) st.topic = data.topics[0].id;
+    /* modular courses (IAL): units are separate papers, so the bank shows one unit's topics at a time */
+    const unitOf = id => (data.topics.find(t => t.id === id) || {}).group;
+    const shown = () => data.modular ? groups.filter(([g]) => g === unitOf(st.topic)) : groups;
     const filtered = topicId => data.items.filter(i => (!topicId || i.topic === topicId) && (st.year === "all" || i.year === +st.year));
     const render = () => {
       store.set("qb", st);
@@ -326,14 +329,15 @@
       box.innerHTML = `
         <aside class="qb-topics" aria-label="Topics">
           <label class="qb-select"><span>Year</span><select id="qb-year">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
-          ${groups.map(([g, name]) => `<div class="qb-group"><div class="qb-gname">${name}</div>${data.topics.filter(t => t.group === g).map(t => {
+          ${data.modular ? `<div class="qb-units" role="group" aria-label="Unit" style="--n:${groups.length}">${groups.map(([g, name]) => `<button class="qb-unit ${g === unitOf(st.topic) ? "on" : ""}" data-qb-unit="${g}" title="${esc(name)}" aria-pressed="${g === unitOf(st.topic)}">${esc(name.split(" ·")[0])}</button>`).join("")}</div>` : ""}
+          ${shown().map(([g, name]) => `<div class="qb-group"><div class="qb-gname">${name}</div>${data.topics.filter(t => t.group === g).map(t => {
             const n = filtered(t.id).length;
             return `<button class="qb-topic ${t.id === st.topic ? "on" : ""}" data-qb-topic="${t.id}" ${n ? "" : "disabled"}><span>${t.num ? `<i class="qb-num">${t.num}</i>` : ""}${esc(t.name)}</span><small>${n}</small></button>`;
           }).join("")}</div>`).join("")}
         </aside>
         <section class="qb-main">
-          <div class="qb-mobile"><label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
-          <label class="qb-select"><span>Topic</span><select id="qb-topic">${groups.map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
+          <div class="qb-mobile">${data.modular ? `<label class="qb-select"><span>Unit</span><select id="qb-unit">${groups.map(([g, name]) => `<option value="${g}" ${g === unitOf(st.topic) ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : ""}<label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
+          <label class="qb-select"><span>Topic</span><select id="qb-topic">${shown().map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
           <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${list.length}${picked.length ? ` of ${inTopic.length}` : ""} question${list.length === 1 ? "" : "s"}</span></div>
           ${specBox}
           ${list.length ? list.map(i => qbCard(i, data)).join("") : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`}
@@ -343,6 +347,8 @@
     box.onclick = e => {
       const wb = e.target.closest("[data-qb-ws]");
       if (wb) { qbWsToggle(wb.dataset.qbWs); return; }
+      const ub = e.target.closest("[data-qb-unit]");
+      if (ub) { st.topic = (data.topics.find(t => t.group === ub.dataset.qbUnit && filtered(t.id).length) || data.topics.find(t => t.group === ub.dataset.qbUnit)).id; render(); return; }
       const tb = e.target.closest("[data-qb-topic]");
       if (tb) { st.topic = tb.dataset.qbTopic; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
       if (e.target.closest("[data-qb-clear]")) { st.specs[st.topic] = []; render(); return; }
@@ -366,6 +372,7 @@
     box.onchange = e => {
       if (e.target.id === "qb-year" || e.target.id === "qb-year-m") { st.year = e.target.value; render(); }
       if (e.target.id === "qb-topic") { st.topic = e.target.value; render(); }
+      if (e.target.id === "qb-unit") { const g = e.target.value; st.topic = (data.topics.find(t => t.group === g && filtered(t.id).length) || data.topics.find(t => t.group === g)).id; render(); }
       if (e.target.dataset.qbSpec) {
         const keep = window.scrollY;
         st.specs[st.topic] = [...box.querySelectorAll("[data-qb-spec]:checked")].map(x => x.dataset.qbSpec);
