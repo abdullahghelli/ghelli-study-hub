@@ -13,7 +13,89 @@ import pdfplumber
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from spec_ial import TOPICS, GROUPS, NAMES
 from build_ch import clean
-from build_ig import ms_pages, split_inline
+from build_ig import split_inline
+
+LABEL = re.compile(r"\*?(\d{1,2})\.?\*?(?:\([ivx]+\))?(?:\(?([a-z])\)?(?:\([ivx]+\))?)?(?:alt\w*)?")
+SUB = re.compile(r"\(([a-z])\)(?:\([ivx]+\))?(?:alt\w*)?")
+
+
+def ms_pages(ms_path, nq):
+    """As build_ig.ms_pages, widened for IAL schemes: an upper-case "QUESTION NUMBER" heading, labels further right
+    (up to x = 140) and a first label up to 120 pt below its heading."""
+    """Where each question and part starts in a mark scheme: {(q, part or None): (page, y fraction)}.
+    Labels sit in the left 'Question' column, e.g. "5(a)(i)", "1a", "5." or "3" then "(b)", set in bold or in the
+    font of the column's "Question"/"Qu" heading. Reading starts at the first heading with question 1 below it
+    (before that is the numbered marking guidance). Notes under a scheme sometimes repeat bold numbers, so the
+    question starts are the longest run of labels that goes up in order; parts are read between those starts."""
+    cands = []      # (position, question number or None, part or None)
+    try:
+        with pdfplumber.open(ms_path) as pdf:
+            hf, hx, first_pg, lx = set(), 70, None, 85
+            for pn in range(1, len(pdf.pages)):
+                pg = pdf.pages[pn]
+                H = float(pg.height)
+                ws = [w for w in pg.extract_words(extra_attrs=["fontname"]) if w["x0"] < 140]
+                heads = [w for w in ws if re.fullmatch(r"Q(?:u(?:es(?:tion)?)?)?|QUESTION", w["text"]) or re.fullmatch(r"Qu\d{1,2}", w["text"])]
+                if not hf:
+                    lab1 = lambda w: (LABEL.fullmatch(w["text"].replace(" ", "")) or [None, None])[1] == "1"
+                    started = any(lab1(w) and 0 <= w["top"] - h["top"] < 120 for h in heads for w in ws)
+                    # some schemes have no "Question" heading: start at the first page with a bold "1"/"1*"/"1(a)" in the column
+                    if not started and not heads and any(lab1(w) and "Bold" in w["fontname"] and 70 <= w["x0"] <= 100 for w in ws):
+                        started, hx = True, 75
+                    if not started:
+                        continue
+                if first_pg is None: first_pg = pn + 1
+                hf |= {w["fontname"] for w in heads}
+                if heads: hx = min(w["x0"] for w in heads)
+                hf |= {'__bold__'}
+                nums = [w["x0"] for w in ws if "Bold" in w["fontname"] and re.fullmatch(r"\d{1,2}\*?", w["text"]) and w["x0"] <= hx + 40]
+                if nums: lx = min(nums)
+                bare = lambda w: lx + 15 <= w["x0"] <= lx + 60 and re.fullmatch(r"\(?[a-h]\)?(?:\([ivx]+\))?", w["text"])   # part letter in its own column
+                ws = [w for w in ws if (w["x0"] <= hx + 40 and ("Bold" in w["fontname"] or w["fontname"] in hf or SUB.fullmatch(w["text"].replace(" ", "")))) or bare(w)]
+                ws.sort(key=lambda w: (round(w["top"] / 3), w["x0"]))
+                for w in ws:
+                    t = re.sub(r"^Qu(?=\d)", "", w["text"].replace(" ", ""))   # "Qu6" = heading and label run together
+                    pos = (pn + 1, round(max(0, w["top"] - 14) / H, 4))
+                    m = LABEL.fullmatch(t)
+                    if m and 1 <= int(m.group(1)) <= nq:
+                        cands.append((pos, int(m.group(1)), m.group(2), "Bold" in w["fontname"]))
+                        continue
+                    m = SUB.fullmatch(t) or (bare(w) and re.fullmatch(r"\(?([a-h])\)?(?:\([ivx]+\))?", t))
+                    if m:
+                        cands.append((pos, None, m.group(1), "Bold" in w["fontname"]))
+    except Exception:
+        return {}
+    # longest strictly increasing run of question numbers, earliest occurrences preferred
+    def run(qs):
+        best = []    # best[k] = (length, previous index in qs)
+        for k, (i, n) in enumerate(qs):
+            L, prev = 1, None
+            for j in range(k):
+                if qs[j][1] < n and best[j][0] + 1 > L:
+                    L, prev = best[j][0] + 1, j
+            best.append((L, prev))
+        chain, k = [], (max(range(len(qs)), key=lambda k: (best[k][0], -k)) if qs else None)
+        while k is not None:
+            chain.append(qs[k]); k = best[k][1]
+        return chain[::-1]
+    # where the labels are in bold, numbers in the working (set in the same plain type as the heading) are not labels:
+    # use the bold labels alone when they give every question in order
+    chain = run([(i, c[1]) for i, c in enumerate(cands) if c[1] and c[3]])
+    if [n for _, n in chain] != list(range(1, nq + 1)):
+        chain = run([(i, c[1]) for i, c in enumerate(cands) if c[1]])
+    at = {}
+    starts = [(i, n) for i, n in chain]
+    for s, (i, n) in enumerate(starts):
+        end = starts[s + 1][0] if s + 1 < len(starts) else len(cands)
+        at[(n, None)] = cands[i][0]
+        for pos, qn, part, _ in cands[i:end]:
+            if part and (qn is None or qn == n):
+                at.setdefault((n, part), pos)
+    if (1, None) not in at and first_pg:      # question 1's label in plain type: start of the scheme
+        at[(1, None)] = (first_pg, 0.05)
+    return at
+
+
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SERIES = {"jan": "January", "jun": "June", "oct": "October"}
@@ -28,6 +110,7 @@ def main():
     for f in sorted(glob.glob(os.path.join(ext_dir, "ext-*.json"))):
         data.update(json.load(open(f)))
     ov = {k: v for k, v in json.load(open(os.path.join(HERE, "overrides_yma01.json"))).items() if not k.startswith("_")}
+    fixes = {k: v for k, v in json.load(open(os.path.join(HERE, "ms_fixes_yma01.json"))).items() if not k.startswith("_")}
     order = {t[0]: i for i, t in enumerate(TOPICS)}
     group = {t[0]: t[3] for t in TOPICS}
     items, pdfs, missing = [], {}, []
@@ -40,6 +123,10 @@ def main():
         has_ms = os.path.exists(os.path.join(papers_dir, msf))
         ms = WEB + msf if has_ms else None
         msp = ms_pages(os.path.join(papers_dir, msf), len(r["questions"])) if has_ms else {}
+        for qn, pos in fixes.get(f[:-4], {}).items():
+            msp[(int(qn), None)] = tuple(pos)
+            for k in [k for k in msp if k[0] == int(qn) and k[1]]:
+                del msp[k]
         with pdfplumber.open(os.path.join(papers_dir, f)) as pdf:
             cb, mb = pdf.pages[1].cropbox, pdf.pages[1].mediabox
             right = max((w["x1"] for pg in pdf.pages[1:] for w in pg.extract_words(extra_attrs=["upright"])
