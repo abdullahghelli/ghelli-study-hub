@@ -78,25 +78,50 @@
      pts: [[x, y, pressure], ...] in CSS pixels; width: the stroke's normal width; live: still being written */
   function inkGeom(pts, width, live = false) {
     const n = pts.length;
+    /* 0. iron out the tiny wobble in the Pencil's positions: each point moves to the weighted average of the
+          points within W of it along the stroke (W shrinks near the ends, so the ends stay put). Without this,
+          the wobble showed as short flat facets on curves and turns. A point only changes until the stroke has
+          gone W past it, which is what lets the live stroke draw its settled part once. */
+    const W = width * 2.6, sl = [0];
+    for (let k = 1; k < n; k++) sl.push(sl[k - 1] + Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]));
+    if (n > 2 && W > 0) {
+      const S = sl[n - 1], out = [pts[0]];
+      for (let k = 1, a = 0, b = 0; k < n - 1; k++) {
+        const h = Math.min(W, sl[k], S - sl[k]), s2 = 2 * (h / 2) * (h / 2) || 1;
+        while (sl[a] < sl[k] - h - 1e-9) a++;
+        while (b + 1 < n && sl[b + 1] <= sl[k] + h + 1e-9) b++;
+        let x = 0, y = 0, ws = 0;
+        for (let j = a; j <= b; j++) { const dd = sl[j] - sl[k], wt = Math.exp(-dd * dd / s2); x += pts[j][0] * wt; y += pts[j][1] * wt; ws += wt; }
+        out.push([x / ws, y / ws, pts[k][2]]);
+      }
+      out.push(pts[n - 1]); pts = out;
+    }
     const pr = pts.map((q, k) => (pts[Math.max(0, k - 1)][2] + 2 * q[2] + pts[Math.min(n - 1, k + 1)][2]) / 4);
-    /* 1. dense samples along the curve through the midpoints of the points; starts[k] = first sample of piece k */
+    /* 1. dense samples along a centripetal Catmull-Rom curve, which passes through every point and bends
+          round each turn like a pen does (a curve through the midpoints instead cut each turn short and left
+          the parts between as straight lines, so changes of direction looked angular).
+          starts[k] = first sample of piece k, which runs from point k to point k + 1 */
     const d = [], starts = [];
     const add = (x, y, p) => { const l = d[d.length - 1]; if (!l || Math.hypot(x - l[0], y - l[1]) > 0.25) d.push([x, y, p]); };
-    const seg = (x0, y0, cx, cy, x1, y1, p0, p1) => {
-      starts.push(d.length);
-      const len = Math.hypot(cx - x0, cy - y0) + Math.hypot(x1 - cx, y1 - cy), m = Math.max(1, Math.ceil(len / 1.2));
-      for (let i = 1; i <= m; i++) {
-        const t = i / m, u = 1 - t;
-        add(u * u * x0 + 2 * u * t * cx + t * t * x1, u * u * y0 + 2 * u * t * cy + t * t * y1, p0 + (p1 - p0) * t);
-      }
-    };
     add(pts[0][0], pts[0][1], pr[0]);
-    if (n === 2) seg(pts[0][0], pts[0][1], (pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2, pts[1][0], pts[1][1], pr[0], pr[1]);
-    else if (n > 2) {
-      const mx = k => (pts[k][0] + pts[k + 1][0]) / 2, my = k => (pts[k][1] + pts[k + 1][1]) / 2, mp = k => (pr[k] + pr[k + 1]) / 2;
-      seg(pts[0][0], pts[0][1], (pts[0][0] + mx(0)) / 2, (pts[0][1] + my(0)) / 2, mx(0), my(0), pr[0], mp(0));
-      for (let k = 1; k < n - 1; k++) seg(mx(k - 1), my(k - 1), pts[k][0], pts[k][1], mx(k), my(k), mp(k - 1), mp(k));
-      seg(mx(n - 2), my(n - 2), (mx(n - 2) + pts[n - 1][0]) / 2, (my(n - 2) + pts[n - 1][1]) / 2, pts[n - 1][0], pts[n - 1][1], mp(n - 2), pr[n - 1]);
+    const P = k => k < 0 ? [2 * pts[0][0] - pts[1][0], 2 * pts[0][1] - pts[1][1]]
+      : k >= n ? [2 * pts[n - 1][0] - pts[n - 2][0], 2 * pts[n - 1][1] - pts[n - 2][1]] : pts[k];
+    for (let k = 0; k < n - 1; k++) {
+      starts.push(d.length);
+      const p0 = P(k - 1), p1 = pts[k], p2 = pts[k + 1], p3 = P(k + 2);
+      const kn = (a, b) => Math.max(1e-4, Math.sqrt(Math.hypot(b[0] - a[0], b[1] - a[1])));
+      const t1 = kn(p0, p1), t2 = t1 + kn(p1, p2), t3 = t2 + kn(p2, p3);
+      const len = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]), m = Math.max(1, Math.ceil(len * 1.4 / 0.9));
+      for (let i = 1; i <= m; i++) {
+        const t = t1 + (t2 - t1) * i / m, q = [0, 0];
+        for (const c of [0, 1]) {
+          const a1 = ((t1 - t) * p0[c] + t * p1[c]) / t1, a2 = ((t2 - t) * p1[c] + (t - t1) * p2[c]) / (t2 - t1),
+            a3 = ((t3 - t) * p2[c] + (t - t2) * p3[c]) / (t3 - t2),
+            b1 = ((t2 - t) * a1 + t * a2) / t2, b2 = ((t3 - t) * a2 + (t - t1) * a3) / (t3 - t1);
+          q[c] = ((t2 - t) * b1 + (t - t1) * b2) / (t2 - t1);
+        }
+        add(q[0], q[1], pr[k] + (pr[k + 1] - pr[k]) * i / m);
+      }
     }
     /* 2. radius at each sample: pressure (gentle curve), with tapered ends measured by length */
     const dist = [0]; for (let i = 1; i < d.length; i++) dist.push(dist[i - 1] + Math.hypot(d[i][0] - d[i - 1][0], d[i][1] - d[i - 1][1]));
@@ -117,7 +142,7 @@
       if (!live) r *= 1 - tw * (1 - Math.min(1, 0.45 + 0.55 * (total - dist[i]) / tOut));
       return Math.max(0.3, r);
     });
-    return { d, rad, starts, K };
+    return { d, rad, starts, K, sl, W };
   }
   /* 3. hulls i0..i1-1 (hull i joins samples i-1 and i) added to the current path, all wound the same way */
   function inkHulls(ctx, g, i0, i1) {
@@ -640,10 +665,11 @@
           if (n === 1) ctx.lineTo(X(0) + 0.1, Y(0)); else ctx.lineTo(X(1), Y(1));
           ctx.stroke();
         } else if (!hasP) {
-          /* smooth curve through the midpoints of the sampled points */
-          ctx.lineWidth = it.w * w; ctx.beginPath(); ctx.moveTo(X(0), Y(0));
-          for (let k = 1; k < n - 1; k++) ctx.quadraticCurveTo(X(k), Y(k), (X(k) + X(k + 1)) / 2, (Y(k) + Y(k + 1)) / 2);
-          ctx.lineTo(X(n - 1), Y(n - 1)); ctx.stroke();
+          /* the same smooth curve through the points as Pencil ink, at a fixed width */
+          const g = inkGeom(pts.map((q, k) => [X(k), Y(k), 0.5]), it.w * w, true);
+          ctx.lineWidth = it.w * w; ctx.beginPath(); ctx.moveTo(g.d[0][0], g.d[0][1]);
+          for (let k = 1; k < g.d.length; k++) ctx.lineTo(g.d[k][0], g.d[k][1]);
+          ctx.stroke();
         } else {
           /* Apple Pencil: width follows pressure */
           const pp = pts.map(q => [q[0] * w, q[1] * h, q[2]]);
@@ -690,7 +716,10 @@
       const pred = (it._pred || []).map(q => [q[0] * p.w, q[1] * p.h, q[2]]);
       const g = inkGeom(raw.concat(pred), it.w * p.w, true), N = g.d.length;
       /* hulls before this are final: their points can't move, and neither can the width averaged over the next K samples */
-      const lim = Math.min(N, Math.max(st.done, (g.starts[n - 2] ?? 1) - g.K));
+      /* raw point kf is the first that can still move (the stroke hasn't gone W past it); the curve piece two
+         before it is the first whose shape can change */
+      let kf = n - 1; while (kf > 0 && g.sl[n - 1] - g.sl[kf - 1] < g.W) kf--;
+      const lim = Math.min(N, Math.max(st.done, (g.starts[Math.max(0, kf - 2)] ?? 1) - g.K));
       ctx.globalAlpha = 1; ctx.fillStyle = colorOf(it.c, this.dark);
       const hit = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
       if (st.tail) {
