@@ -76,25 +76,40 @@
      so the ink is a single union: smooth edges, no seams, specks or width steps, and round joins at any angle.
      Ends taper over a set length, so the stroke looks the same however fast it was written.
      pts: [[x, y, pressure], ...] in CSS pixels; width: the stroke's normal width; live: still being written */
-  function inkGeom(pts, width, live = false) {
+  function inkGeom(pts, width, live = false, nRaw) {
     const n = pts.length;
-    /* 0. iron out the tiny wobble in the Pencil's positions: each point moves to the weighted average of the
-          points within W of it along the stroke (W shrinks near the ends, so the ends stay put). Without this,
-          the wobble showed as short flat facets on curves and turns. A point only changes until the stroke has
-          gone W past it, which is what lets the live stroke draw its settled part once. */
-    const W = width * 2.6, sl = [0];
+    /* 0. iron out the tiny wobble in the Pencil's positions (it showed as short flat facets on curves): each
+          point moves onto a smooth curve fitted to the points around it along the stroke (a weighted
+          least-squares parabola, in x and in y against distance along the stroke, using points up to W behind
+          and, once they exist, up to W ahead). A parabola follows a real curve, so turns keep their shape, and
+          the point nearest the Pencil is already smoothed when it first appears: as more is written it barely
+          moves (plain averaging left the newest ink raw and then pulled it into place, so the end of the stroke
+          seemed elastic). Only the real points are smoothed: predicted points (nRaw onwards) never pull on the
+          ink. A point only changes until the stroke has gone W past it, which is what lets the live stroke
+          draw its settled part once. */
+    const W = width * 4, sl = [0];
     for (let k = 1; k < n; k++) sl.push(sl[k - 1] + Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]));
-    if (n > 2 && W > 0) {
-      const S = sl[n - 1], out = [pts[0]];
-      for (let k = 1, a = 0, b = 0; k < n - 1; k++) {
-        const h = Math.min(W, sl[k], S - sl[k]), s2 = 2 * (h / 2) * (h / 2) || 1;
-        while (sl[a] < sl[k] - h - 1e-9) a++;
-        while (b + 1 < n && sl[b + 1] <= sl[k] + h + 1e-9) b++;
-        let x = 0, y = 0, ws = 0;
-        for (let j = a; j <= b; j++) { const dd = sl[j] - sl[k], wt = Math.exp(-dd * dd / s2); x += pts[j][0] * wt; y += pts[j][1] * wt; ws += wt; }
-        out.push([x / ws, y / ws, pts[k][2]]);
+    const m = Math.min(n, nRaw ?? n);
+    if (m > 2 && W > 0) {
+      const S = sl[m - 1], out = [pts[0]];
+      for (let k = 1, a = 0, b = 0; k < m; k++) {
+        const hb = Math.min(W, sl[k]), hf = Math.min(W, S - sl[k]), h = W, s2 = 2 * (h / 2) * (h / 2);
+        while (sl[a] < sl[k] - hb - 1e-9) a++;
+        while (b + 1 < m && sl[b + 1] <= sl[k] + hf + 1e-9) b++;
+        let w0 = 0, w1 = 0, w2 = 0, w3 = 0, w4 = 0, x0 = 0, x1 = 0, x2 = 0, y0 = 0, y1 = 0, y2 = 0;
+        for (let j = a; j <= b; j++) {
+          const u = sl[j] - sl[k], wt = Math.exp(-u * u / s2), X = pts[j][0], Y = pts[j][1];
+          w0 += wt; w1 += wt * u; w2 += wt * u * u; w3 += wt * u * u * u; w4 += wt * u * u * u * u;
+          x0 += wt * X; x1 += wt * X * u; x2 += wt * X * u * u; y0 += wt * Y; y1 += wt * Y * u; y2 += wt * Y * u * u;
+        }
+        /* value at u = 0 of the fitted parabola (Cramer's rule); too few points for a parabola: keep the point */
+        const det = w0 * (w2 * w4 - w3 * w3) - w1 * (w1 * w4 - w2 * w3) + w2 * (w1 * w3 - w2 * w2);
+        const at0 = (v0, v1, v2) => (v0 * (w2 * w4 - w3 * w3) - w1 * (v1 * w4 - v2 * w3) + w2 * (v1 * w3 - v2 * w2)) / det;
+        if (b - a >= 3 && Math.abs(det) > 1e-9 * (w0 * w2 * w4 + 1e-12)) out.push([at0(x0, x1, x2), at0(y0, y1, y2), pts[k][2]]);
+        else out.push(pts[k]);
       }
-      out.push(pts[n - 1]); pts = out;
+      for (let k = m; k < n; k++) out.push(pts[k]);
+      pts = out;
     }
     const pr = pts.map((q, k) => (pts[Math.max(0, k - 1)][2] + 2 * q[2] + pts[Math.min(n - 1, k + 1)][2]) / 4);
     /* 1. dense samples along a centripetal Catmull-Rom curve, which passes through every point and bends
@@ -201,9 +216,9 @@
     ctx.arc(sx, sy, rad[0], sa + Math.PI, sa + 2 * Math.PI, true); /* round start */
     ctx.closePath();
   }
-  function drawPressure(ctx, pts, width, live = false) {
+  function drawPressure(ctx, pts, width, live = false, nRaw) {
     if (!pts.length) return;
-    const g = inkGeom(pts, width, live);
+    const g = inkGeom(pts, width, live, nRaw);
     if (g.d.length < 2) { ctx.beginPath(); inkHulls(ctx, g, 0, 1); ctx.fill(); return; }
     /* 1. the outline, with smooth edges */
     ctx.beginPath(); inkOutline(ctx, g); ctx.fill("nonzero");
@@ -675,7 +690,7 @@
           const pp = pts.map(q => [q[0] * w, q[1] * h, q[2]]);
           /* while writing, also draw where the Pencil is about to be (if the browser predicts it), so ink keeps up with the tip */
           if (it._pred) for (const q of it._pred) pp.push([q[0] * w, q[1] * h, q[2]]);
-          drawPressure(ctx, pp, it.w * w, !!it._live);
+          drawPressure(ctx, pp, it.w * w, !!it._live, pts.length);
         }
       }
       ctx.globalAlpha = 1;
@@ -714,7 +729,7 @@
       }
       const raw = it.p.map(q => [q[0] * p.w, q[1] * p.h, q[2]]), n = raw.length;
       const pred = (it._pred || []).map(q => [q[0] * p.w, q[1] * p.h, q[2]]);
-      const g = inkGeom(raw.concat(pred), it.w * p.w, true), N = g.d.length;
+      const g = inkGeom(raw.concat(pred), it.w * p.w, true, n), N = g.d.length;
       /* hulls before this are final: their points can't move, and neither can the width averaged over the next K samples */
       /* raw point kf is the first that can still move (the stroke hasn't gone W past it); the curve piece two
          before it is the first whose shape can change */
