@@ -440,6 +440,8 @@ html.side-hidden .side{display:none}
 
 /* ---------- Question bank ---------- */
 .qb{display:grid;grid-template-columns:240px minmax(0,1fr);gap:32px;margin-top:28px;align-items:start}
+.page.wide{max-width:clamp(1120px,80vw,1480px)}
+.page.wide .qb{grid-template-columns:260px minmax(0,1fr);gap:48px}
 .qb-loading,.qb-empty{color:var(--muted);font-size:14px;padding:24px 0}
 .qb-topics{position:sticky;top:64px;max-height:calc(100vh - 80px);overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding-bottom:20px}
 .qb-gname{font-size:11.5px;color:var(--faint);font-weight:500;padding:0 8px 4px}

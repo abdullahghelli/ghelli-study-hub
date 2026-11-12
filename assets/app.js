@@ -584,7 +584,7 @@
           const cv = document.createElement("canvas");
           const vp = page.getViewport({ scale: scale * dpr, offsetX: -(x0 - cx) * scale * dpr, offsetY: -(y0 - cy) * scale * dpr });
           cv.width = Math.round((x1 - x0) * scale * dpr); cv.height = Math.round((y1 - y0) * scale * dpr);
-          cv.style.width = cssW + "px"; cv.style.height = (y1 - y0) * scale + "px";
+          cv.style.width = "100%"; cv.style.height = "auto";   /* follows the column as it widens or narrows */
           frag.appendChild(cv);
           el._task = page.render({ canvasContext: cv.getContext("2d"), viewport: vp });
           try { await el._task.promise; } finally { el._task = null; }
@@ -644,6 +644,7 @@
     $("#app").classList.remove("nav-open");
     if (r.kind !== "qbank") { $("#qb-ws-bar")?.remove(); document.body.classList.remove("ws-on"); }
     const page = $("#page");
+    page.classList.toggle("wide", r.kind === "qbank");   /* the question bank uses the full width of the window */
     if (r.kind === "viewer") {
       /* Old /viewer links from the previous version: go back to where they came from and pop the paper open. */
       const q = new URLSearchParams(location.search), back = q.get("back") || "/";
