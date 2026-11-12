@@ -310,10 +310,15 @@
       if (!this.pages.length) return;
       const keep = this.scrollPos();
       const w = Math.max(240, this.fitWidth() * this.zoom);
+      const V = this.el.getBoundingClientRect();
       this.pages.forEach((p, i) => {
         if (p.hidden) return;
         const h = w * p.base.height / p.base.width;
-        this.release(i);
+        /* pages on screen keep their current image, stretched, until the re-render at the new size swaps in
+           (no blank flash after a pinch); pages off screen are simply released */
+        const r = p.el.getBoundingClientRect();
+        if (p.rendered && r.bottom > V.top && r.top < V.bottom) this.stale(i);
+        else this.release(i);
         p.w = w; p.h = h;
         p.el.style.width = w + "px"; p.el.style.height = h + "px";
         for (const c of [p.pdf, p.ink, p.live]) { c.style.width = w + "px"; c.style.height = h + "px"; }
@@ -328,7 +333,7 @@
     alloc(p, i) {
       if (p.px) return;
       p.px = this.density(p);
-      p.pdf.width = Math.round(p.w * p.px); p.pdf.height = Math.round(p.h * p.px);
+      if (!p.keep) { p.pdf.width = Math.round(p.w * p.px); p.pdf.height = Math.round(p.h * p.px); }
       this.drawInk(p, i);
     }
     /* the ink layer only takes memory on pages that have notes (or are being written on) */
@@ -337,11 +342,18 @@
       if (c.width !== W || c.height !== H) { c.width = W; c.height = H; }
       const ctx = c.getContext("2d"); ctx.setTransform(p.px, 0, 0, p.px, 0, 0); return ctx;
     }
+    /* forget a page's render but leave its image showing; renderPage draws the new one off screen and swaps it in */
+    stale(i) {
+      const p = this.pages[i];
+      if (p.task) { try { p.task.cancel(); } catch (e) {} p.task = null; }
+      p.live.width = 0; p.live.height = 0;
+      p.px = 0; p.rendered = false; p.rendering = false; p.keep = true;
+    }
     release(i) {
       const p = this.pages[i]; if (!p || p.hidden) return;
       if (p.task) { try { p.task.cancel(); } catch (e) {} p.task = null; }
       for (const c of [p.pdf, p.ink, p.live]) { c.width = 0; c.height = 0; }
-      p.px = 0; p.rendered = false; p.rendering = false;
+      p.px = 0; p.rendered = false; p.rendering = false; p.keep = false;
     }
     destroy() {
       this.observer.disconnect();
@@ -355,11 +367,23 @@
       this.alloc(p, i);
       if (p.rendered || p.rendering) return;
       p.rendering = true;
-      const task = p.page.render({ canvasContext: p.pdf.getContext("2d"), viewport: p.page.getViewport({ scale: (p.w / p.base.width) * p.px }) });
+      /* a page still showing its old image renders into a new canvas, swapped in when done */
+      const cv = p.keep ? Object.assign(document.createElement("canvas"), { className: "pdf", width: Math.round(p.w * p.px), height: Math.round(p.h * p.px) }) : p.pdf;
+      const task = p.page.render({ canvasContext: cv.getContext("2d"), viewport: p.page.getViewport({ scale: (p.w / p.base.width) * p.px }) });
       p.task = task;
-      try { await task.promise; if (p.task === task) p.rendered = true; }
+      try {
+        await task.promise;
+        if (p.task === task) {
+          p.rendered = true;
+          if (cv !== p.pdf) {
+            cv.style.width = p.w + "px"; cv.style.height = p.h + "px";
+            const old = p.pdf; p.el.replaceChild(cv, old); p.pdf = cv; old.width = 0; old.height = 0; p.keep = false;
+          }
+        }
+      }
       catch (e) {}
       if (p.task === task) { p.task = null; p.rendering = false; }
+      if (cv !== p.pdf && !p.rendered) { cv.width = 0; cv.height = 0; }
     }
 
     /* ----- pages ----- */
@@ -458,16 +482,42 @@
       };
       el.addEventListener("touchend", finish);
       el.addEventListener("touchcancel", finish);
-      /* stop Safari zooming the whole page */
-      el.addEventListener("gesturestart", e => e.preventDefault());
+      /* trackpad pinch: Chrome, Edge and Firefox send Ctrl + wheel, Safari sends gesture events. Either way the pages
+         are scaled live with a CSS transform around the pointer (smooth, no re-render), and the real zoom is applied
+         once the fingers stop. */
+      let t = null;   // { s, at, timer }
+      const tStart = at => {
+        const w = this.wrap.getBoundingClientRect();
+        t = { s: 1, at, base: this.zoom };
+        this.wrap.style.transformOrigin = `${at.x - w.left}px ${at.y - w.top}px`;
+        this.wrap.style.willChange = "transform";
+      };
+      const tMove = (s, at) => {
+        t.s = Math.min(3 / t.base, Math.max(0.5 / t.base, s));
+        t.at = at || t.at;
+        this.wrap.style.transform = `scale(${t.s})`;
+      };
+      const tEnd = () => {
+        if (!t) return;
+        const { s, at } = t; clearTimeout(t.timer); t = null;
+        this.wrap.style.transform = ""; this.wrap.style.willChange = "";
+        if (Math.abs(s - 1) > 0.01) this.setZoom(this.zoom * s, at);
+      };
       el.addEventListener("wheel", e => {
         if (!e.ctrlKey || !this.wrap) return;
         e.preventDefault();
-        clearTimeout(this.wheelT);
-        this.wheelZ = (this.wheelZ || this.zoom) * Math.exp(-e.deltaY * 0.01);
-        this.wheelAt = { x: e.clientX, y: e.clientY };
-        this.wheelT = setTimeout(() => { this.setZoom(this.wheelZ, this.wheelAt); this.wheelZ = 0; }, 90);
+        if (!t) tStart({ x: e.clientX, y: e.clientY });
+        tMove(t.s * Math.exp(-e.deltaY * 0.01));
+        clearTimeout(t.timer); t.timer = setTimeout(tEnd, 160);
       }, { passive: false });
+      /* Safari on a Mac; on iPhone and iPad the touch events above do the work, so gesture events are only stopped */
+      el.addEventListener("gesturestart", e => {
+        e.preventDefault();
+        if (g || !this.wrap || ("ontouchstart" in window && navigator.maxTouchPoints > 0)) return;
+        tStart({ x: e.clientX, y: e.clientY });
+      });
+      el.addEventListener("gesturechange", e => { e.preventDefault(); if (t && !g) { tMove(e.scale); clearTimeout(t.timer); } });
+      el.addEventListener("gestureend", e => { e.preventDefault(); if (t && !g) tEnd(); });
     }
 
     setTool(t) {
