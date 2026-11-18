@@ -35,7 +35,7 @@ def course(code):
                     groups=[["as", "Topics 1–10"]], names=s.NAMES["as"])
     import spec as s
     order = ["proof", "algebra", "coord", "sequences", "trig", "explog", "diff", "integ", "vectors",
-             "sampling", "data", "prob", "dist", "hyp", "units", "kin", "forces"]
+             "sampling", "data", "prob", "dist", "hyp", "kin", "forces"]
     tname = {"proof": "Proof", "algebra": "Algebra and functions", "coord": "Coordinate geometry", "sequences": "Sequences and series",
              "trig": "Trigonometry", "explog": "Exponentials and logarithms", "diff": "Differentiation", "integ": "Integration",
              "vectors": "Vectors", "sampling": "Statistical sampling", "data": "Data presentation and interpretation",
