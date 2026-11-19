@@ -323,7 +323,11 @@
       const picked = (st.specs[st.topic] || []).filter(c => pts.some(([p]) => p === c));
       /* questions load only once spec points are ticked (topics without a spec list show everything) */
       const waiting = pts.length && !picked.length;
-      const list = picked.length ? inTopic.filter(i => (i.spec || []).some(c => picked.includes(c))) : waiting ? [] : inTopic;
+      /* a question shows only when every point it covers from this topic is ticked: ticking 2.1 alone leaves out
+         questions that also need 2.2 or 2.3 (points from other topics don't count against it) */
+      const own = c => pts.some(([p]) => p === c);
+      const list = picked.length ? inTopic.filter(i => { const mine = (i.spec || []).filter(own); return mine.length && mine.every(c => picked.includes(c)); })
+        : waiting ? [] : inTopic;
       const specBox = pts.length ? `<fieldset class="qb-specfilter"><legend>Spec points${picked.length ? ` <button type="button" class="qb-clear" data-qb-clear>Clear</button>` : ` <button type="button" class="qb-clear" data-qb-all>Select all</button>`}</legend>
           <div class="qb-speclist">${pts.map(([c, name]) => {
             const n = inTopic.filter(i => (i.spec || []).includes(c)).length;
