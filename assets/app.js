@@ -304,7 +304,6 @@
     const years = [...new Set(data.items.map(i => i.year))].sort((a, b) => b - a);
     const groups = data.groups || [["pure", "Pure"], ["stats", "Statistics"], ["mech", "Mechanics"]];
     const st = qbState;
-    st.specs = {};   /* each visit starts with no spec points ticked, so no questions until some are picked */
     qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)) };
     qbWsBar();
     if (!st.topic || !data.topics.some(t => t.id === st.topic)) st.topic = data.topics[0].id;
