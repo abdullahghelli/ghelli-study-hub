@@ -331,7 +331,7 @@
     const years = [...new Set(data.items.map(i => i.year))].sort((a, b) => b - a);
     const groups = data.groups || [["pure", "Pure"], ["stats", "Statistics"], ["mech", "Mechanics"]];
     const st = qbState;
-    qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)) };
+    qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)), parts: store.get("ws:" + src + ":parts", {}) };
     qbWsBar();
     if (!st.topic || !data.topics.some(t => t.id === st.topic)) st.topic = data.topics[0].id;
     /* modular courses (IAL): units are separate papers, so the bank shows one unit's topics at a time */
@@ -379,12 +379,14 @@
       qbObserve(box, data); qbWsAll(box);
     };
     box.onclick = e => {
+      const pt = e.target.closest("[data-qb-pt]");
+      if (pt) { qbPartToggle(pt.dataset.qbPt, pt.dataset.l); qbWsAll(box); return; }
       const wa = e.target.closest("[data-qb-wsall]");
       if (wa) {   /* every question loaded right now, in the order shown */
         const ids = [...box.querySelectorAll("[data-qb-card]")].map(c => c.dataset.qbCard);
         qbWs.ids = wa.dataset.qbWsall === "add" ? qbWs.ids.concat(ids.filter(id => !qbWs.ids.includes(id))) : qbWs.ids.filter(id => !ids.includes(id));
-        store.set(qbWs.key, qbWs.ids); qbWsBar();
-        box.querySelectorAll("[data-qb-ws]").forEach(b => b.outerHTML = qbWsButton(b.dataset.qbWs));
+        if (wa.dataset.qbWsall === "add") ids.forEach(id => delete qbWs.parts[id]);
+        qbWsSave(); qbWsBar(); ids.forEach(qbRefreshCard);
         qbWsAll(box); return;
       }
       const wb = e.target.closest("[data-qb-ws]");
@@ -427,7 +429,34 @@
   }
   /* ----- Worksheet builder: pick questions, then download one PDF with their pages and, at the back,
      their mark scheme pages. Picks are kept per question bank in this browser. ----- */
-  let qbWs = { key: "", data: null, ids: [] };
+  let qbWs = { key: "", data: null, ids: [], parts: {} };
+  /* parts picked for a question on the worksheet (none listed = the whole question) */
+  const qbWsSave = () => { for (const k in qbWs.parts) if (!qbWs.ids.includes(k)) delete qbWs.parts[k]; store.set(qbWs.key, qbWs.ids); store.set(qbWs.key + ":parts", qbWs.parts); };
+  /* the part chips on a card: tap (a) to put only part (a) on the worksheet, tap more to add them */
+  const qbPartsHtml = i => {
+    if (i.part || !(i.parts || []).length) return "";
+    const on = qbWs.ids.includes(i.id), sel = qbWs.parts[i.id];
+    return `<span class="qb-parts" data-qb-parts="${i.id}"><small>Parts</small>${i.parts.map(p => {
+      const lit = on && (!sel || sel.includes(p.l));
+      return `<button type="button" class="qb-pt ${lit ? "on" : ""}" data-qb-pt="${i.id}" data-l="${p.l}" aria-pressed="${lit}">${p.l}</button>`;
+    }).join("")}</span>`;
+  };
+  const qbRefreshCard = id => {
+    document.querySelectorAll(`[data-qb-ws="${CSS.escape(id)}"]`).forEach(b => b.outerHTML = qbWsButton(id));
+    const it = qbWs.data?.items.find(x => x.id === id);
+    document.querySelectorAll(`[data-qb-parts="${CSS.escape(id)}"]`).forEach(b => b.outerHTML = qbPartsHtml(it));
+  };
+  function qbPartToggle(id, l) {
+    const it = qbWs.data.items.find(x => x.id === id), all = it.parts.map(p => p.l);
+    let sel = qbWs.ids.includes(id) ? (qbWs.parts[id] || all.slice()) : [];
+    sel = sel.includes(l) ? sel.filter(x => x !== l) : all.filter(x => x === l || sel.includes(x));
+    if (!sel.length) { qbWs.ids = qbWs.ids.filter(x => x !== id); delete qbWs.parts[id]; }
+    else {
+      if (!qbWs.ids.includes(id)) qbWs.ids.push(id);
+      if (sel.length === all.length) delete qbWs.parts[id]; else qbWs.parts[id] = sel;
+    }
+    qbWsSave(); qbRefreshCard(id); qbWsBar();
+  }
   const qbWsButton = id => {
     const on = qbWs.ids.includes(id);
     return `<button class="qb-btn wsb${on ? " on" : ""}" data-qb-ws="${id}" aria-pressed="${on}">${on ? "✓ On worksheet" : "+ Worksheet"}</button>`;
@@ -435,8 +464,8 @@
   function qbWsToggle(id) {
     const k = qbWs.ids.indexOf(id);
     if (k >= 0) qbWs.ids.splice(k, 1); else qbWs.ids.push(id);
-    store.set(qbWs.key, qbWs.ids);
-    document.querySelectorAll(`[data-qb-ws="${CSS.escape(id)}"]`).forEach(b => b.outerHTML = qbWsButton(id));
+    delete qbWs.parts[id];
+    qbWsSave(); qbRefreshCard(id);
     qbWsBar();
   }
   /* label of the "add all loaded questions" button, from the cards on screen */
@@ -455,13 +484,14 @@
       bar = document.createElement("div"); bar.id = "qb-ws-bar"; bar.className = "qb-ws-bar";
       bar.onclick = e => {
         const b = e.target.closest("button"); if (!b) return;
-        if (b.dataset.ws === "clear") { qbWs.ids = []; store.set(qbWs.key, []); document.querySelectorAll("[data-qb-ws]").forEach(x => x.outerHTML = qbWsButton(x.dataset.qbWs)); qbWsBar(); }
+        if (b.dataset.ws === "clear") { const was = qbWs.ids; qbWs.ids = []; qbWs.parts = {}; qbWsSave(); was.forEach(qbRefreshCard); qbWsBar(); }
         if (b.dataset.ws === "build") qbWsBuild(b);
       };
       document.body.appendChild(bar);
     }
     document.body.classList.add("ws-on");
-    const marks = qbWs.ids.reduce((a, id) => a + ((qbWs.data.items.find(i => i.id === id) || {}).marks || 0), 0);
+    const marks = qbWs.ids.reduce((a, id) => { const it = qbWs.data.items.find(i => i.id === id) || {}, sel = qbWs.parts[id];
+      return a + (sel ? it.parts.filter(p => sel.includes(p.l)).reduce((b, p) => b + (p.m || 0), 0) : it.marks || 0); }, 0);
     bar.innerHTML = `<span><b>Worksheet</b> · ${n} question${n === 1 ? "" : "s"}${marks ? `<i class="wsm" style="font-style:normal"> · ${marks} marks</i>` : ""}</span>
       <button class="qb-btn" data-ws="clear">Clear</button>
       <button class="qb-btn primary" data-ws="build">Build PDF</button>`;
@@ -493,18 +523,49 @@
         pg.drawText(t, { x: cx - bold.widthOfTextAtSize(t, size) / 2, y: cy - size * 0.36, size, font: bold, color: ink });
       };
       /* a question's pages; for a whole question, a first page holding only a sliver of it (a stray "BLANK PAGE" line) is left out */
-      const ref = it => `${it.series} ${it.paper.replace(/^Paper\s*/, "P")} Q${it.q}${it.part ? `(${it.part})` : ""}`;
+      /* parts picked: a part item is its own part; a question with chosen parts uses those; otherwise the whole question */
+      const whole = it => it.part ? data.items.find(x => x.src === it.src && x.q === it.q && !x.part) : it;
+      const pick = it => { const w = whole(it); if (!w || !(w.parts || []).length) return null;
+        const sel = it.part ? [it.part] : qbWs.parts[it.id]; return sel && w.parts.some(p => sel.includes(p.l)) ? { w, sel } : null; };
+      const ref = it => { const pk = pick(it);
+        return `${it.series} ${it.paper.replace(/^Paper\s*/, "P")} Q${it.q}${pk ? pk.sel.map(l => `(${l})`).join("") : it.part ? `(${it.part})` : ""}`; };
       const qPages = it => {
         const h = {}; it.segs.forEach(([p, y0, y1]) => h[p] = (h[p] || 0) + (y1 - y0));
         const ps = Object.keys(h).map(Number).sort((a, b) => a - b);
         return !it.part && ps.length > 1 && h[ps[0]] < 25 ? ps.slice(1) : ps;
       };
+      /* areas of a page to blank out: parts not picked, from where each starts to where the next one starts
+         (the last one up to the question's total line). Only pages holding the opening lines or a picked part are kept. */
+      const hidden = [];
+      const partPages = ({ w, sel }) => {
+        const keep = new Set([...(w.stem || []), ...w.parts.filter(p => sel.includes(p.l)).flatMap(p => p.s)].map(x => x[0]));
+        const m = data.pdfs[w.src], last = w.segs[w.segs.length - 1];
+        const qEnd = last[2] - last[1] < 24 ? [last[0], last[1] - 2] : [last[0], last[2] + 2];
+        const top = pn => Math.min(...w.segs.filter(x => x[0] === pn).map(x => x[1]), m.H - 50) - 3;
+        w.parts.forEach((p, k) => {
+          if (sel.includes(p.l)) return;
+          const a = [p.s[0][0], p.s[0][1] - 3], nx = w.parts[k + 1], b = nx ? [nx.s[0][0], nx.s[0][1] - 3] : qEnd;
+          for (let pn = a[0]; pn <= b[0]; pn++) {
+            if (!keep.has(pn)) continue;
+            const y0 = pn === a[0] ? a[1] : top(pn), y1 = pn === b[0] ? b[1] : m.H - 45;
+            if (y1 > y0) hidden.push({ src: w.src, pn, y0, y1, m });
+          }
+        });
+        return [...keep].sort((x, y) => x - y);
+      };
       for (const [k, it] of items.entries()) {
-        const ps = qPages(it);
+        const pk = pick(it), ps = pk ? partPages(pk) : qPages(it);
         await add(it.src, ps);
         const qp = placed[it.src + "|" + ps[0]];
         /* "Question 1: June 2024 P2 Q8" goes in the page's top margin (drawn once all questions are in) */
         if (qp) (qp.gshLabels ||= []).push(`Question ${k + 1}: ${ref(it)}`);
+      }
+      for (const h of hidden) {
+        const pg = placed[h.src + "|" + h.pn]; if (!pg) continue;
+        const mb = pg.getMediaBox(), x0 = h.m.x0 || h.m.W * 0.092, x1 = h.m.x1 || h.m.W * 0.905;
+        /* past the marks column too, where answer lines end in dots, but short of the page's border */
+        const right = Math.min(x1 + 36, h.m.W - 66);
+        pg.drawRectangle({ x: mb.x + x0 - 10, y: mb.y + mb.height - h.y1, width: right - x0 + 10, height: h.y1 - h.y0, color: rgb(1, 1, 1) });
       }
       for (const pg of Object.values(placed)) {
         if (!pg.gshLabels) continue;
@@ -569,7 +630,7 @@
       <footer class="qb-card-foot">
         ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
         <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open question</button>
-        ${qbWsButton(i.id)}
+        ${qbPartsHtml(i)}${qbWsButton(i.id)}
       </footer>
     </article>`;
   }
