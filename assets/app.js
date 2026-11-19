@@ -347,13 +347,22 @@
           <label class="qb-select"><span>Topic</span><select id="qb-topic">${shown().map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
           <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${waiting ? `${inTopic.length} question${inTopic.length === 1 ? "" : "s"}` : `${list.length}${picked.length ? ` of ${inTopic.length}` : ""} question${list.length === 1 ? "" : "s"}`}</span></div>
           ${specBox}
+          ${list.length ? `<div class="qb-wsall"><button type="button" class="qb-btn" data-qb-wsall></button></div>` : ""}
           ${waiting ? `<p class="qb-empty qb-pick">Tick one or more spec points above to load their questions.</p>` : list.length ? list.map(i => qbCard(i, data)).join("") : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`}
         </section>`;
-      qbObserve(box, data);
+      qbObserve(box, data); qbWsAll(box);
     };
     box.onclick = e => {
+      const wa = e.target.closest("[data-qb-wsall]");
+      if (wa) {   /* every question loaded right now, in the order shown */
+        const ids = [...box.querySelectorAll("[data-qb-card]")].map(c => c.dataset.qbCard);
+        qbWs.ids = wa.dataset.qbWsall === "add" ? qbWs.ids.concat(ids.filter(id => !qbWs.ids.includes(id))) : qbWs.ids.filter(id => !ids.includes(id));
+        store.set(qbWs.key, qbWs.ids); qbWsBar();
+        box.querySelectorAll("[data-qb-ws]").forEach(b => b.outerHTML = qbWsButton(b.dataset.qbWs));
+        qbWsAll(box); return;
+      }
       const wb = e.target.closest("[data-qb-ws]");
-      if (wb) { qbWsToggle(wb.dataset.qbWs); return; }
+      if (wb) { qbWsToggle(wb.dataset.qbWs); qbWsAll(box); return; }
       const ub = e.target.closest("[data-qb-unit]");
       if (ub) { st.topic = (data.topics.find(t => t.group === ub.dataset.qbUnit && filtered(t.id).length) || data.topics.find(t => t.group === ub.dataset.qbUnit)).id; render(); return; }
       const tb = e.target.closest("[data-qb-topic]");
@@ -403,6 +412,14 @@
     store.set(qbWs.key, qbWs.ids);
     document.querySelectorAll(`[data-qb-ws="${CSS.escape(id)}"]`).forEach(b => b.outerHTML = qbWsButton(id));
     qbWsBar();
+  }
+  /* label of the "add all loaded questions" button, from the cards on screen */
+  function qbWsAll(box) {
+    const b = box.querySelector("[data-qb-wsall]"); if (!b) return;
+    const ids = [...box.querySelectorAll("[data-qb-card]")].map(c => c.dataset.qbCard), n = ids.filter(id => qbWs.ids.includes(id)).length;
+    const all = n === ids.length;
+    b.dataset.qbWsall = all ? "remove" : "add"; b.classList.toggle("on", all);
+    b.textContent = all ? `Remove all ${ids.length} from worksheet` : n ? `+ Add the other ${ids.length - n} to worksheet` : `+ Add all ${ids.length} to worksheet`;
   }
   function qbWsBar() {
     let bar = $("#qb-ws-bar");
