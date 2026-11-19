@@ -149,9 +149,26 @@
         </a>`).join("") + `</div>`;
   const paperCount = (l, t, s) => Object.keys(S.papers[K(l, t, s)] || {}).length;
 
+  /* the specs this person uses, chosen on the question bank page (kept on this device) */
+  const qbKeys = () => Object.keys(S.qbanks || {}).filter(k => course(...k.split("/")));
+  const qbMine = () => store.get("qb-mine", []).filter(k => (S.qbanks || {})[k]);
+  let qbPicking = false;
+  const qbLabel = k => { const [l, t, s] = k.split("/"); return `${subj(s).name} ${course(l, t, s).code} · ${track(l, t).full}`; };
+  /* picker: every spec with a question bank, tap to add or remove it from yours */
+  function qbPicker() {
+    const mine = qbMine();
+    return `<div class="qbk-grid qbk-pick">` + qbKeys().map(k => {
+      const [l, t, s] = k.split("/"), c = course(l, t, s), on = mine.includes(k);
+      return `<button type="button" class="qbk s-${subj(s).color}-q ${on ? "on" : ""}" data-qb-mine="${k}" aria-pressed="${on}">
+        <span class="qbk-ic">${on ? `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg>` : icon.bank}</span>
+        <span class="qbk-name">${esc(subj(s).name)} <span class="qbk-code">${esc(c.code)}</span></span>
+        <span class="qbk-sub">${esc(track(l, t).full)}</span>
+      </button>`;
+    }).join("") + `</div>`;
+  }
   /* one card per subject that has a question bank */
-  function qbankCards() {
-    return `<div class="qbk-grid">` + Object.keys(S.qbanks || {}).map(k => {
+  function qbankCards(keys = Object.keys(S.qbanks || {})) {
+    return `<div class="qbk-grid">` + keys.map(k => {
       const [l, t, s] = k.split("/"), c = course(l, t, s); if (!c) return "";
       return `<a class="qbk s-${subj(s).color}-q" href="${url.qbank(l, t, s)}">
         <span class="qbk-ic">${icon.bank}</span>
@@ -278,6 +295,15 @@
   }
 
   /* ---------- Question bank ---------- */
+  /* jump to another spec's bank: your specs first, then the rest */
+  function qbSwitch(cur) {
+    const mine = qbMine(), rest = qbKeys().filter(k => !mine.includes(k));
+    const opt = k => `<option value="${url.qbank(...k.split("/"))}" ${k === cur ? "selected" : ""}>${esc(qbLabel(k))}</option>`;
+    return `<label class="qb-switch"><span>Spec</span><select id="qb-spec-switch" aria-label="Switch spec">${mine.length
+      ? `<optgroup label="Your specs">${mine.map(opt).join("")}</optgroup>${rest.length ? `<optgroup label="Other specs">${rest.map(opt).join("")}</optgroup>` : ""}`
+      : qbKeys().map(opt).join("")}</select></label>`;
+  }
+  document.addEventListener("change", e => { if (e.target.id === "qb-spec-switch") go(e.target.value); });
   const qbCache = {};
   const qbState = store.get("qb", { topic: null, ptype: "all", year: "all" });
   function vQbank({ l, t, s }) {
@@ -287,7 +313,8 @@
     const src = S.qbanks[K(l, t, s)];
     setTimeout(() => qbMount(src, K(l, t, s)), 0);
     return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span> question bank</h1>
-      <div class="facts"><span>${esc(T.full)}</span><span data-qb-count>Loading questions…</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a></div>
+      <div class="facts"><span>${esc(T.full)}</span><span data-qb-count>Loading questions…</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a>
+        ${qbSwitch(K(l, t, s))}</div>
       <div class="qb" id="qb"><div class="qb-loading">Loading the question bank…</div></div>
       <p class="legend owner">${esc(ownerNote(t))}</p>`;
   }
@@ -645,7 +672,16 @@
     }
     if (kind === "question-banks") {
       crumbs([{ t: "Question bank" }]); setTitle("Question bank");
-      return `<div class="home"><h1>Question bank</h1><p class="lede">Every past paper question, sorted by spec topic and checked against its mark scheme. Choose a subject.</p>${qbankCards()}</div>`;
+      const mine = qbMine(), picking = qbPicking || !mine.length, rest = qbKeys().filter(k => !mine.includes(k));
+      if (picking) return `<div class="home"><h1>Question bank</h1>
+        <p class="lede">Every past paper question, sorted by spec topic and checked against its mark scheme. Choose the specs you use; they'll be waiting here next time.</p>
+        ${qbPicker()}
+        <div class="qbk-actions"><button type="button" class="qb-btn primary" data-qb-done ${mine.length ? "" : "disabled"}>${mine.length ? `Done · ${mine.length} spec${mine.length === 1 ? "" : "s"}` : "Pick at least one spec"}</button></div></div>`;
+      return `<div class="home"><h1>Question bank</h1>
+        <p class="lede">Every past paper question, sorted by spec topic and checked against its mark scheme.</p>
+        <div class="qbk-head"><h2>Your specs</h2><button type="button" class="qb-btn" data-qb-edit>Change specs</button></div>
+        ${qbankCards(mine)}
+        ${rest.length ? `<details class="qbk-more"><summary>Other question banks (${rest.length})</summary>${qbankCards(rest)}</details>` : ""}</div>`;
     }
     if (kind === "formula-sheets") {
       crumbs([{ t: "Formula sheets" }]); setTitle("Formula sheets");
@@ -728,6 +764,14 @@
       if (b) { $("#app").classList.remove("nav-open"); window.Viewer.open(b); }
       return;
     }
+    const qm = e.target.closest("[data-qb-mine]");
+    if (qm) {
+      const k = qm.dataset.qbMine, mine = qbMine();
+      store.set("qb-mine", mine.includes(k) ? mine.filter(x => x !== k) : qbKeys().filter(x => x === k || mine.includes(x)));
+      const keep = window.scrollY; qbPicking = true; render(); window.scrollTo(0, keep); return;
+    }
+    if (e.target.closest("[data-qb-edit]")) { qbPicking = true; render(); return; }
+    if (e.target.closest("[data-qb-done]")) { qbPicking = false; render(); window.scrollTo(0, 0); return; }
     const hit = e.target.closest("[data-href]");
     if (hit) { closeSearch(); go(hit.dataset.href); return; }
     const a = e.target.closest("a[href]");

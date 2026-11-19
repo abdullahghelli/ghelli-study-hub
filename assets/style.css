@@ -598,4 +598,18 @@ body.pv-open .qb-ws-bar{display:none}
 .subj-tile.primary{background:var(--accent-soft);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 35%,transparent)}
 .subj-tile.primary b,.subj-tile.primary .arrow{color:var(--accent)}
 .subj-tile.primary:hover{box-shadow:inset 0 0 0 1px var(--accent)}
+.qbk-pick .qbk{text-align:left;font:inherit;cursor:pointer;opacity:.62}
+.qbk-pick .qbk:hover{opacity:.85}
+.qbk-pick .qbk.on{opacity:1;box-shadow:inset 0 0 0 2px var(--sc)}
+.qbk-actions{display:flex;justify-content:flex-end;margin-top:20px}
+.qb-btn.primary{background:var(--fg);color:var(--bg);box-shadow:none;padding:0 16px}
+.qb-btn.primary:disabled{opacity:.4;cursor:default}
+.qbk-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:32px}
+.qbk-head h2{margin:0;font-size:15px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.qbk-head+.qbk-grid{margin-top:14px}
+.qbk-more{margin-top:36px}
+.qbk-more summary{cursor:pointer;font-size:14px;font-weight:500;color:var(--muted)}
+.qbk-more .qbk-grid{margin-top:14px}
+.qb-switch{display:inline-flex;align-items:center;gap:8px;margin-left:auto}
+.qb-switch select{height:30px;border-radius:8px;padding:0 28px 0 10px;font:inherit;font-size:13px;color:var(--fg);background:var(--side);border:1px solid var(--line);max-width:min(320px,70vw)}
 @media (max-width:760px){.qbk-grid,.subj-tiles{grid-template-columns:1fr}}
