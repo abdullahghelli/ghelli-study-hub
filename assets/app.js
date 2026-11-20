@@ -337,7 +337,10 @@
     /* modular courses (IAL): units are separate papers, so the bank shows one unit's topics at a time */
     const unitOf = id => (data.topics.find(t => t.id === id) || {}).group;
     const shown = () => data.modular ? groups.filter(([g]) => g === unitOf(st.topic)) : groups;
-    const filtered = topicId => data.items.filter(i => (!topicId || i.topic === topicId) && (st.year === "all" || i.year === +st.year));
+    /* banks covering several papers (Cambridge 9701: Paper 1 multiple choice, Papers 2 and 4) can show one paper at a time */
+    const paperOf = () => data.papers && data.papers.some(([p]) => p === st.paper) ? st.paper : "all";
+    const filtered = topicId => data.items.filter(i => (!topicId || i.topic === topicId) && (st.year === "all" || i.year === +st.year) && (paperOf() === "all" || i.ptype === paperOf()));
+    const paperSel = id => data.papers ? `<label class="qb-select"><span>Paper</span><select id="${id}">${[["all", "All papers"], ...data.papers].map(([p, name]) => `<option value="${p}" ${paperOf() === p ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : "";
     const render = () => {
       store.set("qb", st);
       const tp = data.topics.find(t => t.id === st.topic);
@@ -362,6 +365,7 @@
       box.innerHTML = `
         <aside class="qb-topics" aria-label="Topics">
           <label class="qb-select"><span>Year</span><select id="qb-year">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
+          ${paperSel("qb-paper")}
           ${data.modular ? `<div class="qb-units" role="group" aria-label="Unit" style="--n:${groups.length}">${groups.map(([g, name]) => `<button class="qb-unit ${g === unitOf(st.topic) ? "on" : ""}" data-qb-unit="${g}" title="${esc(name)}" aria-pressed="${g === unitOf(st.topic)}">${esc(name.split(" ·")[0])}</button>`).join("")}</div>` : ""}
           ${shown().map(([g, name]) => `<div class="qb-group"><div class="qb-gname">${name}</div>${data.topics.filter(t => t.group === g).map(t => {
             const n = filtered(t.id).length;
@@ -370,6 +374,7 @@
         </aside>
         <section class="qb-main">
           <div class="qb-mobile">${data.modular ? `<label class="qb-select"><span>Unit</span><select id="qb-unit">${groups.map(([g, name]) => `<option value="${g}" ${g === unitOf(st.topic) ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : ""}<label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
+          ${paperSel("qb-paper-m")}
           <label class="qb-select"><span>Topic</span><select id="qb-topic">${shown().map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
           <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${waiting ? `${inTopic.length} question${inTopic.length === 1 ? "" : "s"}` : `${list.length}${picked.length ? ` of ${inTopic.length}` : ""} question${list.length === 1 ? "" : "s"}`}</span></div>
           ${specBox}
@@ -379,6 +384,30 @@
       qbObserve(box, data); qbWsAll(box);
     };
     box.onclick = e => {
+      /* multiple choice: pick A-D, then Check */
+      const opt = e.target.closest("[data-qb-opt]");
+      if (opt) {
+        const mc = opt.closest("[data-qb-mcq]");
+        mc.querySelectorAll("[data-qb-opt]").forEach(b => { const on = b === opt; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); b.classList.remove("right", "wrong"); });
+        const cb = mc.querySelector("[data-qb-check]"); if (cb) cb.disabled = false;
+        mc.querySelector(".qb-mcq-res").innerHTML = "";
+        return;
+      }
+      const chk = e.target.closest("[data-qb-check], [data-qb-reveal]");
+      if (chk) {
+        const mc = chk.closest("[data-qb-mcq]"), it = data.items.find(x => x.id === mc.dataset.qbMcq), res = mc.querySelector(".qb-mcq-res");
+        const pick = mc.querySelector("[data-qb-opt].on");
+        if (chk.dataset.qbReveal !== undefined) {
+          mc.querySelectorAll("[data-qb-opt]").forEach(b => b.classList.toggle("right", b.dataset.qbOpt === it.ans));
+          res.innerHTML = `<span class="qb-mcq-ans">The answer is <b>${it.ans}</b></span>`;
+          return;
+        }
+        if (!pick) return;
+        const ok = pick.dataset.qbOpt === it.ans;
+        pick.classList.add(ok ? "right" : "wrong");
+        res.innerHTML = ok ? `<span class="qb-mcq-ok">✓ Correct</span>` : `<span class="qb-mcq-no">✗ Not right</span> <button type="button" class="qb-link" data-qb-reveal>Show answer</button>`;
+        return;
+      }
       const wa = e.target.closest("[data-qb-wsall]");
       if (wa) {   /* every question loaded right now, in the order shown */
         const ids = [...box.querySelectorAll("[data-qb-card]")].map(c => c.dataset.qbCard);
@@ -414,6 +443,7 @@
     };
     box.onchange = e => {
       if (e.target.id === "qb-year" || e.target.id === "qb-year-m") { st.year = e.target.value; render(); }
+      if (e.target.id === "qb-paper" || e.target.id === "qb-paper-m") { st.paper = e.target.value; render(); }
       if (e.target.id === "qb-topic") { st.topic = e.target.value; render(); }
       if (e.target.id === "qb-unit") { const g = e.target.value; st.topic = (data.topics.find(t => t.group === g && filtered(t.id).length) || data.topics.find(t => t.group === g)).id; render(); }
       if (e.target.dataset.qbSpec) {
@@ -566,12 +596,21 @@
         ${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}
       </header>
       <div class="qb-snip" data-qb-snip="${i.id}" style="--ar:${qbAspect(i, data)}"></div>
+      ${i.mcq ? qbMcq(i) : ""}
       <footer class="qb-card-foot">
         ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
         <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open question</button>
         ${qbWsButton(i.id)}
       </footer>
     </article>`;
+  }
+  /* answer buttons for a multiple-choice question (no answer key for the paper: no Check) */
+  function qbMcq(i) {
+    return `<div class="qb-mcq" data-qb-mcq="${i.id}" role="group" aria-label="Your answer to Q${i.q}">
+      ${["A", "B", "C", "D"].map(l => `<button type="button" class="qb-opt" data-qb-opt="${l}" aria-pressed="false">${l}</button>`).join("")}
+      ${i.ans ? `<button type="button" class="qb-btn primary qb-check" data-qb-check disabled>Check</button>` : `<small class="qb-mcq-none">No answer key for this paper yet</small>`}
+      <span class="qb-mcq-res" aria-live="polite"></span>
+    </div>`;
   }
   function qbAspect(i, data) {
     const m = data.pdfs[i.src]; const w = (m.x1 || m.W * 0.905) - (m.x0 || m.W * 0.092);

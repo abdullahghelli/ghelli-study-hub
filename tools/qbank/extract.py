@@ -19,6 +19,9 @@ QNUM = re.compile(r"^(\d{1,2})(\.?)$")
 PART = re.compile(r"^\(([a-h])\)$")
 TOTAL = re.compile(r"\(?Total (?:for Question (\d+) (?:is |= ?)?)?(\d+) marks?\)", re.I)   # older IAL papers: "(Total 8 marks)"
 MARK = re.compile(r"^\((\d{1,2})\)$")
+STOP = None      # optional: a line that ends a question without a total (set by extract_caie.py)
+LOOSE_QNUM = False  # optional: accept a question number that isn't bold when an uppercase word follows (no font info)
+SHIFTED = False  # optional: decode fonts whose text comes out shifted by 29 characters (set by extract_caie.py)
 
 
 def page_words(pdf_path, pdf, pn, ocr_dir):
@@ -35,6 +38,17 @@ def page_words(pdf_path, pdf, pn, ocr_dir):
             for c in cids:
                 n = int(re.fullmatch(r"\(cid:(\d+)\)", c["text"]).group(1))
                 c["text"] = chr(n + 29) if 3 <= n < 98 else "?"
+    if SHIFTED:
+        # some Cambridge papers map every glyph 29 places down ("&DPEULGJH" for "Cambridge"): shift fonts back
+        # when that turns them into ordinary English
+        low = lambda t: sum(ch.islower() for ch in t) / max(1, sum(not ch.isspace() for ch in t))
+        for cs in by_font.values():
+            t = "".join(c["text"] for c in cs)
+            u = "".join(chr(ord(ch) + 29) if 3 <= ord(ch) < 98 else ch for ch in t)
+            # shifted digits fall below the printable range; shifted lowercase text turns into capitals and symbols
+            if any(3 <= ord(ch) < 32 for ch in t) or (len(t) > 20 and low(t) < 0.1 and low(u) > 0.5):
+                for c in cs:
+                    c["text"] = "".join(chr(ord(ch) + 29) if 3 <= ord(ch) < 98 else ch for ch in c["text"])
     words = []
     for w in pg.extract_words(extra_attrs=["fontname", "upright"], keep_blank_chars=False):
         # rotated "DO NOT WRITE IN THIS AREA" margin text (maths papers set it in Myriad; chemistry papers use Myriad for everything)
@@ -150,11 +164,14 @@ def parse_paper(pdf_path):
             first = ws[0]
             text = " ".join(w["text"] for w in ws)
             m = QNUM.match(first["text"])
-            if m and first["x0"] < 0.135 * W and (m.group(2) or first["bold"] or (first.get("ocr") and len(ws) > 2 and ws[1]["text"][:1].isupper())) and first["top"] < 0.9 * H:
+            loose = (first.get("ocr") or LOOSE_QNUM) and (len(ws) == 1 or ws[1]["x0"] > first["x0"] + 12) and first["x0"] < 0.115 * W
+            if m and first["x0"] < 0.135 * W and (m.group(2) or first["bold"] or loose) and first["top"] < 0.9 * H:
                 events.append(("q", int(m.group(1)), pn, first["top"], first["x0"]))
             mp = PART.match(first["text"])
             if mp and first["x0"] < 0.16 * W:
                 events.append(("part", mp.group(1), pn, first["top"]))
+            if STOP and STOP.search(text):
+                events.append(("stop", None, pn, first["top"]))
             mt = TOTAL.search(text)
             if mt:
                 events.append(("total", (int(mt.group(1)) if mt.group(1) else None, int(mt.group(2))), pn, min(0.93 * H, max(w["bottom"] for w in ws))))
@@ -191,6 +208,11 @@ def parse_paper(pdf_path):
                 last_end = cur["end"]
             cur = dict(q=e[1], start=(e[2], e[3] - 4), parts=[], marks=None, part_marks=[])
             expected += 1
+        elif cur and e[0] == "stop" and cur["marks"] is None:
+            cur["end"] = (e[2], e[3] - 4)
+            questions.append(cur)
+            last_end = cur["end"]
+            cur = None
         elif cur and e[0] == "part":
             if not cur["parts"] or e[1] > cur["parts"][-1][0]:
                 cur["parts"].append((e[1], e[2], e[3] - 4))
