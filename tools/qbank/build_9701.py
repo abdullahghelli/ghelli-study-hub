@@ -112,6 +112,26 @@ def main():
                     it["ans"] = key[q["q"] - 1]
             items.append(it)
 
+    # the same question set in more than one variant (whole papers, e.g. Oct/Nov 11 and 13, or single questions):
+    # keep the first copy (lowest variant)
+    # compared within one series and paper type; extraction can differ a little between copies, so near matches count
+    from difflib import SequenceMatcher
+    norm = lambda t: re.sub(r"[^a-z]", "", re.sub(r"^\s*\d{1,2}\s|\([a-z]{1,4}\)", " ", t.lower()))[:300]
+    seen, kept, dups = {}, [], 0
+    for it in sorted(items, key=lambda i: (i["year"], i["series"], i["ptype"], i["paper"], i["q"])):
+        k, t = (it["series"], it["ptype"]), norm(it["text"])
+        if len(t) > 40 and any(SequenceMatcher(None, t, u).ratio() > 0.85 for u in seen.get(k, [])):
+            dups += 1; continue
+        seen.setdefault(k, []).append(t); kept.append(it)
+    # a paper that is mostly a copy of another variant is a copy throughout (its few unmatched questions were read a
+    # little differently, e.g. a diagram with labels): leave it out whole
+    from collections import Counter
+    total, left = Counter(i["src"] for i in items), Counter(i["src"] for i in kept)
+    copies = {src for src in total if left[src] < 0.4 * total[src]}
+    dups += sum(left[src] for src in copies)
+    items = sorted((i for i in kept if i["src"] not in copies), key=lambda i: (i["src"], i["q"]))
+    print(dups, "repeated questions left out")
+
     used = {c for it in items for c in it["spec"]}
     out_data = dict(spec="9701", label="Cambridge International AS & A Level Chemistry 9701",
                     groups=[list(g) for g in GROUPS],
