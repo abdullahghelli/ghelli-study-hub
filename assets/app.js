@@ -241,6 +241,14 @@
     return h;
   }
 
+  /* the subject's progress: questions tried in its question bank (once some are), otherwise topics marked done */
+  function qbSubjProg(l, t, s, c, nDone) {
+    const sum = Object.values(store.get("qbsum:" + K(l, t, s), {}) || {});
+    const tried = sum.reduce((a, x) => a + x[0], 0), total = sum.reduce((a, x) => a + x[1], 0), got = sum.reduce((a, x) => a + x[2], 0);
+    if (tried) return `<div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(tried / total) * 100}%"></i></div><span><b>${tried}</b> of ${total} questions tried · ${got} got it</span></div>`;
+    return `<div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(nDone / c.topics.length) * 100}%"></i></div><span>${nDone}/${c.topics.length} done</span></div>`;
+  }
+
   function vSubject({ l, t, s }) {
     const c = course(l, t, s), T = track(l, t), name = `${T.full} ${subj(s).name}`;
     crumbs([...trackCrumbs(l, t), { t: subj(s).name }]); setTitle(name);
@@ -251,13 +259,15 @@
         ${(S.qbanks || {})[K(l, t, s)] ? `<a class="subj-tile primary" href="${url.qbank(l, t, s)}">${icon.bank}<span><b>Question bank</b><small>Past paper questions by spec topic</small></span>${icon.arrow}</a>` : ""}
         <a class="subj-tile" href="${url.papers(l, t, s)}">${icon.paper}<span><b>Past papers</b><small>Question papers and mark schemes</small></span>${icon.arrow}</a>
       </div>
-      <div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(nDone / c.topics.length) * 100}%"></i></div><span>${nDone}/${c.topics.length} done</span></div>
+      ${qbSubjProg(l, t, s, c, nDone)}
       <h2>Topics</h2><div class="list">` +
       c.topics.map((tp, i) => {
         const n = i + 1, k = K(l, t, s, n), live = liveCount(l, t, s, n);
         const head = (c.topicGroups || []).find(([from]) => from === n);
         const qb = (S.qbanks || {})[K(l, t, s)] ? `<a class="row-q" href="${url.qbank(l, t, s)}?topic=${n}" aria-label="Questions on ${esc(tp)}">Questions →</a>` : "";
-        return `${head ? `<div class="list-head">${esc(head[1])}</div>` : ""}<div class="row-wrap"><a class="row" href="${url.topic(l, t, s, n)}"><span class="num s-${subj(s).color}-t">${String(n).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span><span class="aside hide-sm">${live ? `${live} file${live > 1 ? "s" : ""}` : ""}</span><span class="tick ${done[k] ? "on" : ""}" aria-label="${done[k] ? "Done" : "Not done"}"></span></a>${qb}</div>`;
+        const ts = (store.get("qbsum:" + K(l, t, s), {}) || {})[n];
+        const tbar = ts && ts[0] ? `<span class="row-prog" title="${ts[0]} of ${ts[1]} questions tried, ${ts[2]} got it"><i style="width:${(ts[0] / ts[1]) * 100}%"></i></span>` : "";
+        return `${head ? `<div class="list-head">${esc(head[1])}</div>` : ""}<div class="row-wrap"><a class="row" href="${url.topic(l, t, s, n)}"><span class="num s-${subj(s).color}-t">${String(n).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span><span class="aside hide-sm">${live ? `${live} file${live > 1 ? "s" : ""}` : ""}</span>${tbar}<span class="tick ${done[k] ? "on" : ""}" aria-label="${done[k] ? "Done" : "Not done"}"></span></a>${qb}</div>`;
       }).join("") + `</div>`;
   }
 
@@ -340,7 +350,7 @@
   }
   /* the bank topic that matches topic n of the course's own topic list: same name (topic n itself when names repeat,
      e.g. 9701's AS and A Level "Equilibria"), else the topic or unit sharing the most words */
-  function qbTopicFor(data, key, n) {
+  function qbTopicFor(data, key, n, whole) {
     const name = (course(...key.split("/")).topics || [])[n - 1]; if (!name) return null;
     const words = x => (x.toLowerCase().match(/[a-z0-9]+/g) || []).filter(w => !["and", "of", "the", "in", "a"].includes(w));
     const same = data.topics.filter(t => t.name.toLowerCase() === name.toLowerCase());
@@ -348,8 +358,9 @@
     const want = words(name), score = x => { const w = words(x); return want.filter(v => w.includes(v)).length / want.length; };
     let best = null, top = 0.5;
     for (const t of data.topics) if (score(t.name) > top) { best = t.id; top = score(t.name); }
-    for (const [g, gname] of data.groups || []) if (score(gname) > top) { best = (data.topics.find(t => t.group === g) || {}).id || best; top = score(gname); }
-    return best;
+    let unit = null;
+    for (const [g, gname] of data.groups || []) if (score(gname) > top) { best = (data.topics.find(t => t.group === g) || {}).id || best; unit = g; top = score(gname); }
+    return whole && unit ? { group: unit } : best;
   }
   async function qbMount(src, key) {
     const box = $("#qb"); if (!box) return;
@@ -364,6 +375,8 @@
     const years = [...new Set(data.items.map(i => i.year))].sort((a, b) => b - a);
     const groups = data.groups || [["pure", "Pure"], ["stats", "Statistics"], ["mech", "Mechanics"]];
     const st = qbState;
+    qbProg = { key: "qbp:" + src, map: store.get("qbp:" + src, {}) };
+    st.show = ["all", "new", "weak", "got"].includes(st.show) ? st.show : "all";
     qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)) };
     qbWsBar();
     const want = +new URLSearchParams(location.search).get("topic");
@@ -396,12 +409,16 @@
       /* a question shows only when every point it covers from this topic is ticked: ticking 2.1 alone leaves out
          questions that also need 2.2 or 2.3 (points from other topics don't count against it) */
       const own = c => pts.some(([p]) => p === c);
-      const list = picked.length ? inTopic.filter(i => { const mine = (i.spec || []).filter(own); return mine.length && mine.every(c => picked.includes(c)); })
+      const bySpec = picked.length ? inTopic.filter(i => { const mine = (i.spec || []).filter(own); return mine.length && mine.every(c => picked.includes(c)); })
         : waiting ? [] : inTopic;
+      /* Show: every question, ones not tried yet, ones missed or partly right (to go back over), or ones got */
+      const shows = { all: () => true, new: i => !qbProg.map[i.id], weak: i => ["miss", "part"].includes(qbProg.map[i.id]), got: i => qbProg.map[i.id] === "got" };
+      const list = bySpec.filter(shows[st.show]);
+      qbSummary(data, key);
       const specBox = pts.length ? `<fieldset class="qb-specfilter"><legend>Spec points${picked.length ? ` <button type="button" class="qb-clear" data-qb-clear>Clear</button>` : ` <button type="button" class="qb-clear" data-qb-all>Select all</button>`}</legend>
           <div class="qb-speclist">${pts.map(([c, name]) => {
             const n = inTopic.filter(i => (i.spec || []).includes(c)).length;
-            return `<label class="qb-specopt ${n ? "" : "none"}"><input type="checkbox" id="qb-spec-${c.replace(".", "-")}" data-qb-spec="${c}" ${picked.includes(c) ? "checked" : ""} ${n ? "" : "disabled"}><b>${c}</b><span>${esc(name)}</span><small>${n}</small></label>`;
+            return `<label class="qb-specopt ${n ? "" : "none"}"><input type="checkbox" id="qb-spec-${c.replace(".", "-")}" data-qb-spec="${c}" ${picked.includes(c) ? "checked" : ""} ${n ? "" : "disabled"}><b>${c}</b><span>${esc(name)}</span><small data-qb-sprog="${c}">${qbSpecProg(inTopic, c)}</small></label>`;
           }).join("")}</div></fieldset>` : "";
       box.innerHTML = `
         <aside class="qb-topics" aria-label="Topics">
@@ -410,21 +427,27 @@
           ${data.modular ? `<div class="qb-units" role="group" aria-label="Unit" style="--n:${groups.length}">${groups.map(([g, name]) => `<button class="qb-unit ${g === unitOf(st.topic) ? "on" : ""}" data-qb-unit="${g}" title="${esc(name)}" aria-pressed="${g === unitOf(st.topic)}">${esc(name.split(" ·")[0])}</button>`).join("")}</div>` : ""}
           ${shown().map(([g, name]) => `<div class="qb-group"><div class="qb-gname">${name}</div>${data.topics.filter(t => t.group === g).map(t => {
             const n = filtered(t.id).length;
-            return `<button class="qb-topic ${t.id === st.topic ? "on" : ""}" data-qb-topic="${t.id}" ${n ? "" : "disabled"}><span>${t.num ? `<i class="qb-num">${t.num}</i>` : ""}${esc(t.name)}</span><small>${n}</small></button>`;
+            return `<button class="qb-topic ${t.id === st.topic ? "on" : ""}" data-qb-topic="${t.id}" ${n ? "" : "disabled"}><span>${t.num ? `<i class="qb-num">${t.num}</i>` : ""}${esc(t.name)}</span><small>${n}</small><i class="qb-tbar" data-qb-tprog="${t.id}">${qbBar(filtered(t.id))}</i></button>`;
           }).join("")}</div>`).join("")}
         </aside>
         <section class="qb-main">
           <div class="qb-mobile">${data.modular ? `<label class="qb-select"><span>Unit</span><select id="qb-unit">${groups.map(([g, name]) => `<option value="${g}" ${g === unitOf(st.topic) ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : ""}<label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
           ${paperSel("qb-paper-m")}
           <label class="qb-select"><span>Topic</span><select id="qb-topic">${shown().map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
-          <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${waiting ? `${inTopic.length} question${inTopic.length === 1 ? "" : "s"}` : `${list.length}${picked.length ? ` of ${inTopic.length}` : ""} question${list.length === 1 ? "" : "s"}`}</span></div>
+          <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${waiting ? `${inTopic.length} question${inTopic.length === 1 ? "" : "s"}` : `${list.length}${picked.length || st.show !== "all" ? ` of ${inTopic.length}` : ""} question${list.length === 1 ? "" : "s"}`}</span></div>
+          <p class="qb-tprog" data-qb-hprog>${qbHeadProg(inTopic)}</p>
           ${specBox}
+          ${waiting ? "" : `<div class="qb-show" role="group" aria-label="Show">${[["all", "All"], ["new", "Not tried"], ["weak", "Missed or partly"], ["got", "Got it"]].map(([v, l]) => `<button type="button" class="qb-showbtn ${st.show === v ? "on" : ""}" data-qb-show="${v}" aria-pressed="${st.show === v}">${l}</button>`).join("")}</div>`}
           ${list.length ? `<div class="qb-wsall"><button type="button" class="qb-btn" data-qb-wsall></button></div>` : ""}
-          ${waiting ? `<p class="qb-empty qb-pick">Tick one or more spec points above to load their questions.</p>` : list.length ? list.map(i => qbCard(i, data)).join("") : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`}
+          ${waiting ? `<p class="qb-empty qb-pick">Tick one or more spec points above to load their questions.</p>` : list.length ? list.map(i => qbCard(i, data)).join("") : (st.show !== "all" && bySpec.length ? `<p class="qb-empty">${{ new: "You've tried every question here.", weak: "Nothing missed here. 🎉", got: "None marked Got it yet." }[st.show]}</p>` : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`)}
         </section>`;
       qbObserve(box, data); qbWsAll(box);
     };
     box.onclick = e => {
+      const sh = e.target.closest("[data-qb-show]");
+      if (sh) { st.show = sh.dataset.qbShow; render(); return; }
+      const mk = e.target.closest("[data-qb-st]");
+      if (mk) { const id = mk.closest("[data-qb-card]").dataset.qbCard; qbSetProg(id, qbProg.map[id] === mk.dataset.qbSt ? null : mk.dataset.qbSt, box, data, key); return; }
       /* multiple choice: pick A-D, then Check */
       const opt = e.target.closest("[data-qb-opt]");
       if (opt) {
@@ -445,6 +468,7 @@
         }
         if (!pick) return;
         const ok = pick.dataset.qbOpt === it.ans;
+        qbSetProg(it.id, ok ? "got" : "miss", box, data, key);
         pick.classList.add(ok ? "right" : "wrong");
         res.innerHTML = ok ? `<span class="qb-mcq-ok">✓ Correct</span>` : `<span class="qb-mcq-no">✗ Not right</span> <button type="button" class="qb-link" data-qb-reveal>Show answer</button>`;
         return;
@@ -629,21 +653,74 @@
   function qbCard(i, data) {
     /* spec points the question covers, e.g. "8.5 Integration by substitution and by parts" */
     const spec = (i.spec || []).map(c => `<span class="qb-spec"><b>${c}</b> ${esc(((data.points || {})[GROUP_OF(i, data)] || {})[c] || "")}</span>`).join("");
-    return `<article class="qb-card" data-qb-card="${i.id}">
+    return `<article class="qb-card ${qbProg.map[i.id] ? "st-" + qbProg.map[i.id] : ""}" data-qb-card="${i.id}">
       <header class="qb-card-head">
         <div class="qb-title"><b>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` <span class="qb-part">part (${i.part})</span>` : ""}</b>
           ${spec ? `<div class="qb-specs">${spec}</div>` : ""}
           ${i.part ? `<small>Shown with the question's opening lines</small>` : ""}</div>
-        ${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}
+        <span class="qb-headr"><span class="qb-stbadge" data-qb-badge>${qbBadge(i.id)}</span>${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}</span>
       </header>
       <div class="qb-snip" data-qb-snip="${i.id}" style="--ar:${qbAspect(i, data)}"></div>
       ${i.mcq ? qbMcq(i) : ""}
+      ${i.mcq ? "" : `<div class="qb-markrow"><span>How did it go?</span>${[["got", "✓ Got it"], ["part", "◐ Partly"], ["miss", "✗ Missed it"]].map(([v, l]) => `<button type="button" class="qb-stbtn st-${v} ${qbProg.map[i.id] === v ? "on" : ""}" data-qb-st="${v}" aria-pressed="${qbProg.map[i.id] === v}">${l}</button>`).join("")}</div>`}
       <footer class="qb-card-foot">
         ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
         <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open question</button>
         ${qbWsButton(i.id)}
       </footer>
     </article>`;
+  }
+  /* ----- Progress: each question marked Got it / Partly / Missed it (multiple choice: from Check), kept per bank
+     in this browser. Shown on cards, topics, spec points and the subject page. ----- */
+  let qbProg = { key: "", map: {} };
+  const QB_ST = { got: "Got it", part: "Partly", miss: "Missed it" };
+  const qbBadge = id => qbProg.map[id] ? `<span class="b-${qbProg.map[id]}">${QB_ST[qbProg.map[id]]}</span>` : "";
+  const qbCounts = items => { const c = { got: 0, part: 0, miss: 0, n: items.length }; items.forEach(i => { const v = qbProg.map[i.id]; if (v) c[v]++; }); c.tried = c.got + c.part + c.miss; return c; };
+  /* a thin bar: green got it, amber partly, red missed */
+  function qbBar(items) {
+    const c = qbCounts(items); if (!c.tried || !c.n) return "";
+    return ["got", "part", "miss"].map(v => c[v] ? `<b class="b-${v}" style="width:${(c[v] / c.n) * 100}%"></b>` : "").join("");
+  }
+  function qbHeadProg(items) {
+    const c = qbCounts(items); if (!c.tried) return "";
+    return `<span class="qb-bar">${qbBar(items)}</span><span><b>${c.tried}</b> of ${c.n} tried · ${c.got} got it${c.part ? ` · ${c.part} partly` : ""}${c.miss ? ` · ${c.miss} missed` : ""}</span>`;
+  }
+  function qbSpecProg(items, code) {
+    const its = items.filter(i => (i.spec || []).includes(code)), c = qbCounts(its);
+    if (!c.tried) return `${its.length}`;
+    const dot = c.miss ? "miss" : c.part ? "part" : "got";
+    return `<i class="qb-dot b-${dot}" title="${c.tried} tried, ${c.got} got it"></i>${c.tried}/${its.length}`;
+  }
+  /* per course topic (the subject page's list): [tried, total, got], kept for the subject page */
+  function qbSummary(data, key) {
+    const c = course(...key.split("/")); if (!c) return;
+    const sum = {};
+    c.topics.forEach((_, i) => {
+      /* a course topic that is a whole unit (IAL "Pure Mathematics 3") counts every topic in it */
+      const t = qbTopicFor(data, key, i + 1, true); if (!t) return;
+      const ids = t.group ? new Set(data.topics.filter(x => x.group === t.group).map(x => x.id)) : new Set([t]);
+      const k = qbCounts(data.items.filter(it => ids.has(it.topic))); sum[i + 1] = [k.tried, k.n, k.got];
+    });
+    store.set("qbsum:" + key, sum);
+  }
+  function qbSetProg(id, v, box, data, key) {
+    if (v) qbProg.map[id] = v; else delete qbProg.map[id];
+    store.set(qbProg.key, qbProg.map);
+    const card = box.querySelector(`[data-qb-card="${CSS.escape(id)}"]`);
+    if (card) {
+      card.classList.remove("st-got", "st-part", "st-miss"); if (v) card.classList.add("st-" + v);
+      card.querySelector("[data-qb-badge]").innerHTML = qbBadge(id);
+      card.querySelectorAll("[data-qb-st]").forEach(b => { const on = b.dataset.qbSt === v; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+    }
+    /* refresh the bars and counts in place (re-drawing the page would redraw every question) */
+    const st = qbState, inTopic = data.items.filter(i => i.topic === st.topic && (st.year === "all" || i.year === +st.year) && (!data.papers || !st.paper || st.paper === "all" || i.ptype === st.paper));
+    box.querySelectorAll("[data-qb-tprog]").forEach(el => {
+      const tid = el.dataset.qbTprog;
+      el.innerHTML = qbBar(data.items.filter(i => i.topic === tid && (st.year === "all" || i.year === +st.year) && (!data.papers || !st.paper || st.paper === "all" || i.ptype === st.paper)));
+    });
+    box.querySelectorAll("[data-qb-sprog]").forEach(el => el.innerHTML = qbSpecProg(inTopic, el.dataset.qbSprog));
+    const h = box.querySelector("[data-qb-hprog]"); if (h) h.innerHTML = qbHeadProg(inTopic);
+    qbSummary(data, key);
   }
   /* answer buttons for a multiple-choice question (no answer key for the paper: no Check) */
   function qbMcq(i) {
