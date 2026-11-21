@@ -596,8 +596,10 @@
     let t = $("#qb-toast"); if (!t) { t = document.createElement("div"); t.id = "qb-toast"; t.className = "qb-toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
     t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2600);
   }
-  /* before building: title, a cover page, a footer line on every page, and whether to include the mark schemes.
+  /* before building: title, a cover page and whether to include the mark schemes.
      The choices are remembered on this device. */
+  /* every worksheet carries the site owner's name, bottom right of every page */
+  const WS_FOOTER = "Abdullah Ghelli";
   function qbWsDialog() {
     const o = store.get("ws-opts", { cover: true, ms: true, footer: "" });
     const data = qbWs.data, topic = (data.topics.find(t => t.id === qbState.topic) || {}).name || "";
@@ -605,7 +607,6 @@
     dlg.innerHTML = `<form class="qb-dlg" role="dialog" aria-modal="true" aria-labelledby="qb-dlg-h">
       <h2 id="qb-dlg-h">Build worksheet</h2>
       <label class="qb-field"><span>Title</span><input name="title" value="${esc(o.titleFor === data.spec ? o.title : `${data.spec} · ${topic}`)}" maxlength="80"></label>
-      <label class="qb-field"><span>Footer on every page <small>e.g. your name or school</small></span><input name="footer" value="${esc(o.footer || "")}" maxlength="60" placeholder="Leave blank for none"></label>
       <label class="qb-check"><input type="checkbox" name="cover" ${o.cover ? "checked" : ""}><span><b>Cover page</b><small>Title, name and date lines, total marks, suggested time and the list of questions</small></span></label>
       <label class="qb-check"><input type="checkbox" name="ms" ${o.ms ? "checked" : ""}><span><b>Mark schemes at the back</b><small>Untick for a student copy without answers</small></span></label>
       <div class="qb-dlg-btns"><button type="button" class="qb-btn" data-x>Cancel</button><button type="submit" class="qb-btn primary">Build PDF</button></div>
@@ -617,7 +618,7 @@
     dlg.onkeydown = e => { if (e.key === "Escape") close(); };
     f.onsubmit = e => {
       e.preventDefault();
-      const opts = { title: f.title.value.trim(), titleFor: data.spec, footer: f.footer.value.trim(), cover: f.cover.checked, ms: f.ms.checked };
+      const opts = { title: f.title.value.trim(), titleFor: data.spec, footer: WS_FOOTER, cover: f.cover.checked, ms: f.ms.checked };
       store.set("ws-opts", opts); close();
       qbWsBuild($("#qb-ws-bar [data-ws=build]"), opts);
     };
@@ -641,7 +642,8 @@
       <button class="qb-btn" data-ws="clear">Clear</button>
       <button class="qb-btn primary" data-ws="build">Build PDF</button>`;
   }
-  async function qbWsBuild(btn, opts = { cover: false, ms: true, footer: "", title: "" }) {
+  async function qbWsBuild(btn, opts = { cover: false, ms: true, title: "" }) {
+    opts = { ...opts, footer: WS_FOOTER };
     const data = qbWs.data, items = qbWs.ids.map(id => data.items.find(i => i.id === id)).filter(Boolean);
     if (!items.length) return;
     btn.disabled = true; btn.textContent = "Building…";
