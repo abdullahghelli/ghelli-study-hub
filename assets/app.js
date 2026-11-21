@@ -269,8 +269,11 @@
       <h1>${esc(title)}</h1>
       <button class="done-toggle ${done[k] ? "on" : ""}" data-act="done" data-k="${k}"><span class="tick ${done[k] ? "on" : ""}"></span>${done[k] ? "Done" : "Mark as done"}</button>
       ${(S.qbanks || {})[K(l, t, s)] ? `<div class="subj-tiles"><a class="subj-tile primary" href="${url.qbank(l, t, s)}?topic=${n}">${icon.bank}<span><b>Practise this topic</b><small>Past paper questions on ${esc(title)}</small></span>${icon.arrow}</a></div>` : ""}`;
-    for (const g of resources(l, t, s, n)) {
-      h += `<section class="res-group"><h2>${g.label}<span>${g.items.filter(i => i.href).length}/${g.items.length}</span></h2><div class="list">` +
+    /* only what's there: items without a file, and sections with none, are left out until they arrive */
+    for (const g0 of resources(l, t, s, n)) {
+      const g = { ...g0, items: g0.items.filter(i => i.href) };
+      if (!g.items.length) continue;
+      h += `<section class="res-group"><h2>${g.label}</h2><div class="list">` +
         g.items.map(it => it.href
           ? (isPdf(it.href)
               ? `<a class="row" ${pdfAttrs({ src: it.href, title: it.title, desc: `${title} · ${T.full} ${subj(s).name}` })}><span class="ftype">${it.kind}</span><span class="grow">${esc(it.title)}</span><span class="open">Open</span></a>`
