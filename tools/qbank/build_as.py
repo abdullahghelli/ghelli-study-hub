@@ -114,6 +114,10 @@ def main():
                          text=clean(q["text"])[:400], checked=True)
             if o.get("parts"):
                 whole["partTopics"] = {lab: v["topic"] for lab, v in o["parts"].items()}
+            ps = [p for p in q.get("parts") or [] if p.get("segs")]
+            if len(ps) >= 2:   # part positions, so a worksheet can include just the parts picked (see add_parts.py)
+                whole["stem"] = q.get("stem") or []
+                whole["parts"] = [dict(l=p["label"], m=p["marks"], s=p["segs"]) for p in ps]
             items.append(whole)
             parts = {p["label"]: p for p in q.get("parts") or []}
             for lab, v in (o.get("parts") or {}).items():

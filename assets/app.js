@@ -377,7 +377,7 @@
     const st = qbState;
     qbProg = { key: "qbp:" + src, map: store.get("qbp:" + src, {}) };
     st.show = ["all", "new", "weak", "got"].includes(st.show) ? st.show : "all";
-    qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)) };
+    qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)), parts: store.get("ws:" + src + ":parts", {}) };
     qbWsBar();
     const want = +new URLSearchParams(location.search).get("topic");
     if (want) {
@@ -438,12 +438,30 @@
           <p class="qb-tprog" data-qb-hprog>${qbHeadProg(inTopic)}</p>
           ${specBox}
           ${waiting ? "" : `<div class="qb-show" role="group" aria-label="Show">${[["all", "All"], ["new", "Not tried"], ["weak", "Missed or partly"], ["got", "Got it"]].map(([v, l]) => `<button type="button" class="qb-showbtn ${st.show === v ? "on" : ""}" data-qb-show="${v}" aria-pressed="${st.show === v}">${l}</button>`).join("")}</div>`}
-          ${list.length ? `<div class="qb-wsall"><button type="button" class="qb-btn" data-qb-wsall></button></div>` : ""}
+          ${list.length ? `<div class="qb-wsall"><span class="qb-fill"><label for="qb-fill-n">Fill a worksheet to</label><input id="qb-fill-n" type="number" min="1" max="300" value="${store.get("ws-fill", 40)}" inputmode="numeric"><span>marks</span><button type="button" class="qb-btn" data-qb-fill>Fill</button></span><button type="button" class="qb-btn" data-qb-wsall></button></div>` : ""}
           ${waiting ? `<p class="qb-empty qb-pick">Tick one or more spec points above to load their questions.</p>` : list.length ? list.map(i => qbCard(i, data)).join("") : (st.show !== "all" && bySpec.length ? `<p class="qb-empty">${{ new: "You've tried every question here.", weak: "Nothing missed here. 🎉", got: "None marked Got it yet." }[st.show]}</p>` : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`)}
         </section>`;
       qbObserve(box, data); qbWsAll(box);
     };
     box.onclick = e => {
+      if (e.target.closest("[data-qb-fill]")) {
+        /* questions shown here, in random order, until the marks reach the target (never a question that would go well past it) */
+        const n = Math.max(1, Math.min(300, +box.querySelector("#qb-fill-n").value || 40)); store.set("ws-fill", n);
+        const have = qbWs.ids.reduce((a, id) => a + qbWsMarks(id), 0);
+        const pool = [...box.querySelectorAll("[data-qb-card]")].map(c => c.dataset.qbCard).filter(id => !qbWs.ids.includes(id));
+        for (let k = pool.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [pool[k], pool[j]] = [pool[j], pool[k]]; }
+        let total = have; const added = [];
+        for (const id of pool) {
+          const m = (data.items.find(x => x.id === id) || {}).marks || 1;
+          if (total + m <= n) { added.push(id); total += m; }
+          if (total >= n) break;
+        }
+        qbWs.ids = qbWs.ids.concat(added); qbWsSave(); qbWsBar(); added.forEach(qbRefreshCard); qbWsAll(box);
+        qbToast(added.length ? `Added ${added.length} question${added.length === 1 ? "" : "s"} · worksheet now ${total} marks` : total >= n ? `The worksheet already has ${total} marks` : "No more questions here fit");
+        return;
+      }
+      const pt = e.target.closest("[data-qb-pt]");
+      if (pt) { qbPartToggle(pt.dataset.qbPt, pt.dataset.l); qbWsAll(box); return; }
       const sh = e.target.closest("[data-qb-show]");
       if (sh) { st.show = sh.dataset.qbShow; render(); return; }
       const mk = e.target.closest("[data-qb-st]");
@@ -477,8 +495,8 @@
       if (wa) {   /* every question loaded right now, in the order shown */
         const ids = [...box.querySelectorAll("[data-qb-card]")].map(c => c.dataset.qbCard);
         qbWs.ids = wa.dataset.qbWsall === "add" ? qbWs.ids.concat(ids.filter(id => !qbWs.ids.includes(id))) : qbWs.ids.filter(id => !ids.includes(id));
-        store.set(qbWs.key, qbWs.ids); qbWsBar();
-        box.querySelectorAll("[data-qb-ws]").forEach(b => b.outerHTML = qbWsButton(b.dataset.qbWs));
+        if (wa.dataset.qbWsall === "add") ids.forEach(id => delete qbWs.parts[id]);
+        qbWsSave(); qbWsBar(); ids.forEach(qbRefreshCard);
         qbWsAll(box); return;
       }
       const wb = e.target.closest("[data-qb-ws]");
@@ -522,7 +540,34 @@
   }
   /* ----- Worksheet builder: pick questions, then download one PDF with their pages and, at the back,
      their mark scheme pages. Picks are kept per question bank in this browser. ----- */
-  let qbWs = { key: "", data: null, ids: [] };
+  let qbWs = { key: "", data: null, ids: [], parts: {} };
+  /* parts picked for a question on the worksheet (none listed = the whole question) */
+  const qbWsSave = () => { for (const k in qbWs.parts) if (!qbWs.ids.includes(k)) delete qbWs.parts[k]; store.set(qbWs.key, qbWs.ids); store.set(qbWs.key + ":parts", qbWs.parts); };
+  /* the part chips on a card: tap (a) to put only part (a) on the worksheet, tap more to add them */
+  const qbPartsHtml = i => {
+    if (i.part || !(i.parts || []).length) return "";
+    const on = qbWs.ids.includes(i.id), sel = qbWs.parts[i.id];
+    return `<span class="qb-parts" data-qb-parts="${i.id}"><small>Parts</small>${i.parts.map(p => {
+      const lit = on && (!sel || sel.includes(p.l));
+      return `<button type="button" class="qb-pt ${lit ? "on" : ""}" data-qb-pt="${i.id}" data-l="${p.l}" aria-pressed="${lit}">${p.l}</button>`;
+    }).join("")}</span>`;
+  };
+  const qbRefreshCard = id => {
+    document.querySelectorAll(`[data-qb-ws="${CSS.escape(id)}"]`).forEach(b => b.outerHTML = qbWsButton(id));
+    const it = qbWs.data?.items.find(x => x.id === id);
+    document.querySelectorAll(`[data-qb-parts="${CSS.escape(id)}"]`).forEach(b => b.outerHTML = qbPartsHtml(it));
+  };
+  function qbPartToggle(id, l) {
+    const it = qbWs.data.items.find(x => x.id === id), all = it.parts.map(p => p.l);
+    let sel = qbWs.ids.includes(id) ? (qbWs.parts[id] || all.slice()) : [];
+    sel = sel.includes(l) ? sel.filter(x => x !== l) : all.filter(x => x === l || sel.includes(x));
+    if (!sel.length) { qbWs.ids = qbWs.ids.filter(x => x !== id); delete qbWs.parts[id]; }
+    else {
+      if (!qbWs.ids.includes(id)) qbWs.ids.push(id);
+      if (sel.length === all.length) delete qbWs.parts[id]; else qbWs.parts[id] = sel;
+    }
+    qbWsSave(); qbRefreshCard(id); qbWsBar();
+  }
   const qbWsButton = id => {
     const on = qbWs.ids.includes(id);
     return `<button class="qb-btn wsb${on ? " on" : ""}" data-qb-ws="${id}" aria-pressed="${on}">${on ? "✓ On worksheet" : "+ Worksheet"}</button>`;
@@ -530,8 +575,8 @@
   function qbWsToggle(id) {
     const k = qbWs.ids.indexOf(id);
     if (k >= 0) qbWs.ids.splice(k, 1); else qbWs.ids.push(id);
-    store.set(qbWs.key, qbWs.ids);
-    document.querySelectorAll(`[data-qb-ws="${CSS.escape(id)}"]`).forEach(b => b.outerHTML = qbWsButton(id));
+    delete qbWs.parts[id];
+    qbWsSave(); qbRefreshCard(id);
     qbWsBar();
   }
   /* label of the "add all loaded questions" button, from the cards on screen */
@@ -542,6 +587,41 @@
     b.dataset.qbWsall = all ? "remove" : "add"; b.classList.toggle("on", all);
     b.textContent = all ? `Remove all ${ids.length} from worksheet` : n ? `+ Add the other ${ids.length - n} to worksheet` : `+ Add all ${ids.length} to worksheet`;
   }
+  /* marks a worksheet question carries: its picked parts, or the whole question */
+  function qbWsMarks(id) {
+    const it = qbWs.data.items.find(i => i.id === id) || {}, sel = qbWs.parts[id];
+    return sel && it.parts ? it.parts.filter(p => sel.includes(p.l)).reduce((b, p) => b + (p.m || 0), 0) : it.marks || 0;
+  }
+  function qbToast(msg) {
+    let t = $("#qb-toast"); if (!t) { t = document.createElement("div"); t.id = "qb-toast"; t.className = "qb-toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2600);
+  }
+  /* before building: title, a cover page, a footer line on every page, and whether to include the mark schemes.
+     The choices are remembered on this device. */
+  function qbWsDialog() {
+    const o = store.get("ws-opts", { cover: true, ms: true, footer: "" });
+    const data = qbWs.data, topic = (data.topics.find(t => t.id === qbState.topic) || {}).name || "";
+    const dlg = document.createElement("div"); dlg.className = "qb-dlg-wrap";
+    dlg.innerHTML = `<form class="qb-dlg" role="dialog" aria-modal="true" aria-labelledby="qb-dlg-h">
+      <h2 id="qb-dlg-h">Build worksheet</h2>
+      <label class="qb-field"><span>Title</span><input name="title" value="${esc(o.titleFor === data.spec ? o.title : `${data.spec} · ${topic}`)}" maxlength="80"></label>
+      <label class="qb-field"><span>Footer on every page <small>e.g. your name or school</small></span><input name="footer" value="${esc(o.footer || "")}" maxlength="60" placeholder="Leave blank for none"></label>
+      <label class="qb-check"><input type="checkbox" name="cover" ${o.cover ? "checked" : ""}><span><b>Cover page</b><small>Title, name and date lines, total marks, suggested time and the list of questions</small></span></label>
+      <label class="qb-check"><input type="checkbox" name="ms" ${o.ms ? "checked" : ""}><span><b>Mark schemes at the back</b><small>Untick for a student copy without answers</small></span></label>
+      <div class="qb-dlg-btns"><button type="button" class="qb-btn" data-x>Cancel</button><button type="submit" class="qb-btn primary">Build PDF</button></div>
+    </form>`;
+    document.body.appendChild(dlg);
+    const f = dlg.querySelector("form"), close = () => dlg.remove();
+    f.title.focus(); f.title.select();
+    dlg.onclick = e => { if (e.target === dlg || e.target.closest("[data-x]")) close(); };
+    dlg.onkeydown = e => { if (e.key === "Escape") close(); };
+    f.onsubmit = e => {
+      e.preventDefault();
+      const opts = { title: f.title.value.trim(), titleFor: data.spec, footer: f.footer.value.trim(), cover: f.cover.checked, ms: f.ms.checked };
+      store.set("ws-opts", opts); close();
+      qbWsBuild($("#qb-ws-bar [data-ws=build]"), opts);
+    };
+  }
   function qbWsBar() {
     let bar = $("#qb-ws-bar");
     const n = qbWs.ids.length;
@@ -550,24 +630,32 @@
       bar = document.createElement("div"); bar.id = "qb-ws-bar"; bar.className = "qb-ws-bar";
       bar.onclick = e => {
         const b = e.target.closest("button"); if (!b) return;
-        if (b.dataset.ws === "clear") { qbWs.ids = []; store.set(qbWs.key, []); document.querySelectorAll("[data-qb-ws]").forEach(x => x.outerHTML = qbWsButton(x.dataset.qbWs)); qbWsBar(); }
-        if (b.dataset.ws === "build") qbWsBuild(b);
+        if (b.dataset.ws === "clear") { const was = qbWs.ids; qbWs.ids = []; qbWs.parts = {}; qbWsSave(); was.forEach(qbRefreshCard); qbWsBar(); }
+        if (b.dataset.ws === "build") qbWsDialog();
       };
       document.body.appendChild(bar);
     }
     document.body.classList.add("ws-on");
-    const marks = qbWs.ids.reduce((a, id) => a + ((qbWs.data.items.find(i => i.id === id) || {}).marks || 0), 0);
+    const marks = qbWs.ids.reduce((a, id) => a + qbWsMarks(id), 0);
     bar.innerHTML = `<span><b>Worksheet</b> · ${n} question${n === 1 ? "" : "s"}${marks ? `<i class="wsm" style="font-style:normal"> · ${marks} marks</i>` : ""}</span>
       <button class="qb-btn" data-ws="clear">Clear</button>
       <button class="qb-btn primary" data-ws="build">Build PDF</button>`;
   }
-  async function qbWsBuild(btn) {
+  async function qbWsBuild(btn, opts = { cover: false, ms: true, footer: "", title: "" }) {
     const data = qbWs.data, items = qbWs.ids.map(id => data.items.find(i => i.id === id)).filter(Boolean);
     if (!items.length) return;
     btn.disabled = true; btn.textContent = "Building…";
     try {
       await window.Viewer.loadPdfLib();
-      const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+      const { PDFDocument, StandardFonts, rgb, degrees } = window.PDFLib;
+      /* drawing on a page as it is seen: some mark scheme pages are stored on their side and shown turned (/Rotate).
+         at(u, v) maps a point measured from the bottom left of the page as seen to the page's own coordinates. */
+      const view = pg => {
+        const c = pg.getCropBox(), a = ((pg.getRotation().angle % 360) + 360) % 360, side = a % 180 !== 0;
+        const at = (u, v) => a === 90 ? { x: c.x + c.width - v, y: c.y + u } : a === 180 ? { x: c.x + c.width - u, y: c.y + c.height - v }
+          : a === 270 ? { x: c.x + v, y: c.y + c.height - u } : { x: c.x + u, y: c.y + v };
+        return { W: side ? c.height : c.width, H: side ? c.width : c.height, at, rotate: degrees(a) };
+      };
       const out = await PDFDocument.create(), cache = {}, used = new Set();
       const load = async src => cache[src] ||= PDFDocument.load(await (await fetch(src)).arrayBuffer(), { ignoreEncryption: true });
       /* copy pages (1-based) of src not already in the worksheet */
@@ -582,35 +670,96 @@
       /* the worksheet number in a circle in the left margin; top = distance from the top of the visible page */
       const stamp = (pg, num, top) => {
         if (!pg) return;
-        const c = pg.getCropBox(), r = 11, t = String(num), size = t.length > 1 ? 10.5 : 12;
-        const cx = c.x + 19, cy = Math.min(c.y + c.height - r - 4, Math.max(c.y + r + 4, c.y + c.height - top));
-        pg.drawCircle({ x: cx, y: cy, size: r, color: rgb(1, 1, 1), borderColor: ink, borderWidth: 1.3 });
-        pg.drawText(t, { x: cx - bold.widthOfTextAtSize(t, size) / 2, y: cy - size * 0.36, size, font: bold, color: ink });
+        const v = view(pg), r = 11, t = String(num), size = t.length > 1 ? 10.5 : 12;
+        const cu = 19, cv = Math.min(v.H - r - 4, Math.max(r + 4, v.H - top));
+        const c0 = v.at(cu, cv), t0 = v.at(cu - bold.widthOfTextAtSize(t, size) / 2, cv - size * 0.36);
+        pg.drawCircle({ x: c0.x, y: c0.y, size: r, color: rgb(1, 1, 1), borderColor: ink, borderWidth: 1.3 });
+        pg.drawText(t, { x: t0.x, y: t0.y, size, font: bold, color: ink, rotate: v.rotate });
       };
       /* a question's pages; for a whole question, a first page holding only a sliver of it (a stray "BLANK PAGE" line) is left out */
-      const ref = it => `${it.series} ${it.paper.replace(/^Paper\s*/, "P")} Q${it.q}${it.part ? `(${it.part})` : ""}`;
+      /* parts picked: a part item is its own part; a question with chosen parts uses those; otherwise the whole question */
+      const whole = it => it.part ? data.items.find(x => x.src === it.src && x.q === it.q && !x.part) : it;
+      const pick = it => { const w = whole(it); if (!w || !(w.parts || []).length) return null;
+        const sel = it.part ? [it.part] : qbWs.parts[it.id]; return sel && w.parts.some(p => sel.includes(p.l)) ? { w, sel } : null; };
+      const ref = it => { const pk = pick(it);
+        return `${it.series} ${it.paper.replace(/^Paper\s*/, "P")} Q${it.q}${pk ? pk.sel.map(l => `(${l})`).join("") : it.part ? `(${it.part})` : ""}`; };
       const qPages = it => {
         const h = {}; it.segs.forEach(([p, y0, y1]) => h[p] = (h[p] || 0) + (y1 - y0));
         const ps = Object.keys(h).map(Number).sort((a, b) => a - b);
         return !it.part && ps.length > 1 && h[ps[0]] < 25 ? ps.slice(1) : ps;
       };
+      /* areas of a page to blank out: parts not picked, from where each starts to where the next one starts
+         (the last one up to the question's total line). Only pages holding the opening lines or a picked part are kept. */
+      const hidden = [];
+      const partPages = ({ w, sel }) => {
+        const keep = new Set([...(w.stem || []), ...w.parts.filter(p => sel.includes(p.l)).flatMap(p => p.s)].map(x => x[0]));
+        const m = data.pdfs[w.src], last = w.segs[w.segs.length - 1];
+        const qEnd = last[2] - last[1] < 24 ? [last[0], last[1] - 2] : [last[0], last[2] + 2];
+        const top = pn => Math.min(...w.segs.filter(x => x[0] === pn).map(x => x[1]), m.H - 50) - 3;
+        w.parts.forEach((p, k) => {
+          if (sel.includes(p.l)) return;
+          const a = [p.s[0][0], p.s[0][1] - 3], nx = w.parts[k + 1], b = nx ? [nx.s[0][0], nx.s[0][1] - 3] : qEnd;
+          for (let pn = a[0]; pn <= b[0]; pn++) {
+            if (!keep.has(pn)) continue;
+            const y0 = pn === a[0] ? a[1] : top(pn), y1 = pn === b[0] ? b[1] : m.H - 45;
+            if (y1 > y0) hidden.push({ src: w.src, pn, y0, y1, m });
+          }
+        });
+        return [...keep].sort((x, y) => x - y);
+      };
+      /* cover page: title, name/date lines, marks, suggested time, the questions */
+      const clean = t => String(t).replace(/[^\x20-\x7E\u00A0-\u00FF]/g, "-");
+      const qMarks = it => { const pk = pick(it); return pk ? pk.w.parts.filter(p => pk.sel.includes(p.l)).reduce((a, p) => a + (p.m || 0), 0) : it.marks || 0; };
+      if (opts.cover) {
+        const pg = out.addPage([595.28, 841.89]), total = items.reduce((a, it) => a + qMarks(it), 0);
+        /* exam pace: about 1.2 minutes a mark for written questions, a multiple-choice question about 1.9 */
+        const mins = Math.round(items.reduce((a, it) => a + (it.mcq ? 1.875 : 1.2 * qMarks(it)), 0) / 5) * 5;
+        pg.drawText(clean(opts.title || "Worksheet"), { x: 56, y: 760, size: 24, font: bold, color: ink, maxWidth: 480 });
+        pg.drawText(clean(data.label || ""), { x: 56, y: 736, size: 11, font, color: rgb(0.4, 0.42, 0.42) });
+        const line = (label, x, y, w) => { pg.drawText(label, { x, y, size: 11, font, color: ink }); const lx = x + font.widthOfTextAtSize(label, 11) + 6; pg.drawLine({ start: { x: lx, y: y - 2 }, end: { x: x + w, y: y - 2 }, thickness: 0.7, color: rgb(0.55, 0.57, 0.57) }); };
+        line("Name", 56, 690, 300); line("Date", 376, 690, 163);
+        const box = (label, val, x) => {
+          pg.drawRectangle({ x, y: 600, width: 150, height: 58, borderColor: rgb(0.8, 0.82, 0.82), borderWidth: 1 });
+          pg.drawText(label, { x: x + 12, y: 640, size: 9, font, color: rgb(0.4, 0.42, 0.42) });
+          pg.drawText(val, { x: x + 12, y: 612, size: 18, font: bold, color: ink });
+        };
+        box("Total marks", String(total), 56); box("Suggested time", `${mins} min`, 222); box("Your mark", `       / ${total}`, 388);
+        pg.drawText("Questions", { x: 56, y: 560, size: 13, font: bold, color: ink });
+        let y = 536;
+        items.forEach((it, k) => {
+          if (y < 70) return;
+          pg.drawText(clean(`${k + 1}.  ${ref(it)}`), { x: 56, y, size: 11, font, color: ink });
+          const m = qMarks(it), t = `${m} mark${m === 1 ? "" : "s"}`;
+          pg.drawText(t, { x: 539 - font.widthOfTextAtSize(t, 11), y, size: 11, font, color: rgb(0.4, 0.42, 0.42) });
+          y -= 19;
+        });
+        if (y < 70) pg.drawText(`… and ${items.length - Math.floor((536 - 70) / 19) - 1} more`, { x: 56, y: 56, size: 10, font, color: rgb(0.4, 0.42, 0.42) });
+      }
       for (const [k, it] of items.entries()) {
-        const ps = qPages(it);
+        const pk = pick(it), ps = pk ? partPages(pk) : qPages(it);
         await add(it.src, ps);
         const qp = placed[it.src + "|" + ps[0]];
         /* "Question 1: June 2024 P2 Q8" goes in the page's top margin (drawn once all questions are in) */
         if (qp) (qp.gshLabels ||= []).push(`Question ${k + 1}: ${ref(it)}`);
       }
+      for (const h of hidden) {
+        const pg = placed[h.src + "|" + h.pn]; if (!pg) continue;
+        const mb = pg.getMediaBox(), x0 = h.m.x0 || h.m.W * 0.092, x1 = h.m.x1 || h.m.W * 0.905;
+        /* past the marks column too, where answer lines end in dots, but short of the page's border */
+        const right = Math.max(Math.min(x1 + 36, h.m.W - 66), x1 + 4);
+        pg.drawRectangle({ x: mb.x + x0 - 10, y: mb.y + mb.height - h.y1, width: right - x0 + 10, height: h.y1 - h.y0, color: rgb(1, 1, 1) });
+      }
       for (const pg of Object.values(placed)) {
         if (!pg.gshLabels) continue;
-        const c = pg.getCropBox(), y = c.y + c.height - 30, size = 9;
-        let x = c.x + 46;
+        const v = view(pg), size = 9;
+        let u = 46;
         for (const label of pg.gshLabels) {
-          pg.drawText(label, { x, y, size, font: bold, color: ink });
-          x += bold.widthOfTextAtSize(label, size) + 20;
+          const o = v.at(u, v.H - 30);
+          pg.drawText(label, { x: o.x, y: o.y, size, font: bold, color: ink, rotate: v.rotate });
+          u += bold.widthOfTextAtSize(label, size) + 20;
         }
       }
-      const withMs = items.filter(it => it.ms && it.msPage);
+      const withMs = opts.ms ? items.filter(it => it.ms && it.msPage) : [];
       if (withMs.length) {
         /* divider page listing the questions in order */
         const pg = out.addPage([595.28, 841.89]);
@@ -622,15 +771,24 @@
         });
         for (const [k, it] of items.entries()) {
           if (!it.ms || !it.msPage) continue;
-          await add(it.ms, qbMsPages(it, data) || [it.msPage]);
+          await add(it.ms, it.part ? [it.msPage] : qbMsPages(it, data) || [it.msPage]);
           const mp = placed[it.ms + "|" + it.msPage];
-          if (mp) stamp(mp, k + 1, (it.msY || 0) * mp.getCropBox().height + 18);
+          if (mp) stamp(mp, k + 1, (it.msY || 0) * view(mp).H + 18);
+        }
+      }
+      /* footer on every page, bottom right, on a white strip so it reads over anything printed there */
+      if (opts.footer) {
+        const t = clean(opts.footer), size = 8.5;
+        for (const pg of out.getPages()) {
+          const v = view(pg), w = font.widthOfTextAtSize(t, size), u = v.W - 24 - w, r0 = v.at(u - 4, 7), t0 = v.at(u, 10);
+          pg.drawRectangle({ x: r0.x, y: r0.y, width: w + 8, height: size + 6, color: rgb(1, 1, 1), rotate: v.rotate });
+          pg.drawText(t, { x: t0.x, y: t0.y, size, font, color: rgb(0.35, 0.37, 0.37), rotate: v.rotate });
         }
       }
       const blob = new Blob([await out.save()], { type: "application/pdf" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `${(data.label || document.title.replace(/ question bank.*$/i, "") || data.spec).replace(/[^\w\s.-]+/g, " ").trim()} worksheet (${items.length} question${items.length === 1 ? "" : "s"}).pdf`;
+      a.download = `${(opts.title || `${data.label || data.spec} worksheet`).replace(/[^\w\s.-]+/g, " ").replace(/\s+/g, " ").trim()} (${items.length} question${items.length === 1 ? "" : "s"}).pdf`;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
       btn.textContent = "Build PDF";
@@ -666,7 +824,7 @@
       <footer class="qb-card-foot">
         ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
         <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open question</button>
-        ${qbWsButton(i.id)}
+        ${qbPartsHtml(i)}${qbWsButton(i.id)}
       </footer>
     </article>`;
   }

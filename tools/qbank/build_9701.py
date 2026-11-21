@@ -106,6 +106,14 @@ def main():
                       text=clean(q["text"])[:400], checked=True)
             if at and ms:
                 it.update(msPage=at[0], msY=at[1])
+            # parts, so a worksheet can keep just the ones picked (see add_parts.py)
+            ps = [x for x in q.get("parts") or [] if x.get("segs")]
+            # only where the reading is clearly right: letters a, b, c... in order and the part marks add up to the total
+            good = [x["label"] for x in ps] == [chr(97 + k) for k in range(len(ps))] and all(x["marks"] for x in ps) \
+                and sum(x["marks"] for x in ps) == (q["marks"] or -1)
+            if paper != "1" and len(ps) >= 2 and good:
+                it["stem"] = q.get("stem") or []
+                it["parts"] = [dict(l=x["label"], m=x["marks"], s=x["segs"]) for x in ps]
             if paper == "1":
                 it["mcq"] = True
                 if key:
