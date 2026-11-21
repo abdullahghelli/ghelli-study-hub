@@ -1,7 +1,7 @@
 /* Ghelli Study Hub
    Layout: a quiet sidebar and one reading column. No boxes unless something needs setting apart. */
 :root{
-  --bg:#ffffff; --side:#f8f9f8; --fg:#1b1f1e; --muted:#676e6c; --faint:#a1a7a5;
+  --bg:#ffffff; --side:#f8f9f8; --fg:#1b1f1e; --muted:#5b6260; --faint:#7d8482;
   --line:#ececea; --hover:#f1f3f2; --press:#e8ebea;
   --accent:#1f6d68; --accent-soft:#e6f1f0;
   --phys:#3563c9; --phys-s:#ebf0fb; --chem:#b56a12; --chem-s:#fbf2e5;
@@ -14,7 +14,7 @@
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#9aa19f; --faint:#666d6b;
+  --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#a9b0ae; --faint:#80878a;
   --line:#262a29; --hover:#212524; --press:#2a2e2d;
   --accent:#6ee7af; --accent-soft:#21342b;
   --phys:#c3a4e6; --phys-s:#2d2b33; --chem:#e0e582; --chem-s:#2d3023;
@@ -22,7 +22,7 @@
   --done:#6ee7af; --shadow:0 24px 64px -12px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.3);
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#9aa19f; --faint:#666d6b;
+  --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#a9b0ae; --faint:#80878a;
   --line:#262a29; --hover:#212524; --press:#2a2e2d;
   --accent:#6ee7af; --accent-soft:#21342b;
   --phys:#c3a4e6; --phys-s:#2d2b33; --chem:#e0e582; --chem-s:#2d3023;
@@ -338,7 +338,7 @@ body.pv-open{overflow:hidden}
 
 /* Dark mode inside the viewer window, independent of the site theme. */
 .pv.dark-pages{
-  --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#9aa19f; --faint:#666d6b;
+  --bg:#151716; --side:#1a1c1b; --fg:#e7eae9; --muted:#a9b0ae; --faint:#80878a;
   --line:#262a29; --hover:#212524; --press:#2a2e2d; --accent:#6ee7af; --accent-soft:#21342b;
   color-scheme:dark; color:var(--fg)}
 /* Dark pages: invert the paper (and notes, so they stay readable on it); colours keep their hue. */
@@ -575,7 +575,7 @@ body.pv-open .qb-ws-bar{display:none}
 .s-math-q{--sc:var(--math);--ss:var(--math-s)} .s-chem-q{--sc:var(--chem);--ss:var(--chem-s)}
 .s-phys-q{--sc:var(--phys);--ss:var(--phys-s)} .s-bio-q{--sc:var(--bio);--ss:var(--bio-s)}
 .qbk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:32px}
-.subj-tiles.home-tiles{margin-top:80px}
+.subj-tiles.home-tiles{margin-top:48px}
 .qbk{position:relative;display:flex;flex-direction:column;gap:3px;padding:18px 20px 18px;border-radius:16px;background:var(--ss,var(--side));
   box-shadow:inset 0 0 0 1px transparent;transition:box-shadow .15s,transform .15s}
 .qbk:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--sc) 45%,transparent);transform:translateY(-2px)}
@@ -628,3 +628,35 @@ body.pv-open .qb-ws-bar{display:none}
 .qb-link{border:0;background:none;padding:0;font:inherit;color:var(--accent);cursor:pointer;text-decoration:underline}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .qb-mcq-ok{color:#6ee7af}:root:not([data-theme="light"]) .qb-mcq-no{color:#ff8a7a}}
 :root[data-theme="dark"] .qb-mcq-ok{color:#6ee7af}:root[data-theme="dark"] .qb-mcq-no{color:#ff8a7a}
+
+/* home: free line, carry on, your subjects */
+.home-free{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 0}
+.home-free span{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:500}
+.home-free span::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.home-mine{margin-top:32px}
+.home-cont{position:relative;display:flex;flex-direction:column;gap:2px;padding:14px 48px 14px 18px;border-radius:14px;background:var(--ss,var(--side));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--sc,var(--accent)) 30%,transparent)}
+.home-cont small{font-size:12.5px;color:var(--muted)}
+.home-cont b{font-size:16px;font-weight:600;color:var(--fg)}
+.home-cont .arrow{position:absolute;right:18px;top:50%;margin-top:-9px;width:18px;height:18px;color:var(--sc,var(--accent))}
+.home-cont:hover{transform:translateY(-1px)}
+.home-mine .qbk-head{margin-top:26px}
+.home-mine .qbk-head h2{font-size:13px}
+.home-mine .qbk-grid{margin-top:12px}
+.home-mine+.lvl-grid{margin-top:44px}
+/* picker: unpicked specs readable, picked ones marked */
+.qbk-pick .qbk{opacity:.8}
+/* subject page: topic group headings and a link to each topic's questions */
+.list-head{margin:18px 8px 4px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.list-head:first-child{margin-top:0}
+.row-wrap{display:flex;align-items:center;gap:4px}
+.row-wrap .row{flex:1;min-width:0}
+.row-q{flex:none;font-size:13px;font-weight:500;color:var(--accent);padding:6px 10px;border-radius:8px;white-space:nowrap}
+.row-q:hover{background:var(--accent-soft)}
+.done-toggle+.subj-tiles{margin-top:18px}
+@media (max-width:760px){
+  .home{display:flex;flex-direction:column}
+  .home .home-tiles{order:1;margin-top:24px}
+  .home .lvl-grid{order:2;margin-top:28px}
+  .home .home-links{order:3}
+}
+.qbk-head a.qb-btn{display:inline-flex;align-items:center}

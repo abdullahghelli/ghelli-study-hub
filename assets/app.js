@@ -179,11 +179,25 @@
     }).join("") + `</div>`;
   }
 
+  /* returning visitors: carry on where they left off, and their own specs one tap away */
+  function homeMine() {
+    const last = store.get("qb-last", null), mine = qbMine();
+    const lastOk = last && (S.qbanks || {})[last.k] && course(...last.k.split("/"));
+    if (!lastOk && !mine.length) return "";
+    const lastLink = lastOk ? (() => {
+      const [l, t, s] = last.k.split("/"), c = course(l, t, s);
+      return `<a class="home-cont s-${subj(s).color}-q" href="${url.qbank(l, t, s)}"><small>Continue where you left off</small><b>${esc(subj(s).name)} ${esc(c.code)}${last.name ? ` · ${last.num ? last.num + " " : ""}${esc(last.name)}` : ""}</b>${icon.arrow}</a>`;
+    })() : "";
+    return `<section class="home-mine">${lastLink}${mine.length ? `<div class="qbk-head"><h2>Your subjects</h2><a class="qb-btn" href="/question-banks">Change</a></div>${qbankCards(mine)}` : ""}</section>`;
+  }
+
   function vHome() {
     crumbs([{ t: "Home" }]); setTitle();
     return `<div class="home">
       <h1>What are you revising?</h1>
-      <p class="lede">Notes, flashcards, questions and past papers, sorted by exam board.</p>
+      <p class="lede">Every past paper question, sorted by topic and checked against the mark scheme.</p>
+      <p class="home-free"><span>Free</span><span>No ads</span><span>No sign-up</span></p>
+      ${homeMine()}
       <div class="lvl-grid">` + S.levels.map(L => `
         <a class="lvl lv-${L.id}" href="${url.level(L.id)}">
           <span class="lvl-name">${L.name}</span>
@@ -241,7 +255,9 @@
       <h2>Topics</h2><div class="list">` +
       c.topics.map((tp, i) => {
         const n = i + 1, k = K(l, t, s, n), live = liveCount(l, t, s, n);
-        return `<a class="row" href="${url.topic(l, t, s, n)}"><span class="num s-${subj(s).color}-t">${String(n).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span><span class="aside hide-sm">${live ? `${live} file${live > 1 ? "s" : ""}` : ""}</span><span class="tick ${done[k] ? "on" : ""}" aria-label="${done[k] ? "Done" : "Not done"}"></span></a>`;
+        const head = (c.topicGroups || []).find(([from]) => from === n);
+        const qb = (S.qbanks || {})[K(l, t, s)] ? `<a class="row-q" href="${url.qbank(l, t, s)}?topic=${n}" aria-label="Questions on ${esc(tp)}">Questions →</a>` : "";
+        return `${head ? `<div class="list-head">${esc(head[1])}</div>` : ""}<div class="row-wrap"><a class="row" href="${url.topic(l, t, s, n)}"><span class="num s-${subj(s).color}-t">${String(n).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span><span class="aside hide-sm">${live ? `${live} file${live > 1 ? "s" : ""}` : ""}</span><span class="tick ${done[k] ? "on" : ""}" aria-label="${done[k] ? "Done" : "Not done"}"></span></a>${qb}</div>`;
       }).join("") + `</div>`;
   }
 
@@ -251,7 +267,8 @@
     recent = [{ l, t, s, n }, ...recent.filter(x => K(x.l, x.t, x.s, x.n) !== k)].slice(0, 8); store.set("recent2", recent);
     let h = `<div class="eyebrow"><span>${esc(T.full)} ${esc(subj(s).name)} (${c.code}) · Topic ${n} of ${c.topics.length}</span></div>
       <h1>${esc(title)}</h1>
-      <button class="done-toggle ${done[k] ? "on" : ""}" data-act="done" data-k="${k}"><span class="tick ${done[k] ? "on" : ""}"></span>${done[k] ? "Done" : "Mark as done"}</button>`;
+      <button class="done-toggle ${done[k] ? "on" : ""}" data-act="done" data-k="${k}"><span class="tick ${done[k] ? "on" : ""}"></span>${done[k] ? "Done" : "Mark as done"}</button>
+      ${(S.qbanks || {})[K(l, t, s)] ? `<div class="subj-tiles"><a class="subj-tile primary" href="${url.qbank(l, t, s)}?topic=${n}">${icon.bank}<span><b>Practise this topic</b><small>Past paper questions on ${esc(title)}</small></span>${icon.arrow}</a></div>` : ""}`;
     for (const g of resources(l, t, s, n)) {
       h += `<section class="res-group"><h2>${g.label}<span>${g.items.filter(i => i.href).length}/${g.items.length}</span></h2><div class="list">` +
         g.items.map(it => it.href
@@ -318,6 +335,19 @@
       <div class="qb" id="qb"><div class="qb-loading">Loading the question bank…</div></div>
       <p class="legend owner">${esc(ownerNote(t))}</p>`;
   }
+  /* the bank topic that matches topic n of the course's own topic list: same name (topic n itself when names repeat,
+     e.g. 9701's AS and A Level "Equilibria"), else the topic or unit sharing the most words */
+  function qbTopicFor(data, key, n) {
+    const name = (course(...key.split("/")).topics || [])[n - 1]; if (!name) return null;
+    const words = x => (x.toLowerCase().match(/[a-z0-9]+/g) || []).filter(w => !["and", "of", "the", "in", "a"].includes(w));
+    const same = data.topics.filter(t => t.name.toLowerCase() === name.toLowerCase());
+    if (same.length) return (same.find(t => t.num === n) || same[0]).id;
+    const want = words(name), score = x => { const w = words(x); return want.filter(v => w.includes(v)).length / want.length; };
+    let best = null, top = 0.5;
+    for (const t of data.topics) if (score(t.name) > top) { best = t.id; top = score(t.name); }
+    for (const [g, gname] of data.groups || []) if (score(gname) > top) { best = (data.topics.find(t => t.group === g) || {}).id || best; top = score(gname); }
+    return best;
+  }
   async function qbMount(src, key) {
     const box = $("#qb"); if (!box) return;
     let data = qbCache[src];
@@ -333,6 +363,12 @@
     const st = qbState;
     qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)) };
     qbWsBar();
+    const want = +new URLSearchParams(location.search).get("topic");
+    if (want) {
+      const t0 = qbTopicFor(data, key, want);
+      if (t0) st.topic = t0;
+      history.replaceState(history.state, "", location.pathname);
+    }
     if (!st.topic || !data.topics.some(t => t.id === st.topic)) st.topic = data.topics[0].id;
     /* modular courses (IAL): units are separate papers, so the bank shows one unit's topics at a time */
     const unitOf = id => (data.topics.find(t => t.id === id) || {}).group;
@@ -344,12 +380,14 @@
     const render = () => {
       store.set("qb", st);
       const tp = data.topics.find(t => t.id === st.topic);
+      store.set("qb-last", { k: key, name: tp.name, num: tp.num || null });
       const inTopic = filtered(st.topic).sort((a, b) => b.year - a.year || a.paper.localeCompare(b.paper) || a.q - b.q || (a.part || "").localeCompare(b.part || ""));
       /* spec checklist for this topic: tick points to show only questions that cover them */
       const pts = Object.entries((data.points || {})[tp.group] || {}).filter(([c]) => tp.num && c.split(".")[0] === String(tp.num))
         .sort((a, b) => +a[0].split(".")[1] - +b[0].split(".")[1]);
       st.specs = st.specs || {};
-      const picked = (st.specs[st.topic] || []).filter(c => pts.some(([p]) => p === c));
+      let picked = (st.specs[st.topic] || []).filter(c => pts.some(([p]) => p === c));
+      if (pts.length === 1 && !picked.length) picked = [pts[0][0]];   /* one spec point: nothing to choose */
       /* questions load only once spec points are ticked (topics without a spec list show everything) */
       const waiting = pts.length && !picked.length;
       /* a question shows only when every point it covers from this topic is ticked: ticking 2.1 alone leaves out
@@ -711,11 +749,15 @@
     }
     if (kind === "question-banks") {
       crumbs([{ t: "Question bank" }]); setTitle("Question bank");
-      const mine = qbMine(), picking = qbPicking || !mine.length, rest = qbKeys().filter(k => !mine.includes(k));
+      const mine = qbMine(), picking = qbPicking, rest = qbKeys().filter(k => !mine.includes(k));
       if (picking) return `<div class="home"><h1>Question bank</h1>
-        <p class="lede">Every past paper question, sorted by spec topic and checked against its mark scheme. Choose the specs you use; they'll be waiting here next time.</p>
+        <p class="lede">Tap the specs you use. They'll be at the top here and on the home page.</p>
         ${qbPicker()}
-        <div class="qbk-actions"><button type="button" class="qb-btn primary" data-qb-done ${mine.length ? "" : "disabled"}>${mine.length ? `Done · ${mine.length} spec${mine.length === 1 ? "" : "s"}` : "Pick at least one spec"}</button></div></div>`;
+        <div class="qbk-actions"><button type="button" class="qb-btn primary" data-qb-done>${mine.length ? `Done · ${mine.length} spec${mine.length === 1 ? "" : "s"}` : "Done"}</button></div></div>`;
+      if (!mine.length) return `<div class="home"><h1>Question bank</h1>
+        <p class="lede">Every past paper question, sorted by spec topic and checked against its mark scheme.</p>
+        <div class="qbk-head"><h2>All question banks</h2><button type="button" class="qb-btn" data-qb-edit>Choose your specs</button></div>
+        ${qbankCards(qbKeys())}</div>`;
       return `<div class="home"><h1>Question bank</h1>
         <p class="lede">Every past paper question, sorted by spec topic and checked against its mark scheme.</p>
         <div class="qbk-head"><h2>Your specs</h2><button type="button" class="qb-btn" data-qb-edit>Change specs</button></div>
