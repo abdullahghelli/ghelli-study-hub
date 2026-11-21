@@ -642,6 +642,10 @@
       <button class="qb-btn" data-ws="clear">Clear</button>
       <button class="qb-btn primary" data-ws="build">Build PDF</button>`;
   }
+  /* The worksheet is built afresh: each question is cut from its paper (only its own lines, with the space and
+     diagrams between them) and laid onto clean A4 pages, numbered 1, 2, 3… in worksheet order under a line naming
+     its source. The paper's own question number is covered, and parts not picked are left out. Pages get their own
+     numbers and the footer. Mark schemes follow, cut the same way; multiple-choice answers go in one table. */
   async function qbWsBuild(btn, opts = { cover: false, ms: true, title: "" }) {
     opts = { ...opts, footer: WS_FOOTER };
     const data = qbWs.data, items = qbWs.ids.map(id => data.items.find(i => i.id === id)).filter(Boolean);
@@ -650,143 +654,186 @@
     try {
       await window.Viewer.loadPdfLib();
       const { PDFDocument, StandardFonts, rgb, degrees } = window.PDFLib;
-      /* drawing on a page as it is seen: some mark scheme pages are stored on their side and shown turned (/Rotate).
-         at(u, v) maps a point measured from the bottom left of the page as seen to the page's own coordinates. */
-      const view = pg => {
-        const c = pg.getCropBox(), a = ((pg.getRotation().angle % 360) + 360) % 360, side = a % 180 !== 0;
-        const at = (u, v) => a === 90 ? { x: c.x + c.width - v, y: c.y + u } : a === 180 ? { x: c.x + c.width - u, y: c.y + c.height - v }
-          : a === 270 ? { x: c.x + v, y: c.y + c.height - u } : { x: c.x + u, y: c.y + v };
-        return { W: side ? c.height : c.width, H: side ? c.width : c.height, at, rotate: degrees(a) };
-      };
-      const out = await PDFDocument.create(), cache = {}, used = new Set();
+      const out = await PDFDocument.create(), cache = {};
       const load = async src => cache[src] ||= PDFDocument.load(await (await fetch(src)).arrayBuffer(), { ignoreEncryption: true });
-      /* copy pages (1-based) of src not already in the worksheet */
-      const placed = {};   /* "src|page" -> the copied page in the worksheet */
-      const add = async (src, pages) => {
-        const doc = await load(src), n = doc.getPageCount();
-        const want = pages.filter(p => p >= 1 && p <= n && !placed[src + "|" + p]);
-        if (want.length) (await out.copyPages(doc, want.map(p => p - 1))).forEach((pg, k) => { out.addPage(pg); placed[src + "|" + want[k]] = pg; });
-      };
       const font = await out.embedFont(StandardFonts.Helvetica), bold = await out.embedFont(StandardFonts.HelveticaBold);
-      const ink = rgb(0.11, 0.12, 0.12);
-      /* the worksheet number in a circle in the left margin; top = distance from the top of the visible page */
-      const stamp = (pg, num, top) => {
-        if (!pg) return;
-        const v = view(pg), r = 11, t = String(num), size = t.length > 1 ? 10.5 : 12;
-        const cu = 19, cv = Math.min(v.H - r - 4, Math.max(r + 4, v.H - top));
-        const c0 = v.at(cu, cv), t0 = v.at(cu - bold.widthOfTextAtSize(t, size) / 2, cv - size * 0.36);
-        pg.drawCircle({ x: c0.x, y: c0.y, size: r, color: rgb(1, 1, 1), borderColor: ink, borderWidth: 1.3 });
-        pg.drawText(t, { x: t0.x, y: t0.y, size, font: bold, color: ink, rotate: v.rotate });
-      };
-      /* a question's pages; for a whole question, a first page holding only a sliver of it (a stray "BLANK PAGE" line) is left out */
-      /* parts picked: a part item is its own part; a question with chosen parts uses those; otherwise the whole question */
+      const ink = rgb(0.11, 0.12, 0.12), grey = rgb(0.4, 0.42, 0.42), white = rgb(1, 1, 1);
+      const clean = t => String(t).replace(/[^\x20-\x7E -ÿ]/g, "-");
+      /* parts picked: a part card is its own part; a question with chosen parts uses those; otherwise the whole question */
       const whole = it => it.part ? data.items.find(x => x.src === it.src && x.q === it.q && !x.part) : it;
       const pick = it => { const w = whole(it); if (!w || !(w.parts || []).length) return null;
         const sel = it.part ? [it.part] : qbWs.parts[it.id]; return sel && w.parts.some(p => sel.includes(p.l)) ? { w, sel } : null; };
       const ref = it => { const pk = pick(it);
-        return `${it.series} ${it.paper.replace(/^Paper\s*/, "P")} Q${it.q}${pk ? pk.sel.map(l => `(${l})`).join("") : it.part ? `(${it.part})` : ""}`; };
-      const qPages = it => {
-        const h = {}; it.segs.forEach(([p, y0, y1]) => h[p] = (h[p] || 0) + (y1 - y0));
-        const ps = Object.keys(h).map(Number).sort((a, b) => a - b);
-        return !it.part && ps.length > 1 && h[ps[0]] < 25 ? ps.slice(1) : ps;
-      };
-      /* areas of a page to blank out: parts not picked, from where each starts to where the next one starts
-         (the last one up to the question's total line). Only pages holding the opening lines or a picked part are kept. */
-      const hidden = [];
-      const partPages = ({ w, sel }) => {
-        const keep = new Set([...(w.stem || []), ...w.parts.filter(p => sel.includes(p.l)).flatMap(p => p.s)].map(x => x[0]));
-        const m = data.pdfs[w.src], last = w.segs[w.segs.length - 1];
-        const qEnd = last[2] - last[1] < 24 ? [last[0], last[1] - 2] : [last[0], last[2] + 2];
-        const top = pn => Math.min(...w.segs.filter(x => x[0] === pn).map(x => x[1]), m.H - 50) - 3;
-        w.parts.forEach((p, k) => {
-          if (sel.includes(p.l)) return;
-          const a = [p.s[0][0], p.s[0][1] - 3], nx = w.parts[k + 1], b = nx ? [nx.s[0][0], nx.s[0][1] - 3] : qEnd;
-          for (let pn = a[0]; pn <= b[0]; pn++) {
-            if (!keep.has(pn)) continue;
-            const y0 = pn === a[0] ? a[1] : top(pn), y1 = pn === b[0] ? b[1] : m.H - 45;
-            if (y1 > y0) hidden.push({ src: w.src, pn, y0, y1, m });
-          }
-        });
-        return [...keep].sort((x, y) => x - y);
-      };
-      /* cover page: title, name/date lines, marks, suggested time, the questions */
-      const clean = t => String(t).replace(/[^\x20-\x7E\u00A0-\u00FF]/g, "-");
+        return `${it.series} ${it.paper.replace(/^Paper\s*/, "P")} Q${String(it.q).padStart(2, "0")}${pk ? pk.sel.map(l => `(${l})`).join("") : it.part ? `(${it.part})` : ""}`; };
       const qMarks = it => { const pk = pick(it); return pk ? pk.w.parts.filter(p => pk.sel.includes(p.l)).reduce((a, p) => a + (p.m || 0), 0) : it.marks || 0; };
+
+      /* the bands of a question to show, each [page, top, bottom] in points from the top of the paper's page.
+         Lines next to each other stay together with whatever lies between them (working space, diagrams);
+         a part not picked breaks the run, so it and the space around it drop out. */
+      const bandsOf = it => {
+        const pk = pick(it);
+        let groups;    /* runs of segments, each group shown in order; a new group starts after something left out */
+        if (pk) {
+          const parts = pk.w.parts, keep = [{ k: -1, s: pk.w.stem || [] }, ...parts.map((p, k) => ({ k, s: p.s })).filter(g => pk.sel.includes(parts[g.k].l))];
+          groups = []; let prev = null;
+          for (const g of keep) { if (!g.s.length) continue; if (prev !== null && g.k === prev + 1) groups[groups.length - 1].push(...g.s); else groups.push([...g.s]); prev = g.k; }
+        } else {
+          const w = whole(it), stem = it.part && w && w.stem ? w.stem : null;
+          groups = stem ? [stem, it.segs.filter(sg => !stem.some(x => x[0] === sg[0] && Math.abs(x[1] - sg[1]) < 0.5))] : [it.segs];
+        }
+        const bands = [];
+        for (const g of groups) {
+          const byPage = {};
+          g.forEach(([pn, y0, y1]) => { const b = byPage[pn] ||= [pn, y0, y1]; b[1] = Math.min(b[1], y0); b[2] = Math.max(b[2], y1); });
+          bands.push(...Object.values(byPage).sort((a, b) => a[0] - b[0]));
+        }
+        /* a whole question starting with a sliver at the foot of a page (a stray line) leaves that sliver out */
+        if (!pk && !it.part && bands.length > 1 && bands[0][2] - bands[0][1] < 25) bands.shift();
+        return bands;
+      };
+      /* where the paper prints the question's own number (to cover it): from the page's text, near the left edge on its first line */
+      const numberBox = async (it, band, m) => {
+        try {
+          return await window.Viewer.withDoc(it.src, async doc => {
+            /* the bank measures from the top of the full page (media box); the text from the visible part (crop box) is cy higher */
+            const page = await doc.getPage(band[0]), tc = await page.getTextContent(), top = page.view[3] + (m.cy || 0);
+            const x0 = m.x0 || m.W * 0.092, want = new RegExp(`^\\s*(0?${it.q}\\.?)(\\s|$)`);
+            for (const t of tc.items) {
+              const s = t.str || "", mt = s.match(want), x = t.transform[4], base = top - t.transform[5], size = Math.hypot(t.transform[2], t.transform[3]) || t.height || 11;
+              if (mt && x < x0 + 30 && base > band[1] && base < band[1] + 60) {
+                /* a run like "5. The curve…": cover just the number */
+                const w = s.trim().length > mt[1].length ? (t.width || 0) * (mt[0].trimEnd().length / s.length) : (t.width || size * 0.6 * mt[1].length);
+                return { x0: x - 1.5, x1: x + (w || size * 0.55 * mt[1].length) + 1, y0: base - size * 0.85, y1: base + size * 0.3 };
+              }
+            }
+            return null;
+          });
+        } catch (e) { return null; }
+      };
+
+      /* page layout */
+      const PW = 595.28, PH = 841.89, M = 42, TOP = PH - 46, BOTTOM = 58, COLW = PW - 2 * M;
+      let page = null, y = 0;
+      const body = [];   /* pages that get a page number */
+      const newPage = () => { page = out.addPage([PW, PH]); body.push(page); y = TOP; };
+      const room = () => page ? y - BOTTOM : 0;
+      const heading = (num, label, need) => {
+        if (!page || room() < 24 + Math.min(need, TOP - BOTTOM - 24)) newPage();
+        page.drawText(String(num), { x: M, y: y - 12, size: 12.5, font: bold, color: ink });
+        page.drawText(clean(label), { x: M + 34, y: y - 12, size: 12.5, font: bold, color: ink });
+        y -= 24;
+      };
+      /* draw a band of a source page at the cursor, scaled to the column, starting a new page when it doesn't fit */
+      /* x0, x1, t, b are measured on the page as it is seen (some mark scheme pages are stored on their side, /Rotate) */
+      const drawBand = async (srcDoc, pn, x0, x1, t, b, cover) => {
+        const sp = srcDoc.getPage(pn - 1), mb = sp.getMediaBox(), rot = ((sp.getRotation().angle % 360) + 360) % 360;
+        const box = rot === 90 ? { left: mb.x + t, right: mb.x + b, bottom: mb.y + x0, top: mb.y + x1 }
+          : rot === 270 ? { left: mb.x + mb.width - b, right: mb.x + mb.width - t, bottom: mb.y + mb.height - x1, top: mb.y + mb.height - x0 }
+          : rot === 180 ? { left: mb.x + mb.width - x1, right: mb.x + mb.width - x0, bottom: mb.y + t, top: mb.y + b }
+          : { left: mb.x + x0, right: mb.x + x1, bottom: mb.y + mb.height - b, top: mb.y + mb.height - t };
+        const ep = await out.embedPage(sp, box);
+        let sc = Math.min(1, COLW / (x1 - x0)), h = (b - t) * sc;
+        if (h > TOP - BOTTOM) { sc *= (TOP - BOTTOM) / h; h = TOP - BOTTOM; }
+        if (!page || room() < h) newPage();
+        const left = M, by = y - h, w = (x1 - x0) * sc;
+        const at = rot === 90 ? { x: left, y: by + h, rotate: degrees(-90) } : rot === 270 ? { x: left + w, y: by, rotate: degrees(90) }
+          : rot === 180 ? { x: left + w, y: by + h, rotate: degrees(180) } : { x: left, y: by };
+        page.drawPage(ep, { ...at, xScale: sc, yScale: sc });
+        if (cover) page.drawRectangle({ x: left + (cover.x0 - x0) * sc, y: by + (b - cover.y1) * sc, width: (cover.x1 - cover.x0) * sc, height: (cover.y1 - cover.y0) * sc, color: white });
+        y = by - 6;
+      };
+
+      /* cover page */
       if (opts.cover) {
-        const pg = out.addPage([595.28, 841.89]), total = items.reduce((a, it) => a + qMarks(it), 0);
+        const pg = out.addPage([PW, PH]), total = items.reduce((a, it) => a + qMarks(it), 0);
         /* exam pace: about 1.2 minutes a mark for written questions, a multiple-choice question about 1.9 */
-        const mins = Math.round(items.reduce((a, it) => a + (it.mcq ? 1.875 : 1.2 * qMarks(it)), 0) / 5) * 5;
+        const mins = Math.max(5, Math.round(items.reduce((a, it) => a + (it.mcq ? 1.875 : 1.2 * qMarks(it)), 0) / 5) * 5);
         pg.drawText(clean(opts.title || "Worksheet"), { x: 56, y: 760, size: 24, font: bold, color: ink, maxWidth: 480 });
-        pg.drawText(clean(data.label || ""), { x: 56, y: 736, size: 11, font, color: rgb(0.4, 0.42, 0.42) });
-        const line = (label, x, y, w) => { pg.drawText(label, { x, y, size: 11, font, color: ink }); const lx = x + font.widthOfTextAtSize(label, 11) + 6; pg.drawLine({ start: { x: lx, y: y - 2 }, end: { x: x + w, y: y - 2 }, thickness: 0.7, color: rgb(0.55, 0.57, 0.57) }); };
+        pg.drawText(clean(data.label || ""), { x: 56, y: 736, size: 11, font, color: grey });
+        const line = (label, x, yy, w) => { pg.drawText(label, { x, y: yy, size: 11, font, color: ink }); const lx = x + font.widthOfTextAtSize(label, 11) + 6; pg.drawLine({ start: { x: lx, y: yy - 2 }, end: { x: x + w, y: yy - 2 }, thickness: 0.7, color: rgb(0.55, 0.57, 0.57) }); };
         line("Name", 56, 690, 300); line("Date", 376, 690, 163);
-        const box = (label, val, x) => {
+        const tile = (label, val, x) => {
           pg.drawRectangle({ x, y: 600, width: 150, height: 58, borderColor: rgb(0.8, 0.82, 0.82), borderWidth: 1 });
-          pg.drawText(label, { x: x + 12, y: 640, size: 9, font, color: rgb(0.4, 0.42, 0.42) });
+          pg.drawText(label, { x: x + 12, y: 640, size: 9, font, color: grey });
           pg.drawText(val, { x: x + 12, y: 612, size: 18, font: bold, color: ink });
         };
-        box("Total marks", String(total), 56); box("Suggested time", `${mins} min`, 222); box("Your mark", `       / ${total}`, 388);
+        tile("Total marks", String(total), 56); tile("Suggested time", `${mins} min`, 222); tile("Your mark", `       / ${total}`, 388);
         pg.drawText("Questions", { x: 56, y: 560, size: 13, font: bold, color: ink });
-        let y = 536;
-        items.forEach((it, k) => {
-          if (y < 70) return;
-          pg.drawText(clean(`${k + 1}.  ${ref(it)}`), { x: 56, y, size: 11, font, color: ink });
-          const m = qMarks(it), t = `${m} mark${m === 1 ? "" : "s"}`;
-          pg.drawText(t, { x: 539 - font.widthOfTextAtSize(t, 11), y, size: 11, font, color: rgb(0.4, 0.42, 0.42) });
-          y -= 19;
+        let yy = 536; const fits = Math.floor((536 - 70) / 19);
+        items.slice(0, fits).forEach((it, k) => {
+          pg.drawText(clean(`${k + 1}.  ${ref(it)}`), { x: 56, y: yy, size: 11, font, color: ink });
+          const mk = qMarks(it), t = `${mk} mark${mk === 1 ? "" : "s"}`;
+          pg.drawText(t, { x: 539 - font.widthOfTextAtSize(t, 11), y: yy, size: 11, font, color: grey });
+          yy -= 19;
         });
-        if (y < 70) pg.drawText(`… and ${items.length - Math.floor((536 - 70) / 19) - 1} more`, { x: 56, y: 56, size: 10, font, color: rgb(0.4, 0.42, 0.42) });
+        if (items.length > fits) pg.drawText(`… and ${items.length - fits} more`, { x: 56, y: 56, size: 10, font, color: grey });
       }
+
+      /* the questions */
       for (const [k, it] of items.entries()) {
-        const pk = pick(it), ps = pk ? partPages(pk) : qPages(it);
-        await add(it.src, ps);
-        const qp = placed[it.src + "|" + ps[0]];
-        /* "Question 1: June 2024 P2 Q8" goes in the page's top margin (drawn once all questions are in) */
-        if (qp) (qp.gshLabels ||= []).push(`Question ${k + 1}: ${ref(it)}`);
+        const m = data.pdfs[it.src], doc = await load(it.src), bands = bandsOf(it); if (!bands.length) continue;
+        const x0 = (m.x0 || m.W * 0.092) - 4, x1 = (m.x1 || m.W * 0.905) + 6;
+        const num = await numberBox(it, bands[0], m);
+        heading(k + 1, ref(it), (bands[0][2] - bands[0][1]) * Math.min(1, COLW / (x1 - x0)));
+        for (const [j, [pn, t, b]] of bands.entries()) await drawBand(doc, pn, x0, x1, t - 3, b + 6, j === 0 ? num : null);
+        y -= 18;
       }
-      for (const h of hidden) {
-        const pg = placed[h.src + "|" + h.pn]; if (!pg) continue;
-        const mb = pg.getMediaBox(), x0 = h.m.x0 || h.m.W * 0.092, x1 = h.m.x1 || h.m.W * 0.905;
-        /* past the marks column too, where answer lines end in dots, but short of the page's border */
-        const right = Math.max(Math.min(x1 + 36, h.m.W - 66), x1 + 4);
-        pg.drawRectangle({ x: mb.x + x0 - 10, y: mb.y + mb.height - h.y1, width: right - x0 + 10, height: h.y1 - h.y0, color: rgb(1, 1, 1) });
-      }
-      for (const pg of Object.values(placed)) {
-        if (!pg.gshLabels) continue;
-        const v = view(pg), size = 9;
-        let u = 46;
-        for (const label of pg.gshLabels) {
-          const o = v.at(u, v.H - 30);
-          pg.drawText(label, { x: o.x, y: o.y, size, font: bold, color: ink, rotate: v.rotate });
-          u += bold.widthOfTextAtSize(label, size) + 20;
+
+      /* mark schemes: one answer table for multiple choice, then each written question's rows */
+      if (opts.ms) {
+        const mcq = items.map((it, k) => [k + 1, it]).filter(([, it]) => it.mcq);
+        const written = items.map((it, k) => [k + 1, it]).filter(([, it]) => !it.mcq && it.ms && it.msPage);
+        if (mcq.length || written.length) {
+          newPage();
+          page.drawText("Mark schemes", { x: M, y: y - 22, size: 22, font: bold, color: ink }); y -= 46;
+          if (mcq.length) {
+            page.drawText("Multiple-choice answers", { x: M, y: y - 12, size: 12.5, font: bold, color: ink }); y -= 28;
+            const cols = 5, cw = COLW / cols;
+            mcq.forEach(([n, it], k) => {
+              if (k % cols === 0 && k) y -= 20;
+              if (y < BOTTOM + 20) newPage();
+              const x = M + (k % cols) * cw;
+              page.drawText(`${n}.`, { x, y: y - 12, size: 11.5, font, color: grey });
+              page.drawText(it.ans || "–", { x: x + 30, y: y - 12, size: 11.5, font: bold, color: ink });
+            });
+            y -= 40;
+          }
+          for (const [n, it] of written) {
+            const msDoc = await load(it.ms), pc = msDoc.getPageCount();
+            /* the page as seen: a page stored on its side is seen the other way round */
+            const seen = pn => { const pg = msDoc.getPage(pn - 1), r = pg.getRotation().angle % 180 !== 0; return r ? [pg.getHeight(), pg.getWidth()] : [pg.getWidth(), pg.getHeight()]; };
+            /* from where this question starts to where the next one does */
+            const next = it.part ? null : data.items.filter(x => x.ms === it.ms && !x.part && x.q > it.q && x.msPage).sort((a, b) => a.q - b.q)[0];
+            /* positions are fractions of the page's height as seen */
+            const start = [it.msPage, (it.msY || 0) * seen(it.msPage)[1]];
+            let end = next ? [next.msPage, next.msY * seen(next.msPage)[1]] : [it.part ? it.msPage : Math.min(pc, it.msPage + 2), seen(it.msPage)[1] * 0.92];
+            if (next && data.spec === "9701") end[1] -= 24;   /* each Cambridge question's rows sit under their own heading row */
+            if (next && next.msY < 0.12) end = [next.msPage - 1, seen(Math.max(1, next.msPage - 1))[1] * 0.92];
+            const bands = [];
+            for (let pn = start[0]; pn <= Math.max(start[0], end[0]) && pn <= pc; pn++) {
+              const [pw, ph] = seen(pn);
+              const t = pn === start[0] ? start[1] : ph * 0.09, b = pn === end[0] ? Math.min(end[1], ph * 0.92) : ph * 0.92;
+              if (b - t > 8) bands.push([pn, pw * 0.04, pw * 0.96, t, b]);
+            }
+            if (!bands.length) continue;
+            /* the heading stays with the first rows */
+            const [, fx0, fx1, ft, fb] = bands[0];
+            heading(n, `${ref(it)} mark scheme`, (fb - ft) * Math.min(1, COLW / (fx1 - fx0)));
+            for (const [pn, bx0, bx1, t, b] of bands) await drawBand(msDoc, pn, bx0, bx1, t, b, null);
+            y -= 18;
+          }
         }
       }
-      const withMs = opts.ms ? items.filter(it => it.ms && it.msPage) : [];
-      if (withMs.length) {
-        /* divider page listing the questions in order */
-        const pg = out.addPage([595.28, 841.89]);
-        pg.drawText("Mark schemes", { x: 56, y: 760, size: 24, font: bold, color: rgb(0.1, 0.1, 0.1) });
-        let y = 724;
-        items.forEach((it, k) => {
-          if (y < 60) return;
-          pg.drawText(`Question ${k + 1}: ${ref(it)}`, { x: 56, y, size: 12, font, color: rgb(0.2, 0.2, 0.2) }); y -= 20;
-        });
-        for (const [k, it] of items.entries()) {
-          if (!it.ms || !it.msPage) continue;
-          await add(it.ms, it.part ? [it.msPage] : qbMsPages(it, data) || [it.msPage]);
-          const mp = placed[it.ms + "|" + it.msPage];
-          if (mp) stamp(mp, k + 1, (it.msY || 0) * view(mp).H + 18);
-        }
-      }
-      /* footer on every page, bottom right, on a white strip so it reads over anything printed there */
-      if (opts.footer) {
-        const t = clean(opts.footer), size = 8.5;
-        for (const pg of out.getPages()) {
-          const v = view(pg), w = font.widthOfTextAtSize(t, size), u = v.W - 24 - w, r0 = v.at(u - 4, 7), t0 = v.at(u, 10);
-          pg.drawRectangle({ x: r0.x, y: r0.y, width: w + 8, height: size + 6, color: rgb(1, 1, 1), rotate: v.rotate });
-          pg.drawText(t, { x: t0.x, y: t0.y, size, font, color: rgb(0.35, 0.37, 0.37), rotate: v.rotate });
-        }
-      }
+
+      /* page numbers and the footer on every page after the cover */
+      body.forEach((pg, k) => {
+        const c = pg.getCropBox(), rot = pg.getRotation().angle % 360, size = 8.5;
+        if (rot) return;   /* a copied sideways page keeps its own markings */
+        const pnum = `Page ${k + 1} of ${body.length}`;
+        pg.drawText(pnum, { x: c.x + c.width / 2 - font.widthOfTextAtSize(pnum, size) / 2, y: c.y + 22, size, font, color: grey });
+        const t = clean(opts.footer), w = font.widthOfTextAtSize(t, size);
+        pg.drawText(t, { x: c.x + c.width - M - w, y: c.y + 22, size, font, color: grey });
+      });
       const blob = new Blob([await out.save()], { type: "application/pdf" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
