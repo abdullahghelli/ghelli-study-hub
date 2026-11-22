@@ -71,11 +71,13 @@
   }
 
   /* ---------- Routing ---------- */
+  const ACCT = ["sign-in", "my-work", "teacher", "privacy"];   /* pages drawn by account.js */
   function parse(path) {
     const p = path.replace(/\/+$/, "").replace(/\.html$/, "").split("/").filter(Boolean);
     if (!p.length) return { kind: "home" };
     if (p[0] === "viewer") return { kind: "viewer" };
     if (p.length === 1 && ["past-papers", "question-banks", "formula-sheets", "exam-dates"].includes(p[0])) return { kind: p[0] };
+    if (p.length === 1 && ACCT.includes(p[0])) return { kind: p[0] };
     if (p[0] === "past-papers" && level(p[1]) && p.length <= 3) {
       if (p.length === 3 && !track(p[1], p[2])) return { kind: "notfound" };
       return { kind: "level", l: p[1], t: p[2], mode: "papers" };
@@ -126,6 +128,7 @@
     h += bms.length
       ? bms.slice(0, 12).map(b => `<div class="bm"><button class="nav" data-bm='${esc(JSON.stringify({ src: b.src, page: b.page }))}' title="${esc(b.title)} · page ${b.page}">${bmIcon}<span class="bm-t">${esc(b.title)}</span><span class="bm-p">p.${b.page}</span></button><button class="bm-x" data-bm-x='${esc(JSON.stringify({ src: b.src, page: b.page }))}' aria-label="Remove bookmark">×</button></div>`).join("")
       : "";
+    h += `<div class="side-foot"><a href="/privacy">Privacy</a></div>`;
     $("#side").innerHTML = h;
   }
   function crumbs(parts) {
@@ -330,6 +333,7 @@
     return h + `<nav class="pager">${prev}${next}</nav>`;
   }
 
+  let paperChoices = null;
   function vPapers({ l, t, s }) {
     const c = course(l, t, s), T = track(l, t);
     crumbs([...trackCrumbs(l, t), { t: subj(s).name, href: url.subject(l, t, s) }, { t: "Past papers" }]); setTitle(`${T.full} ${subj(s).name} past papers`);
@@ -348,8 +352,11 @@
       return `<a class="chip chip-${ty.toLowerCase()}" ${pdfAttrs({ src: u, title: `${name} (${ty})`, desc: `${kind} · ${T.full} ${subj(s).name} ${c.code}`, ms })} title="${esc(`${name} · ${kind}`)}">${ty}</a>`;
     };
     const rows = seriesRows.map(ser => `<tr><td>${ser}</td>${cols.map(([id]) => `<td>${cell(ser, id, "QP")}${cell(ser, id, "MS")}</td>`).join("")}${hasER ? `<td>${cell(ser, 0, "ER")}</td>` : ""}</tr>`).join("");
+    /* teachers: set one of these papers as work */
+    paperChoices = window.GSHAccount?.isTeacher() ? seriesRows.flatMap(ser => cols.filter(([id]) => links[`${ser}|${id}|QP`]).map(([id, label]) => ({
+      name: `${label} · ${ser}`, src: links[`${ser}|${id}|QP`], ms: links[`${ser}|${id}|MS`] || "", desc: `${T.full} ${subj(s).name} ${c.code}` }))) : null;
     return subjHead(l, t, s, "papers") + `
-      <h2>By series</h2>
+      <div class="pp-head"><h2>By series</h2>${paperChoices && paperChoices.length ? `<button type="button" class="qb-btn" data-assign-paper>Assign a paper</button>` : ""}</div>
       <div class="pp"><table><thead><tr><th>Series</th>${cols.map(([, label]) => `<th>${esc(label)}</th>`).join("")}${hasER ? "<th>Report</th>" : ""}</tr></thead><tbody>${rows}</tbody></table></div>
       ${c.paperNote ? `<p class="legend">${esc(c.paperNote)}</p>` : ""}
       <p class="legend">QP question paper · MS mark scheme${hasER ? " · ER examiner report" : ""}. Highlighted codes are available.</p>
@@ -421,6 +428,8 @@
     const shared = new URLSearchParams(location.search).get("ws"), sharedTitle = new URLSearchParams(location.search).get("t");
     if (shared) { history.replaceState(history.state, "", location.pathname); setTimeout(() => qbSharedOffer(shared, sharedTitle), 300); }
     if (askMix) history.replaceState(history.state, "", location.pathname);
+    const workId = new URLSearchParams(location.search).get("a");
+    if (workId) history.replaceState(history.state, "", location.pathname);
     /* modular courses (IAL): units are separate papers, so the bank shows one unit's topics at a time */
     const unitOf = id => (data.topics.find(t => t.id === id) || {}).group;
     const shown = () => data.modular ? groups.filter(([g]) => g === unitOf(st.topic)) : groups;
@@ -439,6 +448,20 @@
       const ok = list.filter(i => !(i.mcq && !i.ans) && !(i.part && whole.has(i.src + "#" + i.q)));
       const by = f => shuffle(ok.filter(f));
       return [...by(i => ["miss", "part"].includes(qbProg.map[i.id])), ...by(i => !qbProg.map[i.id]), ...by(i => qbProg.map[i.id] === "got")].map(i => i.id);
+    };
+    /* work set by a teacher: its questions as a quiz, carrying on from the marks saved so far */
+    const workGo = async id => {
+      box.innerHTML = `<div class="qb-loading">Loading your work…</div>`;
+      let w;
+      try { w = await window.GSHAccount.loadWork(id); }
+      catch (e) { qbToast(e.message); qz = null; render(); return; }
+      const ids = w.kind === "qs" ? w.payload.items.map(x => x.id).filter(iid => data.items.some(i => i.id === iid)) : [];
+      if (!ids.length) { qbToast("That work has no questions from this bank"); qz = null; render(); return; }
+      const res = {}; ids.forEach(iid => { if (w.marks[iid]) res[iid] = w.marks[iid]; });
+      const first = ids.findIndex(iid => !res[iid]);
+      const parts = Object.fromEntries(w.payload.items.filter(x => x.parts && x.parts.length).map(x => [x.id, x.parts]));
+      qz = { ids, k: first < 0 ? ids.length - 1 : first, res, end: first < 0, work: { id: w.id, title: w.title, due: w.due, parts, sent: first < 0 } };
+      render(); box.scrollIntoView({ block: "start", behavior: "smooth" });
     };
     const quizGo = (ids, mix) => { qz = ids.length ? { ids, k: 0, res: {}, mix } : null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); };
     /* ----- Mixed quiz: questions from several topics, taken in turn from each so no one topic fills it ----- */
@@ -496,16 +519,19 @@
       const n = qz.ids.length;
       if (!qz.end && qz.k < n) {
         const it = data.items.find(x => x.id === qz.ids[qz.k]);
+        const wp = qz.work && qz.work.parts[it.id];
         return `<section class="qb-main qz ${qz.mix ? "mix" : ""}" aria-label="Quiz">
-          <div class="qz-head"><div class="qz-title"><small>${qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
-            <button type="button" class="qb-btn" data-qz-end>End quiz</button></div>
+          <div class="qz-head"><div class="qz-title"><small>${qz.work ? "Set work · " + esc(qz.work.title) : qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
+            ${qz.work ? `<button type="button" class="qb-btn" data-qz-print>Worksheet PDF</button><a class="qb-btn" href="/my-work">Save and leave</a>` : `<button type="button" class="qb-btn" data-qz-end>End quiz</button>`}</div>
           <div class="qz-bar" data-qz-bar style="--n:${n}">${qzBar()}</div>
+          ${qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Show the answer when you're done, then mark how it went. Your teacher sees your marks.</p>` : ""}
           ${qbCard(it, data)}
           <div class="qz-nav"><button type="button" class="qb-btn qz-next" data-qz-next></button></div>
         </section>`;
       }
       const done = qzDone(), c = { got: 0, part: 0, miss: 0, skip: 0 };
       done.forEach(id => c[qz.res[id] || "skip"]++);
+      if (qz.work && !qz.work.sent) { qz.work.sent = true; window.GSHAccount.finish(qz.work.id, c.got, qz.ids.length); }
       const weak = done.filter(id => ["miss", "part"].includes(qz.res[id]));
       const item = id => data.items.find(x => x.id === id);
       /* mixed quiz: how each topic went, weakest first, each a link to its questions */
@@ -517,17 +543,18 @@
       }).join("") : "";
       return `<section class="qb-main qz" aria-label="Quiz results">
         <div class="qz-done">
-          <small>${qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small>
-          <h2>${c.got === done.length ? "Every one right 🎉" : "Quiz done"}</h2>
+          <small>${qz.work ? "Set work · " + esc(qz.work.title) : qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small>
+          <h2>${c.got === done.length ? "Every one right 🎉" : qz.work ? "Work done" : "Quiz done"}</h2>
           <p class="qz-sum"><b>${c.got}</b> of ${done.length} got it${c.part ? ` · ${c.part} partly` : ""}${c.miss ? ` · ${c.miss} missed` : ""}${c.skip ? ` · ${c.skip} skipped` : ""}</p>
           <div class="qz-bar big" style="--n:${done.length}">${done.map(id => `<i class="b-${qz.res[id] || "skip"}"></i>`).join("")}</div>
           ${topicRows ? `<h3 class="qz-h3">By topic</h3><ul class="qz-topics">${topicRows}</ul><h3 class="qz-h3">Questions</h3>` : ""}
           <ol class="qz-list">${done.map(id => { const i = item(id); return `<li><span>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` (${i.part})` : ""}</span><span class="qb-stbadge"><span class="b-${qz.res[id] || "skip"}">${QZ_L[qz.res[id] || "skip"]}</span></span></li>`; }).join("")}</ol>
           <div class="qz-actions">
-            ${weak.length ? `<button type="button" class="qb-btn primary" data-qz-retry>Retry ${weak.length === 1 ? "the one" : `the ${weak.length}`} I missed or got partly</button>` : ""}
-            <button type="button" class="qb-btn ${weak.length ? "" : "primary"}" data-qz-again>Quiz again</button>
-            ${weak.length ? `<button type="button" class="qb-btn" data-qz-ws>Add ${weak.length === 1 ? "it" : "them"} to my worksheet</button>` : ""}
-            <button type="button" class="qb-btn" data-qz-back>Back to questions</button>
+            ${qz.work ? `<a class="qb-btn primary" href="/my-work">Back to My work</a><button type="button" class="qb-btn" data-qz-redo>Change a mark</button>` : ""}
+            ${weak.length && !qz.work ? `<button type="button" class="qb-btn primary" data-qz-retry>Retry ${weak.length === 1 ? "the one" : `the ${weak.length}`} I missed or got partly</button>` : ""}
+            ${qz.work ? "" : `<button type="button" class="qb-btn ${weak.length ? "" : "primary"}" data-qz-again>Quiz again</button>`}
+            ${weak.length && !qz.work ? `<button type="button" class="qb-btn" data-qz-ws>Add ${weak.length === 1 ? "it" : "them"} to my worksheet</button>` : ""}
+            ${qz.work ? "" : `<button type="button" class="qb-btn" data-qz-back>Back to questions</button>`}
           </div>
         </div>
       </section>`;
@@ -627,7 +654,13 @@
         const tl = e.target.closest("[data-qz-topic]");
         if (tl) { st.topic = tl.dataset.qzTopic; st.specs = st.specs || {}; st.specs[st.topic] = []; qz = null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
         if (e.target.closest("[data-qz-end]")) { if (qzDone().length) qz.end = true; else qz = null; render(); return; }
-        if (e.target.closest("[data-qz-next]")) { const id = qz.ids[qz.k]; if (!qz.res[id]) qz.res[id] = "skip"; qz.k++; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+        if (e.target.closest("[data-qz-next]")) {
+          const id = qz.ids[qz.k]; if (!qz.res[id]) { qz.res[id] = "skip"; if (qz.work) window.GSHAccount.mark(qz.work.id, id, "skip"); }
+          qz.k++;
+          render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return;
+        }
+        if (e.target.closest("[data-qz-print]")) { qbSetWs(qz.ids, qz.work.parts); qbWsDialog(); return; }
+        if (e.target.closest("[data-qz-redo]")) { qz.end = false; qz.k = 0; qz.work.sent = false; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
         if (e.target.closest("[data-qz-back]")) { qz = null; render(); return; }
         if (e.target.closest("[data-qz-again]")) { quizGo(qz.mix ? mixPool(qz.mix).slice(0, qz.ids.length) : quizPool(qzList).slice(0, qz.ids.length), qz.mix); return; }
         const weak = () => qzDone().filter(id => ["miss", "part"].includes(qz.res[id]));
@@ -666,7 +699,7 @@
       if (mk) {
         const id = mk.closest("[data-qb-card]").dataset.qbCard, v = qbProg.map[id] === mk.dataset.qbSt && (!qz || qz.res[id]) ? null : mk.dataset.qbSt;
         qbSetProg(id, v, box, data, key);
-        if (qz) { if (v) qz.res[id] = v; else delete qz.res[id]; qzNav(); }
+        if (qz) { if (v) qz.res[id] = v; else delete qz.res[id]; qzNav(); if (qz.work) window.GSHAccount.mark(qz.work.id, id, v); }
         return;
       }
       /* multiple choice: pick A-D, then Check */
@@ -692,7 +725,7 @@
         qbSetProg(it.id, ok ? "got" : "miss", box, data, key);
         pick.classList.add(ok ? "right" : "wrong");
         /* in a quiz the first answer counts */
-        if (qz) { qz.res[it.id] = ok ? "got" : "miss"; mc.querySelectorAll("[data-qb-opt], [data-qb-check]").forEach(b => b.disabled = true); qzNav(); }
+        if (qz) { qz.res[it.id] = ok ? "got" : "miss"; mc.querySelectorAll("[data-qb-opt], [data-qb-check]").forEach(b => b.disabled = true); qzNav(); if (qz.work) window.GSHAccount.mark(qz.work.id, it.id, qz.res[it.id]); }
         res.innerHTML = ok ? `<span class="qb-mcq-ok">✓ Correct</span>` : `<span class="qb-mcq-no">✗ Not right</span> <button type="button" class="qb-link" data-qb-reveal>Show answer</button>`;
         return;
       }
@@ -765,7 +798,7 @@
         $("#qb-spec-" + e.target.dataset.qbSpec.replace(".", "-"))?.focus({ preventScroll: true });
       }
     };
-    if (askMix) mixSetup(); else render();
+    if (workId && window.GSHAccount) workGo(workId); else if (askMix) mixSetup(); else render();
   }
   /* ----- Worksheet builder: pick questions, then download one PDF with their pages and, at the back,
      their mark scheme pages. Picks are kept per question bank in this browser. ----- */
@@ -863,6 +896,11 @@
         if (b.dataset.ws === "clear") { const was = qbWs.ids; qbWs.ids = []; qbWs.parts = {}; qbWsSave(); was.forEach(qbRefreshCard); qbWsBar(); }
         if (b.dataset.ws === "build") qbWsDialog();
         if (b.dataset.ws === "save") qbSavedDialog(true);
+        if (b.dataset.ws === "assign") {
+          const topic = (qbWs.data.topics.find(t => t.id === qbState.topic) || {}).name || "", marks = qbWs.ids.reduce((a, id) => a + qbWsMarks(id), 0), n = qbWs.ids.length;
+          window.GSHAccount.assignDialog({ kind: "qs", bank: qbWs.bank, title: `${qbWs.data.spec} · ${topic}`, summary: `${n} question${n === 1 ? "" : "s"}${marks ? ` · ${marks} marks` : ""}`,
+            payload: { items: qbWs.ids.map(id => qbWs.parts[id] ? { id, parts: qbWs.parts[id] } : { id }), marks } });
+        }
       };
       document.body.appendChild(bar);
     }
@@ -871,6 +909,7 @@
     bar.innerHTML = `<span><b>Worksheet</b> · ${n} question${n === 1 ? "" : "s"}${marks ? `<i class="wsm" style="font-style:normal"> · ${marks} marks</i>` : ""}</span>
       <button class="qb-btn" data-ws="clear">Clear</button>
       <button class="qb-btn" data-ws="save">Save<span class="ws-long"> or share</span></button>
+      ${window.GSHAccount?.isTeacher() ? `<button class="qb-btn" data-ws="assign">Assign</button>` : ""}
       <button class="qb-btn primary" data-ws="build">Build PDF</button>`;
   }
   /* ----- Saved worksheets (kept in this browser, per question bank) and share links that rebuild the same set ----- */
@@ -1487,11 +1526,11 @@
     /* fade the page in only when it's a different page, not when this one redraws (ticking a spec, say) */
     if (page.dataset.path !== location.pathname) { page.style.animation = "none"; void page.offsetWidth; page.style.animation = ""; }
     page.dataset.path = location.pathname;
-    page.innerHTML = views[r.kind] ? views[r.kind](r) : vTool(r.kind);
+    page.innerHTML = views[r.kind] ? views[r.kind](r) : ACCT.includes(r.kind) && window.GSHAccount ? window.GSHAccount.view(r.kind) : vTool(r.kind);
     renderSide(r);   /* after the page: it lists the subjects opened lately, this one included */
     /* search engines: a page that isn't there isn't indexed; the address of this page without a trailing slash */
     let rb = document.querySelector('meta[name="robots"]');
-    if (r.kind === "notfound") { if (!rb) { rb = document.createElement("meta"); rb.name = "robots"; document.head.appendChild(rb); } rb.content = "noindex"; } else rb?.remove();
+    if (r.kind === "notfound" || (ACCT.includes(r.kind) && r.kind !== "privacy")) { if (!rb) { rb = document.createElement("meta"); rb.name = "robots"; document.head.appendChild(rb); } rb.content = "noindex"; } else rb?.remove();
     const cl = document.querySelector('link[rel="canonical"]'); if (cl) cl.href = location.origin + (location.pathname.replace(/\/+$/, "").replace(/\.html$/, "").replace(/\/index$/, "") || "/");
   }
 
@@ -1544,6 +1583,7 @@
       if (b) { $("#app").classList.remove("nav-open"); window.Viewer.open(b); }
       return;
     }
+    if (e.target.closest("[data-assign-paper]") && paperChoices) { window.GSHAccount.assignDialog({ kind: "paper", papers: paperChoices }); return; }
     if (e.target.closest("[data-home-edit]")) { homePicking = !homePicking; const y = scrollY; render(); scrollTo(0, y); return; }
     const hp = e.target.closest("[data-home-pick]");
     if (hp) { const k = hp.dataset.homePick, c = chosenSpecs(); store.set("qb-mine", c.includes(k) ? c.filter(x => x !== k) : [...c, k]); const y = scrollY; render(); scrollTo(0, y); return; }
@@ -1615,5 +1655,15 @@
   };
   window.addEventListener("popstate", () => { window.Viewer?.close(); render(); });
   window.addEventListener("gsh-bookmarks", () => renderSide(parse(location.pathname)));
+  /* accounts (account.js): what it needs from here, and redraws when who's signed in changes */
+  window.GSHAccount?.init({
+    S, esc, url, crumbs, setTitle, qbLabel, toast: m => qbToast(m),
+    go: (href, replace) => { if (replace) { history.replaceState(null, "", href); render(); window.scrollTo(0, 0); } else go(href); },
+    refresh: () => {
+      const k = parse(location.pathname).kind;
+      if ($("#qb-ws-bar")) qbWsBar();
+      if (k === "papers" || ACCT.includes(k)) render();
+    },
+  });
   render();
 })();

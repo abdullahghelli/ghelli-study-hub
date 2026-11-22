@@ -91,6 +91,10 @@ for (const x of subjects) {
   });
 }
 
+/* the privacy policy: the same text the site shows (assets/privacy.html) */
+add("/privacy", "Privacy policy", "What Ghelli Study Hub records when you use it or sign in, why, and how to have it deleted.",
+  fs.readFileSync(path.join(ROOT, "assets/privacy.html"), "utf8"), "0.3");
+
 /* write the pages */
 let written = 0;
 for (const p of pages) {
@@ -112,5 +116,5 @@ fs.writeFileSync(path.join(ROOT, "sitemap.xml"), `<?xml version="1.0" encoding="
 ${pages.map(p => `  <url><loc>${BASE}${p.route === "/" ? "/" : p.route}</loc><lastmod>${today}</lastmod><priority>${p.priority}</priority></url>`).join("\n")}
 </urlset>
 `);
-fs.writeFileSync(path.join(ROOT, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${BASE}/sitemap.xml\n`);
+fs.writeFileSync(path.join(ROOT, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /sign-in\nDisallow: /my-work\nDisallow: /teacher\n\nSitemap: ${BASE}/sitemap.xml\n`);
 console.log(written, "pages,", subjects.length, "subjects; sitemap.xml and robots.txt written");

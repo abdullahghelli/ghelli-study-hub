@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /sign-in
+Disallow: /my-work
+Disallow: /teacher
 
 Sitemap: https://ghelli-study-hub.pages.dev/sitemap.xml
