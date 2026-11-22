@@ -737,3 +737,34 @@ body.pv-open .qb-ws-bar{display:none}
 :root[data-theme="dark"] .qb-ans{background:#1b1d1c}
 :root[data-theme="dark"] .qb-ans canvas{filter:invert(.9) hue-rotate(180deg)}
 :root[data-theme="dark"] .qb-ans-note,:root[data-theme="dark"] .qb-ans-msg{color:var(--muted)}
+/* Quiz me */
+.qz-start{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin:14px 0;padding:12px 14px;border-radius:12px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
+.qz-start>span:first-child{font-size:14px;color:var(--muted)}
+.qz-start b{color:var(--accent);font-size:15px;margin-right:4px}
+.qz-ns{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.qz-ns .qb-btn{background:var(--bg);min-width:40px}
+.qz-ns small{color:var(--muted);font-size:13px;margin-left:2px}
+.qb.qz-on,.page.wide .qb.qz-on{grid-template-columns:minmax(0,1fr)}
+.qb.qz-on{scroll-margin-top:72px}
+.qz{width:100%;max-width:860px;margin:0 auto}
+.qz-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
+.qz-title small,.qz-done>small{display:block;font-size:13px;color:var(--muted);margin-bottom:2px}
+.qz-title b{font-size:20px;letter-spacing:-.01em}
+.qz-bar{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:3px;height:6px;margin-bottom:18px}
+.qz-bar i{border-radius:3px;background:var(--line)}
+.qz-bar i.now{background:var(--fg)}
+.qz-bar i.b-got{background:var(--got)}.qz-bar i.b-part{background:var(--part)}.qz-bar i.b-miss{background:var(--miss)}
+.qz-bar i.b-skip{background:color-mix(in srgb,var(--muted) 45%,transparent)}
+.qz-bar.big{height:10px;margin:14px 0 18px}
+.qz-nav{display:flex;justify-content:flex-end;margin:6px 0 24px}
+.qz-next{height:40px;padding:0 20px;font-size:14px}
+.qz-done{padding:28px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--line)}
+.qz-done h2{margin:0;color:var(--fg);font-size:26px;letter-spacing:-.02em}
+.qz-sum{margin:8px 0 0;color:var(--muted)}
+.qz-sum b{color:var(--fg);font-size:18px}
+.qz-list{list-style:none;margin:0 0 20px;padding:0;border-top:1px solid var(--line)}
+.qz-list li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.qb-stbadge .b-skip{color:var(--muted);background:var(--hover)}
+.qz-actions{display:flex;flex-wrap:wrap;gap:8px}
+.qz-actions .qb-btn{height:38px}
+@media (max-width:600px){.qz-done{padding:18px}.qz-nav .qz-next{width:100%}}

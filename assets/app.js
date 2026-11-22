@@ -393,6 +393,60 @@
     const paperOf = () => data.papers && data.papers.some(([p]) => p === st.paper) ? st.paper : "all";
     const filtered = topicId => data.items.filter(i => (!topicId || i.topic === topicId) && (st.year === "all" || i.year === +st.year) && (paperOf() === "all" || i.ptype === paperOf()));
     const paperSel = id => data.papers ? `<label class="qb-select"><span>Paper</span><select id="${id}">${[["all", "All papers"], ...data.papers].map(([p, name]) => `<option value="${p}" ${paperOf() === p ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : "";
+    /* ----- Quiz me: the questions shown here, one at a time (missed or partly first, then not tried, Got it last) ----- */
+    let qz = null, qzList = [];
+    const shuffle = a => { for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; };
+    const quizPool = list => {
+      /* a part card whose whole question is also here would repeat it; multiple choice needs an answer key to check */
+      const whole = new Set(list.filter(i => !i.part).map(i => i.src + "#" + i.q));
+      const ok = list.filter(i => !(i.mcq && !i.ans) && !(i.part && whole.has(i.src + "#" + i.q)));
+      const by = f => shuffle(ok.filter(f));
+      return [...by(i => ["miss", "part"].includes(qbProg.map[i.id])), ...by(i => !qbProg.map[i.id]), ...by(i => qbProg.map[i.id] === "got")].map(i => i.id);
+    };
+    const quizGo = ids => { qz = ids.length ? { ids, k: 0, res: {} } : null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); };
+    const QZ_L = { ...QB_ST, skip: "Skipped" };
+    const qzBar = () => qz.ids.map((id, k) => `<i class="${qz.res[id] ? "b-" + qz.res[id] : k === qz.k ? "now" : ""}"></i>`).join("");
+    const qzDone = () => qz.ids.slice(0, qz.k + (qz.k < qz.ids.length && qz.res[qz.ids[qz.k]] ? 1 : 0));
+    /* the Next button and the bar follow the marking without redrawing the question */
+    const qzNav = () => {
+      const b = box.querySelector("[data-qz-next]"); if (!b) return;
+      const on = !!qz.res[qz.ids[qz.k]], last = qz.k === qz.ids.length - 1;
+      b.textContent = on ? (last ? "See results" : "Next question →") : (last ? "Skip and finish" : "Skip");
+      b.classList.toggle("primary", on);
+      box.querySelector("[data-qz-bar]").innerHTML = qzBar();
+    };
+    const quizView = tp => {
+      const n = qz.ids.length;
+      if (!qz.end && qz.k < n) {
+        const it = data.items.find(x => x.id === qz.ids[qz.k]);
+        return `<section class="qb-main qz" aria-label="Quiz">
+          <div class="qz-head"><div class="qz-title"><small>Quiz · ${esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
+            <button type="button" class="qb-btn" data-qz-end>End quiz</button></div>
+          <div class="qz-bar" data-qz-bar style="--n:${n}">${qzBar()}</div>
+          ${qbCard(it, data)}
+          <div class="qz-nav"><button type="button" class="qb-btn qz-next" data-qz-next></button></div>
+        </section>`;
+      }
+      const done = qzDone(), c = { got: 0, part: 0, miss: 0, skip: 0 };
+      done.forEach(id => c[qz.res[id] || "skip"]++);
+      const weak = done.filter(id => ["miss", "part"].includes(qz.res[id]));
+      const item = id => data.items.find(x => x.id === id);
+      return `<section class="qb-main qz" aria-label="Quiz results">
+        <div class="qz-done">
+          <small>Quiz · ${esc(tp.name)}</small>
+          <h2>${c.got === done.length ? "Every one right 🎉" : "Quiz done"}</h2>
+          <p class="qz-sum"><b>${c.got}</b> of ${done.length} got it${c.part ? ` · ${c.part} partly` : ""}${c.miss ? ` · ${c.miss} missed` : ""}${c.skip ? ` · ${c.skip} skipped` : ""}</p>
+          <div class="qz-bar big" style="--n:${done.length}">${done.map(id => `<i class="b-${qz.res[id] || "skip"}"></i>`).join("")}</div>
+          <ol class="qz-list">${done.map(id => { const i = item(id); return `<li><span>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` (${i.part})` : ""}</span><span class="qb-stbadge"><span class="b-${qz.res[id] || "skip"}">${QZ_L[qz.res[id] || "skip"]}</span></span></li>`; }).join("")}</ol>
+          <div class="qz-actions">
+            ${weak.length ? `<button type="button" class="qb-btn primary" data-qz-retry>Retry ${weak.length === 1 ? "the one" : `the ${weak.length}`} I missed or got partly</button>` : ""}
+            <button type="button" class="qb-btn ${weak.length ? "" : "primary"}" data-qz-again>Quiz again</button>
+            ${weak.length ? `<button type="button" class="qb-btn" data-qz-ws>Add ${weak.length === 1 ? "it" : "them"} to my worksheet</button>` : ""}
+            <button type="button" class="qb-btn" data-qz-back>Back to questions</button>
+          </div>
+        </div>
+      </section>`;
+    };
     const render = () => {
       store.set("qb", st);
       const tp = data.topics.find(t => t.id === st.topic);
@@ -415,6 +469,11 @@
       const shows = { all: () => true, new: i => !qbProg.map[i.id], weak: i => ["miss", "part"].includes(qbProg.map[i.id]), got: i => qbProg.map[i.id] === "got" };
       const list = bySpec.filter(shows[st.show]);
       qbSummary(data, key);
+      qzList = list;
+      box.classList.toggle("qz-on", !!qz);
+      if (qz) { box.innerHTML = quizView(tp); qbObserve(box, data); qzNav(); return; }
+      const qn = quizPool(list).length;
+      const quizBox = qn ? `<div class="qz-start"><span><b>Quiz me</b> one question at a time</span><span class="qz-ns">${[5, 10, 20].filter(n => n < qn).map(n => `<button type="button" class="qb-btn" data-qz-n="${n}">${n}</button>`).join("")}${qn <= 20 ? `<button type="button" class="qb-btn" data-qz-n="${qn}">All ${qn}</button>` : ""}<small>questions</small></span></div>` : "";
       const specBox = pts.length ? `<fieldset class="qb-specfilter"><legend>Spec points${picked.length ? ` <button type="button" class="qb-clear" data-qb-clear>Clear</button>` : ` <button type="button" class="qb-clear" data-qb-all>Select all</button>`}</legend>
           <div class="qb-speclist">${pts.map(([c, name]) => {
             const n = inTopic.filter(i => (i.spec || []).includes(c)).length;
@@ -438,12 +497,30 @@
           <p class="qb-tprog" data-qb-hprog>${qbHeadProg(inTopic)}</p>
           ${specBox}
           ${waiting ? "" : `<div class="qb-show" role="group" aria-label="Show">${[["all", "All"], ["new", "Not tried"], ["weak", "Missed or partly"], ["got", "Got it"]].map(([v, l]) => `<button type="button" class="qb-showbtn ${st.show === v ? "on" : ""}" data-qb-show="${v}" aria-pressed="${st.show === v}">${l}</button>`).join("")}</div>`}
+          ${quizBox}
           ${list.length ? `<div class="qb-wsall"><span class="qb-fill"><label for="qb-fill-n">Fill a worksheet to</label><input id="qb-fill-n" type="number" min="1" max="300" value="${store.get("ws-fill", 40)}" inputmode="numeric"><span>marks</span><button type="button" class="qb-btn" data-qb-fill>Fill</button></span><button type="button" class="qb-btn" data-qb-wsall></button></div>` : ""}
           ${waiting ? `<p class="qb-empty qb-pick">Tick one or more spec points above to load their questions.</p>` : list.length ? list.map(i => qbCard(i, data)).join("") : (st.show !== "all" && bySpec.length ? `<p class="qb-empty">${{ new: "You've tried every question here.", weak: "Nothing missed here. 🎉", got: "None marked Got it yet." }[st.show]}</p>` : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`)}
         </section>`;
       qbObserve(box, data); qbWsAll(box);
     };
     box.onclick = e => {
+      const qn = e.target.closest("[data-qz-n]");
+      if (qn) { quizGo(quizPool(qzList).slice(0, +qn.dataset.qzN)); return; }
+      if (qz) {
+        if (e.target.closest("[data-qz-end]")) { if (qzDone().length) qz.end = true; else qz = null; render(); return; }
+        if (e.target.closest("[data-qz-next]")) { const id = qz.ids[qz.k]; if (!qz.res[id]) qz.res[id] = "skip"; qz.k++; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+        if (e.target.closest("[data-qz-back]")) { qz = null; render(); return; }
+        if (e.target.closest("[data-qz-again]")) { quizGo(quizPool(qzList).slice(0, qz.ids.length)); return; }
+        const weak = () => qzDone().filter(id => ["miss", "part"].includes(qz.res[id]));
+        if (e.target.closest("[data-qz-retry]")) { quizGo(shuffle(weak())); return; }
+        const qw = e.target.closest("[data-qz-ws]");
+        if (qw) {
+          const add = weak().filter(id => !qbWs.ids.includes(id));
+          qbWs.ids = qbWs.ids.concat(add); add.forEach(id => delete qbWs.parts[id]); qbWsSave(); qbWsBar();
+          qbToast(add.length ? `Added ${add.length} question${add.length === 1 ? "" : "s"} to your worksheet` : "They're already on your worksheet");
+          qw.disabled = true; return;
+        }
+      }
       if (e.target.closest("[data-qb-fill]")) {
         /* questions shown here, in random order, until the marks reach the target (never a question that would go well past it) */
         const n = Math.max(1, Math.min(300, +box.querySelector("#qb-fill-n").value || 40)); store.set("ws-fill", n);
@@ -465,7 +542,12 @@
       const sh = e.target.closest("[data-qb-show]");
       if (sh) { st.show = sh.dataset.qbShow; render(); return; }
       const mk = e.target.closest("[data-qb-st]");
-      if (mk) { const id = mk.closest("[data-qb-card]").dataset.qbCard; qbSetProg(id, qbProg.map[id] === mk.dataset.qbSt ? null : mk.dataset.qbSt, box, data, key); return; }
+      if (mk) {
+        const id = mk.closest("[data-qb-card]").dataset.qbCard, v = qbProg.map[id] === mk.dataset.qbSt && (!qz || qz.res[id]) ? null : mk.dataset.qbSt;
+        qbSetProg(id, v, box, data, key);
+        if (qz) { if (v) qz.res[id] = v; else delete qz.res[id]; qzNav(); }
+        return;
+      }
       /* multiple choice: pick A-D, then Check */
       const opt = e.target.closest("[data-qb-opt]");
       if (opt) {
@@ -488,6 +570,8 @@
         const ok = pick.dataset.qbOpt === it.ans;
         qbSetProg(it.id, ok ? "got" : "miss", box, data, key);
         pick.classList.add(ok ? "right" : "wrong");
+        /* in a quiz the first answer counts */
+        if (qz) { qz.res[it.id] = ok ? "got" : "miss"; mc.querySelectorAll("[data-qb-opt], [data-qb-check]").forEach(b => b.disabled = true); qzNav(); }
         res.innerHTML = ok ? `<span class="qb-mcq-ok">✓ Correct</span>` : `<span class="qb-mcq-no">✗ Not right</span> <button type="button" class="qb-link" data-qb-reveal>Show answer</button>`;
         return;
       }
