@@ -107,7 +107,7 @@
       <a class="nav ${path === "/" ? "on" : ""}" href="/">${icon.home}Home</a>
       <button class="nav" data-act="search">${icon.search}Search</button>`;
     const mine = mySubjects();
-    if (mine.length) h += `<div class="side-label">My subjects</div>` + mine.map(k => {
+    if (mine.length) h += `<div class="side-label">My specs</div>` + mine.map(k => {
       const [l, t, s] = k.split("/"), on = r.l === l && r.t === t && r.s === s;
       return `<a class="nav ${on ? "on" : ""}" href="${url.subject(l, t, s)}"><span class="side-dot s-${subj(s).color}-v"></span>${esc(subj(s).name)} <span class="side-code">${esc(course(l, t, s).code)}</span></a>`;
     }).join("");
@@ -157,7 +157,9 @@
   const liveTracks = L => L.groups.flatMap(g => g.tracks).filter(t => liveSubjects(L.id, t).length);
   const liveLevels = () => S.levels.filter(L => liveTracks(L).length);
   /* subjects this person uses: the ones they chose, then the ones they've opened lately */
-  const mySubjects = () => [...new Set([...store.get("qb-mine", []), ...store.get("subj-recent", [])])].filter(k => isLive(...k.split("/"))).slice(0, 6);
+  const chosenSpecs = () => store.get("qb-mine", []).filter(k => isLive(...k.split("/")));
+  const mySubjects = () => (chosenSpecs().length ? chosenSpecs() : store.get("subj-recent", []).filter(k => isLive(...k.split("/")))).slice(0, 8);
+  let homePicking = false;
   const noteSubject = k => store.set("subj-recent", [k, ...store.get("subj-recent", []).filter(x => x !== k)].slice(0, 6));
   const subjCard = k => {
     const [l, t, s] = k.split("/"), c = course(l, t, s);
@@ -225,15 +227,26 @@
     const last = store.get("qb-last", null), lastOk = last && hasBank(...last.k.split("/"));
     const cont = lastOk ? (() => { const [l, t, s] = last.k.split("/"), c = course(l, t, s);
       return `<a class="home-cont s-${subj(s).color}-q" href="${url.qbank(l, t, s)}"><small>Continue where you left off</small><b>${esc(subj(s).name)} ${esc(c.code)}${last.name ? ` · ${last.num ? last.num + " " : ""}${esc(last.name)}` : ""}</b>${icon.arrow}</a>`; })() : "";
-    const mine = mySubjects();
+    const mine = mySubjects(), chosen = chosenSpecs();
     return `<div class="home">
       <h1>What are you revising?</h1>
       <p class="lede">Every past paper question, sorted by topic and checked against the mark scheme.</p>
       <p class="home-free"><span>Free</span><span>No ads</span><span>No sign-up</span></p>
       ${cont}
-      ${mine.length ? `<section class="home-sec"><h2>Your subjects</h2><div class="chips">${mine.map(k => subjChip(k, true)).join("")}</div></section>` : ""}
-      <section class="home-sec"><h2>All subjects</h2><div class="boards-list">${liveLevels().flatMap(L => liveTracks(L).map(t =>
-        `<div class="bl-row"><span class="bl-name">${esc(L.tracks[t].full)}</span><div class="chips">${liveSubjects(L.id, t).map(s => subjChip(K(L.id, t, s))).join("")}</div></div>`)).join("")}</div></section>
+      <section class="home-sec">
+        <div class="sec-head"><h2>Your specs</h2><button type="button" class="qb-btn ${homePicking ? "primary" : ""}" data-home-edit>${homePicking ? "Done" : chosen.length ? "Change" : "Choose your specs"}</button></div>
+        ${homePicking ? `<p class="sec-note">Tick the specs you study. They stay here and in the sidebar on this device.</p>`
+          : mine.length ? `<div class="spec-cols spec-mine"><div class="spec-col">${mine.map(k => { const [l, t, s] = k.split("/");
+            return `<a href="${url.subject(l, t, s)}"><span>${esc(subj(s).name)} <em>${esc(track(l, t).full)}</em></span><small class="s-${subj(s).color}-t">${esc(course(l, t, s).code)}</small></a>`; }).join("")}</div></div>${chosen.length ? "" : `<p class="sec-note">Recently opened. Choose your specs to keep the right ones here.</p>`}`
+          : `<p class="sec-note">Choose the specs you study to keep them one tap away.</p>`}
+      </section>
+      <section class="home-sec"><h2>All subjects</h2>
+        <div class="spec-cols ${homePicking ? "picking" : ""}">${liveLevels().flatMap(L => liveTracks(L).map(t =>
+          `<div class="spec-col"><h3>${esc(L.tracks[t].full)}</h3>${liveSubjects(L.id, t).map(s => {
+            const k = K(L.id, t, s), code = `<small class="s-${subj(s).color}-t">${esc(course(L.id, t, s).code)}</small>`;
+            return homePicking ? `<button type="button" class="spec-opt ${chosen.includes(k) ? "on" : ""}" data-home-pick="${k}" aria-pressed="${chosen.includes(k)}"><span><i></i>${esc(subj(s).name)}</span>${code}</button>`
+              : `<a href="${url.subject(L.id, t, s)}"><span>${esc(subj(s).name)}</span>${code}</a>`;
+          }).join("")}</div>`)).join("")}</div></section>
       <section class="home-tutor" aria-labelledby="tutor-h">
         <div><h2 id="tutor-h">Want one-to-one help?</h2>
           <p>Online tutoring in all subjects for GCSE, IGCSE, A Level and IB, and preparation for university admissions tests. Message us on WhatsApp to book your demo.</p></div>
@@ -353,7 +366,7 @@
       ? `<optgroup label="Your specs">${mine.map(opt).join("")}</optgroup>${rest.length ? `<optgroup label="Other specs">${rest.map(opt).join("")}</optgroup>` : ""}`
       : qbKeys().map(opt).join("")}</select></label>`;
   }
-  document.addEventListener("change", e => { if (e.target.id === "qb-spec-switch") go(e.target.value); });
+  document.addEventListener("change", e => { if ((e.target.id === "qb-spec-switch" || e.target.id === "home-spec") && e.target.value) go(e.target.value); });
   const qbCache = {};
   const qbState = store.get("qb", { topic: null, ptype: "all", year: "all" });
   function vQbank({ l, t, s }) {
@@ -1530,6 +1543,9 @@
       if (b) { $("#app").classList.remove("nav-open"); window.Viewer.open(b); }
       return;
     }
+    if (e.target.closest("[data-home-edit]")) { homePicking = !homePicking; const y = scrollY; render(); scrollTo(0, y); return; }
+    const hp = e.target.closest("[data-home-pick]");
+    if (hp) { const k = hp.dataset.homePick, c = chosenSpecs(); store.set("qb-mine", c.includes(k) ? c.filter(x => x !== k) : [...c, k]); const y = scrollY; render(); scrollTo(0, y); return; }
     const qm = e.target.closest("[data-qb-mine]");
     if (qm) {
       const k = qm.dataset.qbMine, mine = qbMine();

@@ -931,3 +931,27 @@ details.qb-specfilter{padding:0}
 .bl-row{display:grid;grid-template-columns:270px minmax(0,1fr);align-items:center;gap:8px 16px;padding:12px 0;border-bottom:1px solid var(--line)}
 .bl-name{font-size:14px;color:var(--muted)}
 @media (max-width:700px){.bl-row{grid-template-columns:minmax(0,1fr)}.chip-s{height:34px;font-size:13.5px}}
+/* ===== Home: spec selector and columns by board ===== */
+.spec-pick{display:flex;align-items:center;gap:12px;margin:0 0 22px;font-size:13.5px;color:var(--muted);font-weight:500}
+.spec-pick select{flex:0 1 360px;min-width:0;height:42px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-size:14.5px}
+.spec-pick select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.spec-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 32px}
+.spec-col h3{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--muted)}
+.spec-col a{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px;color:var(--fg);text-decoration:none}
+.spec-col a:hover span{color:var(--accent)}
+.spec-col a small{font-size:13px;font-weight:600;flex:none}
+.spec-col a em{font-style:normal;font-size:13px;color:var(--faint);margin-left:6px}
+.spec-mine{grid-template-columns:minmax(0,1fr)}
+.spec-mine .spec-col{max-width:520px}
+@media (max-width:1100px){.spec-cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.spec-cols{grid-template-columns:minmax(0,1fr);gap:22px}.spec-pick{flex-direction:column;align-items:stretch;gap:6px}.spec-pick select{flex:none;width:100%}}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.sec-head h2{margin:0}
+.sec-note{margin:8px 0 0;font-size:13.5px;color:var(--muted)}
+.spec-opt{display:flex;align-items:baseline;justify-content:space-between;gap:10px;width:100%;padding:8px 0;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;font-size:15px;color:var(--fg);text-align:left;cursor:pointer}
+.spec-opt span{display:flex;align-items:center;gap:10px}
+.spec-opt i{width:17px;height:17px;border-radius:5px;box-shadow:inset 0 0 0 1.5px var(--faint);flex:none;display:grid;place-items:center}
+.spec-opt.on i{background:var(--accent);box-shadow:none}
+.spec-opt.on i::after{content:"";width:8px;height:4px;border-left:2px solid var(--bg);border-bottom:2px solid var(--bg);transform:rotate(-45deg) translate(1px,-1px)}
+.spec-opt small{font-size:13px;font-weight:600}
+.spec-opt:hover span{color:var(--accent)}
