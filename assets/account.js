@@ -63,6 +63,12 @@
   const dueTag = (a, done) => !a.due ? "" : `<span class="aw-due ${!done && a.due < today() ? "late" : ""}">${!done && a.due < today() ? "Overdue · " : "Due "}${day(a.due)}</span>`;
   const bankName = k => { try { return G.qbLabel(k); } catch (e) { return ""; } };
   const what = a => a.kind === "paper" ? `Past paper${a.payload.desc ? " · " + a.payload.desc : ""}` : `${a.payload.items.length} question${a.payload.items.length === 1 ? "" : "s"}${a.payload.marks ? ` · ${a.payload.marks} marks` : ""}${a.bank ? " · " + bankName(a.bank) : ""}`;
+  /* WhatsApp: opens a chat picker with the message written; the teacher chooses who gets it */
+  const WA_ICON = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 3.2a6.8 6.8 0 0 0-5.9 10.2L3.3 16.8l3.5-.8A6.8 6.8 0 1 0 10 3.2Z" stroke-linejoin="round"/></svg>`;
+  const waLink = (text, label) => `<a class="qb-btn wa" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${WA_ICON}${label}</a>`;
+  const first = s => String(s.name || "").trim().split(/\s+/)[0];
+  const inviteText = s => `Hi${first(s) ? " " + first(s) : ""}, I've added you on Ghelli Study Hub, where I'll set your work. Sign in with your Google account (${s.email}) here: ${location.origin}/sign-in`;
+  const workText = a => `New work on Ghelli Study Hub: ${a.title}${a.due ? `, due ${day(a.due)}` : ""}. Sign in to start: ${location.origin}/my-work`;
   const workHref = a => { const [l, t, s] = (a.bank || "").split("/"); return `${G.url.qbank(l, t, s)}?a=${a.id}`; };
   /* got it / partly / missed out of n, as a bar */
   const tally = (marks, n) => { const c = { got: 0, part: 0, miss: 0, skip: 0 }; Object.values(marks || {}).forEach(v => c[v] = (c[v] || 0) + 1); c.n = n; c.marked = c.got + c.part + c.miss + c.skip; return c; };
@@ -226,7 +232,7 @@
           : `<p class="qb-sv-none">No students yet. <a class="link" href="/teacher?tab=students">Add your students</a> first, using the Google email each one signs in with.</p>`}
       </fieldset>
       <div class="qb-dlg-btns"><button type="button" class="qb-btn" data-x>Cancel</button><button type="submit" class="qb-btn primary" ${list.length ? "" : "disabled"}>Assign</button></div></form>`,
-      (e, close) => { if (e.target.closest("a.link")) close(); });
+      (e, close) => { if (e.target.closest("a.link, a[href='/teacher']")) close(); });
     const f = d.querySelector("form"), boxes = () => [...f.querySelectorAll("[name=s]")];
     f.title.focus(); f.title.select();
     f.addEventListener("change", e => {
@@ -241,7 +247,15 @@
       const btn = f.querySelector("[type=submit]"); btn.disabled = true;
       const body = papers ? { kind: "paper", title: f.title.value, due: f.due.value, students: ids, payload: papers[+f.paper.value] }
         : { kind: "qs", title: f.title.value, due: f.due.value, students: ids, bank: o.bank, payload: o.payload };
-      try { await api("assignments", "POST", body); close(); G.toast(`Assigned to ${ids.length} student${ids.length === 1 ? "" : "s"} · see it on your Teacher page`); }
+      try {
+        await api("assignments", "POST", body);
+        const names = list.filter(st => ids.includes(st.id)).map(st => st.name || st.email);
+        f.innerHTML = `<h2>Assigned</h2>
+          <p class="qb-sv-none"><b>${G.esc(f.title.value)}</b> is now on ${ids.length === 1 ? `${G.esc(names[0])}'s My work page` : `My work for all ${ids.length} students`}. Students aren't told automatically, so let them know.</p>
+          <div class="aw-open">${waLink(workText({ title: body.title, due: body.due }), "Share on WhatsApp")}</div>
+          <div class="qb-dlg-btns"><a class="qb-btn" href="/teacher">See it on your Teacher page</a><button type="button" class="qb-btn primary" data-x>Done</button></div>`;
+        f.querySelector("[data-x]").focus();
+      }
       catch (err) { G.toast(err.message); btn.disabled = false; }
     };
   };
@@ -302,7 +316,7 @@
       return `<li class="aw-srow ${s.status}"><span class="aw-sname"><b>${name}</b><small>${status}</small></span><span class="aw-sres">${a.kind === "qs" ? bar(c) : ""}<small>${result}</small></span>${marks}</li>`;
     }).join("");
     det.innerHTML = `<ul class="aw-slist2">${rows}</ul>
-      <div class="aw-dacts">${a.kind === "qs" ? `<a class="qb-btn" href="${workHref(a)}">See the questions</a>` : `<button type="button" class="qb-btn" data-aw-view='${G.esc(JSON.stringify(a.payload))}'>Open the paper</button>`}
+      <div class="aw-dacts">${waLink(workText(a), "Share on WhatsApp")}${a.kind === "qs" ? `<a class="qb-btn" href="${workHref(a)}">See the questions</a>` : `<button type="button" class="qb-btn" data-aw-view='${G.esc(JSON.stringify(a.payload))}'>Open the paper</button>`}
         <button type="button" class="qb-btn danger" data-aw-del="${a.id}">Delete</button></div>`;
     det.querySelector("[data-aw-view]")?.addEventListener("click", e => { const p = JSON.parse(e.currentTarget.dataset.awView); window.Viewer?.open({ src: p.src, title: p.name, desc: p.desc, ms: p.ms }); });
   }
@@ -320,7 +334,12 @@
           <div class="aw-detail" hidden></div></li>`).join("")}</ul>` : `<p class="aw-empty">No students yet. Add one above.</p>`}`;
     $("#aw-add").onsubmit = async e => {
       e.preventDefault(); const f = e.target, b = f.querySelector("button"); b.disabled = true;
-      try { await api("students", "POST", { name: f.name.value, email: f.email.value }); G.toast("Student added"); await drawStudents(body); body.querySelector("[name=name]")?.focus(); }
+      try {
+        const added = { name: f.name.value.trim(), email: f.email.value.trim().toLowerCase() };
+        await api("students", "POST", added); await drawStudents(body);
+        body.querySelector(".aw-hint").insertAdjacentHTML("beforebegin", `<div class="aw-added" role="status"><span><b>${G.esc(added.name || added.email)}</b> added. They aren't told automatically, so send them the sign-in link.</span>${waLink(inviteText(added), "Send invite on WhatsApp")}</div>`);
+        body.querySelector("[name=name]")?.focus();
+      }
       catch (err) { G.toast(err.message); b.disabled = false; }
     };
     body.onclick = async e => {
@@ -351,6 +370,6 @@
         const res = w.kind === "paper" ? (w.score != null ? ` · ${w.score}${w.total ? "/" + w.total : ""} marks` : "") : w.marked ? ` · ${w.marked} marked` : "";
         return `<li class="aw-srow ${w.status}"><span class="aw-sname"><b>${G.esc(w.title)}</b><small>${st}${res}</small></span><span class="aw-sres"><small>${w.due ? `Due ${day(w.due)}` : ""}</small></span></li>`;
       }).join("")}</ul>` : `<p class="aw-empty">No work set yet.</p>`}
-      <div class="aw-dacts"><button type="button" class="qb-btn" data-aw-rename="${id}">Rename</button><button type="button" class="qb-btn danger" data-aw-remove="${id}">Remove student</button></div>`;
+      <div class="aw-dacts">${waLink(inviteText(j.student), "Send invite on WhatsApp")}<button type="button" class="qb-btn" data-aw-rename="${id}">Rename</button><button type="button" class="qb-btn danger" data-aw-remove="${id}">Remove student</button></div>`;
   }
 })();
