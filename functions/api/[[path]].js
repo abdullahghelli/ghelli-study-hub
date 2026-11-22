@@ -265,14 +265,20 @@ async function route(ctx, parts) {
     }
     /* writing on a paper of the work: the student's own, or (for the teacher) a given student's */
     if (c === "ink" && method === "GET") {
-      const src = new URL(req.url).searchParams.get("src") || "", sid = teacher ? +new URL(req.url).searchParams.get("student") : me.id;
+      const q = new URL(req.url).searchParams, src = q.get("src") || "", sid = teacher ? +q.get("student") : me.id;
+      if (q.get("all")) {
+        const { results } = await db.prepare("SELECT src, data FROM ink WHERE assignment_id = ? AND student_id = ?").bind(aid, sid).all();
+        return json({ inks: Object.fromEntries(results.map(r => [r.src, r.data])) });
+      }
       const row = await db.prepare("SELECT data, updated FROM ink WHERE assignment_id = ? AND student_id = ? AND src = ?").bind(aid, sid, src).first();
       return json({ data: row ? row.data : null, updated: row ? row.updated : null });
     }
     if (teacher) return fail(403, "students_only", "That's for students.");
     if (c === "ink" && method === "PUT") {
       const p = await body(), src = clean(p.src, 300), data = typeof p.data === "string" ? p.data : "";
-      if (!/^\/files\/[\w./-]+\.pdf$/.test(src) || (as.kind === "paper" && src !== JSON.parse(as.payload).src)) return fail(400, "bad_src", "That paper isn't part of this work.");
+      /* a paper ("/files/….pdf") or, for questions, one question card ("q:<id>") */
+      const card = src.startsWith("q:") && as.kind === "qs" && JSON.parse(as.payload).items.some(x => x.id === src.slice(2));
+      if (!card && (!/^\/files\/[\w./-]+\.pdf$/.test(src) || (as.kind === "paper" && src !== JSON.parse(as.payload).src))) return fail(400, "bad_src", "That paper isn't part of this work.");
       if (data.length > 1900000) return fail(413, "too_big", "There's too much writing on this paper to save online. It's still saved in this browser.");
       if (!data) await db.prepare("DELETE FROM ink WHERE assignment_id = ? AND student_id = ? AND src = ?").bind(aid, me.id, src).run();
       else await db.batch([

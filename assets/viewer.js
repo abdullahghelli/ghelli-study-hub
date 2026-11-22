@@ -1299,5 +1299,7 @@
     finally { d.busy--; trimDocs(active ? 0 : KEEP_DOCS); }
   }
 
-  window.Viewer = { open: info => { const r = open(info); window.dispatchEvent(new Event("gsh-viewer-open")); trimDocs(0); return r; }, close, Bookmarks, isOpen: () => !!active, withDoc, openDocs: () => docs.size, loadPdfLib: () => loadScript(PDFLIB) };
+  /* the ink drawing, for writing on question cards (cardink.js) */
+  const Ink = { draw: (ctx, items, w, h, dark) => Pane.prototype.drawItems.call({ dark }, ctx, items, w, h, dark), colorOf, PALETTE };
+  window.Viewer = { Ink, open: info => { const r = open(info); window.dispatchEvent(new Event("gsh-viewer-open")); trimDocs(0); return r; }, close, Bookmarks, isOpen: () => !!active, withDoc, openDocs: () => docs.size, loadPdfLib: () => loadScript(PDFLIB) };
 })();

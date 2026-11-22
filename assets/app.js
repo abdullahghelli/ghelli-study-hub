@@ -428,7 +428,7 @@
     const shared = new URLSearchParams(location.search).get("ws"), sharedTitle = new URLSearchParams(location.search).get("t");
     if (shared) { history.replaceState(history.state, "", location.pathname); setTimeout(() => qbSharedOffer(shared, sharedTitle), 300); }
     if (askMix) history.replaceState(history.state, "", location.pathname);
-    const workId = new URLSearchParams(location.search).get("a");
+    const workId = new URLSearchParams(location.search).get("a"), reviewSid = new URLSearchParams(location.search).get("s");
     if (workId) history.replaceState(history.state, "", location.pathname);
     /* modular courses (IAL): units are separate papers, so the bank shows one unit's topics at a time */
     const unitOf = id => (data.topics.find(t => t.id === id) || {}).group;
@@ -452,16 +452,30 @@
     /* work set by a teacher: its questions as a quiz, carrying on from the marks saved so far */
     const workGo = async id => {
       box.innerHTML = `<div class="qb-loading">Loading your work…</div>`;
-      let w;
-      try { w = await window.GSHAccount.loadWork(id); }
+      let w, inks = {};
+      const review = !!reviewSid && window.GSHAccount.isTeacher();
+      try {
+        w = review ? await window.GSHAccount.loadReview(id, reviewSid) : await window.GSHAccount.loadWork(id);
+        inks = await window.GSHAccount.loadCardInks(id, review ? reviewSid : null).catch(() => ({}));
+      }
       catch (e) { qbToast(e.message); qz = null; render(); return; }
       const ids = w.kind === "qs" ? w.payload.items.map(x => x.id).filter(iid => data.items.some(i => i.id === iid)) : [];
       if (!ids.length) { qbToast("That work has no questions from this bank"); qz = null; render(); return; }
       const res = {}; ids.forEach(iid => { if (w.marks[iid]) res[iid] = w.marks[iid]; });
       const first = ids.findIndex(iid => !res[iid]);
       const parts = Object.fromEntries(w.payload.items.filter(x => x.parts && x.parts.length).map(x => [x.id, x.parts]));
-      qz = { ids, k: first < 0 ? ids.length - 1 : first, res, end: first < 0, work: { id: w.id, title: w.title, due: w.due, parts, sent: first < 0 } };
+      qz = { ids, k: first < 0 ? ids.length - 1 : first, res, end: first < 0, work: { id: w.id, title: w.title, due: w.due, parts, sent: first < 0, inks } };
+      /* a teacher looking over a student's work: their marks and writing, nothing can be changed */
+      if (review) { qz.k = 0; qz.end = false; qz.work.sent = true; qz.work.review = w.student; qbProg = { key: "", map: { ...res } }; }
       render(); box.scrollIntoView({ block: "start", behavior: "smooth" });
+    };
+    /* writing on the cards: kept in this browser, or for set work saved to the account; a review shows the student's */
+    const inkContext = () => {
+      const w = qz && qz.work;
+      if (!window.CardInk) return;
+      if (!w) return window.CardInk.setContext({ key: "local" });
+      if (w.review) return window.CardInk.setContext({ key: `review:${w.id}:${reviewSid}`, readOnly: true, preset: w.inks });
+      window.CardInk.setContext({ key: "work:" + w.id, preset: w.inks, sync: (iid, d) => { w.inks[iid] = d; window.GSHAccount.saveCardInk(w.id, iid, d); } });
     };
     const quizGo = (ids, mix) => { qz = ids.length ? { ids, k: 0, res: {}, mix } : null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); };
     /* ----- Mixed quiz: questions from several topics, taken in turn from each so no one topic fills it ----- */
@@ -511,7 +525,7 @@
     const qzNav = () => {
       const b = box.querySelector("[data-qz-next]"); if (!b) return;
       const on = !!qz.res[qz.ids[qz.k]], last = qz.k === qz.ids.length - 1;
-      b.textContent = on ? (last ? "See results" : "Next question →") : (last ? "Skip and finish" : "Skip");
+      b.textContent = on || qz.work?.review ? (last ? "See results" : "Next question →") : (last ? "Skip and finish" : "Skip");
       b.classList.toggle("primary", on);
       box.querySelector("[data-qz-bar]").innerHTML = qzBar();
     };
@@ -521,10 +535,10 @@
         const it = data.items.find(x => x.id === qz.ids[qz.k]);
         const wp = qz.work && qz.work.parts[it.id];
         return `<section class="qb-main qz ${qz.mix ? "mix" : ""}" aria-label="Quiz">
-          <div class="qz-head"><div class="qz-title"><small>${qz.work ? "Set work · " + esc(qz.work.title) : qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
-            ${qz.work ? `<button type="button" class="qb-btn" data-qz-print>Worksheet PDF</button><a class="qb-btn" href="/my-work">Save and leave</a>` : `<button type="button" class="qb-btn" data-qz-end>End quiz</button>`}</div>
+          <div class="qz-head"><div class="qz-title"><small>${qz.work?.review ? `${esc(qz.work.review)}'s work · ${esc(qz.work.title)}` : qz.work ? "Set work · " + esc(qz.work.title) : qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
+            ${qz.work?.review ? `<a class="qb-btn" href="/teacher">Back to Teacher page</a>` : qz.work ? `<button type="button" class="qb-btn" data-qz-print>Worksheet PDF</button><a class="qb-btn" href="/my-work">Save and leave</a>` : `<button type="button" class="qb-btn" data-qz-end>End quiz</button>`}</div>
           <div class="qz-bar" data-qz-bar style="--n:${n}">${qzBar()}</div>
-          ${qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Use <b>Open paper</b> and <b>Write on it</b> to answer on the paper (your teacher sees what you write), then show the answer and mark how it went.</p>` : ""}
+          ${qz.work?.review ? `<p class="qz-work">Their mark: <b>${{ got: "Got it", part: "Partly", miss: "Missed it", skip: "Skipped" }[qz.res[it.id]] || "not marked"}</b>${wp ? ` · set just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")}` : ""}. Their writing shows on the question; anything on the paper itself is under See their writing on your Teacher page.</p>` : qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Tap <b>✎ Write</b> to answer on the question (add <b>More space</b> for working). Your teacher sees what you write. Then show the answer and mark how it went.</p>` : ""}
           ${qbCard(it, data)}
           <div class="qz-nav"><button type="button" class="qb-btn qz-next" data-qz-next></button></div>
         </section>`;
@@ -550,7 +564,7 @@
           ${topicRows ? `<h3 class="qz-h3">By topic</h3><ul class="qz-topics">${topicRows}</ul><h3 class="qz-h3">Questions</h3>` : ""}
           <ol class="qz-list">${done.map(id => { const i = item(id); return `<li><span>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` (${i.part})` : ""}</span><span class="qb-stbadge"><span class="b-${qz.res[id] || "skip"}">${QZ_L[qz.res[id] || "skip"]}</span></span></li>`; }).join("")}</ol>
           <div class="qz-actions">
-            ${qz.work ? `<a class="qb-btn primary" href="/my-work">Back to My work</a><button type="button" class="qb-btn" data-qz-redo>Change a mark</button>` : ""}
+            ${qz.work?.review ? `<a class="qb-btn primary" href="/teacher">Back to Teacher page</a><button type="button" class="qb-btn" data-qz-redo>Look again</button>` : qz.work ? `<a class="qb-btn primary" href="/my-work">Back to My work</a><button type="button" class="qb-btn" data-qz-redo>Change a mark</button>` : ""}
             ${weak.length && !qz.work ? `<button type="button" class="qb-btn primary" data-qz-retry>Retry ${weak.length === 1 ? "the one" : `the ${weak.length}`} I missed or got partly</button>` : ""}
             ${qz.work ? "" : `<button type="button" class="qb-btn ${weak.length ? "" : "primary"}" data-qz-again>Quiz again</button>`}
             ${weak.length && !qz.work ? `<button type="button" class="qb-btn" data-qz-ws>Add ${weak.length === 1 ? "it" : "them"} to my worksheet</button>` : ""}
@@ -585,7 +599,8 @@
       box.classList.toggle("qz-on", !!qz);
       document.querySelectorAll("[data-stab]").forEach(a => { const on = a.dataset.stab === (qz && (qz.setup || qz.mix) ? "quiz" : "questions"); a.classList.toggle("on", on); on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
       if (qz && qz.setup) { box.innerHTML = setupView(); return; }
-      if (qz) { box.innerHTML = quizView(tp); qbObserve(box, data); qzNav(); return; }
+      inkContext();
+      if (qz) { box.innerHTML = quizView(tp); qbObserve(box, data); window.CardInk?.mount(box); qzNav(); return; }
       const qn = quizPool(list).length;
       /* filters (year, paper, difficulty) sit behind one button; spec points fold away once chosen */
       const nOn = (st.year !== "all") + (paperOf() !== "all") + (st.diff !== "all");
@@ -629,7 +644,7 @@
           ${toolbar}
           ${waiting ? `<p class="qb-empty qb-pick">Tick one or more spec points above to load their questions.</p>` : list.length ? list.map(i => qbCard(i, data)).join("") : (st.show !== "all" && bySpec.length ? `<p class="qb-empty">${{ new: "You've tried every question here.", weak: "Nothing missed here. 🎉", got: "None marked Got it yet." }[st.show]}</p>` : `<p class="qb-empty">No questions for this topic${nOn ? " with these filters" : ""} yet.</p>`)}
         </section>`;
-      qbObserve(box, data); qbWsAll(box);
+      qbObserve(box, data); window.CardInk?.mount(box); qbWsAll(box);
     };
     box.onclick = e => {
       /* folding boxes: note the new state straight away (a redraw can come before the toggle event) */
@@ -660,7 +675,7 @@
           render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return;
         }
         if (e.target.closest("[data-qz-print]")) { qbSetWs(qz.ids, qz.work.parts); qbWsDialog(); return; }
-        if (e.target.closest("[data-qz-redo]")) { qz.end = false; qz.k = 0; qz.work.sent = false; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+        if (e.target.closest("[data-qz-redo]")) { qz.end = false; qz.k = 0; qz.work.sent = !!qz.work.review; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
         if (e.target.closest("[data-qz-back]")) { qz = null; render(); return; }
         if (e.target.closest("[data-qz-again]")) { quizGo(qz.mix ? mixPool(qz.mix).slice(0, qz.ids.length) : quizPool(qzList).slice(0, qz.ids.length), qz.mix); return; }
         const weak = () => qzDone().filter(id => ["miss", "part"].includes(qz.res[id]));
@@ -695,6 +710,7 @@
       if (pt) { qbPartToggle(pt.dataset.qbPt, pt.dataset.l); qbWsAll(box); return; }
       const sh = e.target.closest("[data-qb-show]");
       if (sh) { st.show = sh.dataset.qbShow; render(); return; }
+      if (qz && qz.work && qz.work.review && e.target.closest("[data-qb-st], [data-qb-opt], [data-qb-check]")) { qbToast("This is the student's work: marks can't be changed here"); return; }
       const mk = e.target.closest("[data-qb-st]");
       if (mk) {
         const id = mk.closest("[data-qb-card]").dataset.qbCard, v = qbProg.map[id] === mk.dataset.qbSt && (!qz || qz.res[id]) ? null : mk.dataset.qbSt;
@@ -1221,13 +1237,14 @@
           ${i.part ? `<small>Shown with the question's opening lines</small>` : ""}</div>
         <span class="qb-headr"><span class="qb-stbadge" data-qb-badge>${qbBadge(i.id)}</span>${i.diff ? `<span class="qb-diff d${i.diff}" title="Estimated from the marks and where the question comes in its paper">${QB_DIFF[i.diff]}</span>` : ""}${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}</span>
       </header>
-      <div class="qb-snip" data-qb-snip="${i.id}" style="--ar:${qbAspect(i, data)}"></div>
+      <div class="qb-inkwrap"><div class="qb-snip" data-qb-snip="${i.id}" style="--ar:${qbAspect(i, data)}"></div></div>
       ${qbHasAns(i) ? `<div class="qb-ans" data-qb-ansbox="${i.id}" hidden></div>` : ""}
       ${i.mcq ? qbMcq(i) : ""}
       ${i.mcq ? "" : `<div class="qb-markrow"><span>How did it go?</span>${[["got", "✓ Got it"], ["part", "◐ Partly"], ["miss", "✗ Missed it"]].map(([v, l]) => `<button type="button" class="qb-stbtn st-${v} ${qbProg.map[i.id] === v ? "on" : ""}" data-qb-st="${v}" aria-pressed="${qbProg.map[i.id] === v}">${l}</button>`).join("")}</div>`}
       <footer class="qb-card-foot">
         ${qbHasAns(i) ? `<button class="qb-btn ans" data-qb-ans="${i.id}" aria-expanded="false">Show answer</button>` : ""}
         ${i.ms && !qbHasAns(i) && !i.mcq ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
+        ${window.CardInk ? window.CardInk.button(i.id) : ""}
         <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open paper</button>
         ${qbPartsHtml(i)}${qbWsButton(i.id)}
       </footer>
@@ -1273,6 +1290,7 @@
   }
   /* per course topic (the subject page's list): [tried, total, got], kept for the subject page */
   function qbSummary(data, key) {
+    if (!qbProg.key) return;   /* a teacher looking over a student's work: not this browser's own progress */
     const c = course(...key.split("/")); if (!c) return;
     const sum = {};
     c.topics.forEach((_, i) => {

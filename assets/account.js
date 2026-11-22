@@ -222,6 +222,21 @@
     catch (e) { G.toast("Couldn't load your saved writing: " + e.message); }
     window.Viewer?.open({ ...info, inkSync: { initial, save: async ann => api(`assignments/${workId}/ink`, "PUT", { src: info.src, data: await pack(ann) }) } });
   };
+  /* writing on question cards of set work ("q:<question id>"), the student's own or one student's for the teacher */
+  A.loadCardInks = async (workId, studentId) => {
+    const j = await api(`assignments/${workId}/ink?all=1${studentId ? "&student=" + +studentId : ""}`), out = {};
+    for (const [src, d] of Object.entries(j.inks || {})) if (src.startsWith("q:")) { try { out[src.slice(2)] = await unpack(d); } catch (e) {} }
+    return out;
+  };
+  A.saveCardInk = async (workId, id, data) => {
+    try { await api(`assignments/${workId}/ink`, "PUT", { src: "q:" + id, data: data ? await pack(data) : "" }); }
+    catch (e) { G.toast("Couldn't save your writing: " + e.message); }
+  };
+  A.loadReview = async (id, sid) => {
+    const j = await api("assignments/" + +id), s = j.students.find(x => x.id === +sid);
+    if (!s) throw new Error("That student wasn't set this work.");
+    return { ...j.assignment, marks: s.marks || {}, student: s.name || s.email };
+  };
   /* the teacher: one student's writing on one paper, read-only */
   async function viewInk(aid, sid, name, info) {
     try {
@@ -346,8 +361,10 @@
       const marks = a.kind === "qs" && c.marked ? `<button type="button" class="qb-link" data-aw-sm>Show questions</button><ol class="aw-marks" hidden>${a.payload.items.map(x => {
         const m = s.marks[x.id]; return `<li><span>${G.esc(qLabel(item(x.id), x.id))}${x.parts ? ` · part${x.parts.length > 1 ? "s" : ""} ${x.parts.join(", ")}` : ""}</span><span class="qb-stbadge">${m ? `<span class="b-${m}">${MK[m]}</span>` : `<span class="b-skip">Not marked</span>`}</span></li>`; }).join("")}</ol>` : "";
       /* papers this student wrote on: the paper itself, or for questions each paper a question came from */
-      const inkBtns = (s.ink || []).map(k => {
-        const it = data?.items.find(x => x.src === k.src), label = a.kind === "paper" ? "See their writing" : `See their writing${it ? ` · ${it.series} ${it.paper}` : ""}`;
+      const cardInk = (s.ink || []).some(k => k.src.startsWith("q:"));
+      const review = a.kind === "qs" && (c.marked || cardInk) ? `<a class="qb-btn aw-ink" href="${workHref(a)}&s=${s.id}">Go through their work${cardInk ? " and writing" : ""}</a>` : "";
+      const inkBtns = review + (s.ink || []).filter(k => !k.src.startsWith("q:")).map(k => {
+        const it = data?.items.find(x => x.src === k.src), label = a.kind === "paper" ? "See their writing" : `Their writing on the paper${it ? ` · ${it.series} ${it.paper}` : ""}`;
         const info = a.kind === "paper" ? { src: k.src, title: a.payload.name, desc: a.payload.desc, ms: a.payload.ms } : { src: k.src, title: it ? `${it.series} · ${it.paper}` : "Paper", desc: data?.label || "", ms: it?.ms || "" };
         return `<button type="button" class="qb-btn aw-ink" data-aw-ink='${G.esc(JSON.stringify({ sid: s.id, name: s.name || s.email, info }))}'>${label}</button>`;
       }).join("");
