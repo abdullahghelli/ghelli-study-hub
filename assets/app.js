@@ -236,8 +236,7 @@
       <section class="home-sec">
         <div class="sec-head"><h2>Your specs</h2><button type="button" class="qb-btn ${homePicking ? "primary" : ""}" data-home-edit>${homePicking ? "Done" : chosen.length ? "Change" : "Choose your specs"}</button></div>
         ${homePicking ? `<p class="sec-note">Tick the specs you study. They stay here and in the sidebar on this device.</p>`
-          : mine.length ? `<div class="spec-cols spec-mine"><div class="spec-col">${mine.map(k => { const [l, t, s] = k.split("/");
-            return `<a href="${url.subject(l, t, s)}"><span>${esc(subj(s).name)} <em>${esc(track(l, t).full)}</em></span><small class="s-${subj(s).color}-t">${esc(course(l, t, s).code)}</small></a>`; }).join("")}</div></div>${chosen.length ? "" : `<p class="sec-note">Recently opened. Choose your specs to keep the right ones here.</p>`}`
+          : mine.length ? `<div class="sc-grid">${mine.map(subjCard).join("")}</div>${chosen.length ? "" : `<p class="sec-note">Recently opened. Choose your specs to keep the right ones here.</p>`}`
           : `<p class="sec-note">Choose the specs you study to keep them one tap away.</p>`}
       </section>
       <section class="home-sec"><h2>All subjects</h2>
