@@ -499,6 +499,14 @@
         qbWsSave(); qbWsBar(); ids.forEach(qbRefreshCard);
         qbWsAll(box); return;
       }
+      const ab = e.target.closest("[data-qb-ans]");
+      if (ab) {
+        const el = box.querySelector(`[data-qb-ansbox="${CSS.escape(ab.dataset.qbAns)}"]`), open = el.hidden;
+        el.hidden = !open; ab.textContent = open ? "Hide answer" : "Show answer"; ab.setAttribute("aria-expanded", open); ab.classList.toggle("on", open);
+        if (open) qbAnswer(el, data.items.find(x => x.id === ab.dataset.qbAns), data);
+        else { el.querySelectorAll("canvas").forEach(c => { c.width = 0; c.height = 0; }); el.replaceChildren(); }
+        return;
+      }
       const wb = e.target.closest("[data-qb-ws]");
       if (wb) { qbWsToggle(wb.dataset.qbWs); qbWsAll(box); return; }
       const ub = e.target.closest("[data-qb-unit]");
@@ -802,19 +810,8 @@
             const msDoc = await load(it.ms), pc = msDoc.getPageCount();
             /* the page as seen: a page stored on its side is seen the other way round */
             const seen = pn => { const pg = msDoc.getPage(pn - 1), r = pg.getRotation().angle % 180 !== 0; return r ? [pg.getHeight(), pg.getWidth()] : [pg.getWidth(), pg.getHeight()]; };
-            /* from where this question starts to where the next one does */
-            const next = it.part ? null : data.items.filter(x => x.ms === it.ms && !x.part && x.q > it.q && x.msPage).sort((a, b) => a.q - b.q)[0];
-            /* positions are fractions of the page's height as seen */
-            const start = [it.msPage, (it.msY || 0) * seen(it.msPage)[1]];
-            let end = next ? [next.msPage, next.msY * seen(next.msPage)[1]] : [it.part ? it.msPage : Math.min(pc, it.msPage + 2), seen(it.msPage)[1] * 0.92];
-            if (next && data.spec === "9701") end[1] -= 24;   /* each Cambridge question's rows sit under their own heading row */
-            if (next && next.msY < 0.12) end = [next.msPage - 1, seen(Math.max(1, next.msPage - 1))[1] * 0.92];
-            const bands = [];
-            for (let pn = start[0]; pn <= Math.max(start[0], end[0]) && pn <= pc; pn++) {
-              const [pw, ph] = seen(pn);
-              const t = pn === start[0] ? start[1] : ph * 0.09, b = pn === end[0] ? Math.min(end[1], ph * 0.92) : ph * 0.92;
-              if (b - t > 8) bands.push([pn, pw * 0.04, pw * 0.96, t, b]);
-            }
+            /* the question's rows, as Show answer finds them */
+            const bands = qbAnsBands(it, data, seen, pc).map(([pn, t, b]) => { const [pw] = seen(pn); return [pn, pw * 0.04, pw * 0.96, t, b]; });
             if (!bands.length) continue;
             /* the heading stays with the first rows */
             const [, fx0, fx1, ft, fb] = bands[0];
@@ -868,10 +865,12 @@
         <span class="qb-headr"><span class="qb-stbadge" data-qb-badge>${qbBadge(i.id)}</span>${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}</span>
       </header>
       <div class="qb-snip" data-qb-snip="${i.id}" style="--ar:${qbAspect(i, data)}"></div>
+      ${qbHasAns(i) ? `<div class="qb-ans" data-qb-ansbox="${i.id}" hidden></div>` : ""}
       ${i.mcq ? qbMcq(i) : ""}
       ${i.mcq ? "" : `<div class="qb-markrow"><span>How did it go?</span>${[["got", "✓ Got it"], ["part", "◐ Partly"], ["miss", "✗ Missed it"]].map(([v, l]) => `<button type="button" class="qb-stbtn st-${v} ${qbProg.map[i.id] === v ? "on" : ""}" data-qb-st="${v}" aria-pressed="${qbProg.map[i.id] === v}">${l}</button>`).join("")}</div>`}
       <footer class="qb-card-foot">
-        ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
+        ${qbHasAns(i) ? `<button class="qb-btn ans" data-qb-ans="${i.id}" aria-expanded="false">Show answer</button>` : ""}
+        ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">${qbHasAns(i) ? "Full mark scheme" : "Mark scheme"}</button>` : ""}
         <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open question</button>
         ${qbPartsHtml(i)}${qbWsButton(i.id)}
       </footer>
@@ -928,6 +927,58 @@
     box.querySelectorAll("[data-qb-sprog]").forEach(el => el.innerHTML = qbSpecProg(inTopic, el.dataset.qbSprog));
     const h = box.querySelector("[data-qb-hprog]"); if (h) h.innerHTML = qbHeadProg(inTopic);
     qbSummary(data, key);
+  }
+  /* ----- Show answer: the question's own rows of its mark scheme, cut out and drawn under the question ----- */
+  const qbHasAns = i => !i.mcq && i.ms && i.msPage;
+  /* where a question's answer runs in its mark scheme: [page, top, bottom] in points on the page as seen.
+     From where it starts to where the next question starts (a part card: to the foot of its first page). */
+  function qbAnsBands(it, data, size, pages) {
+    /* a part card stops where a later part of the same question starts (when the bank lists one), else at the next question */
+    const later = it.part ? data.items.filter(x => x.ms === it.ms && x.q === it.q && x.part > it.part && x.msPage && (x.msPage > it.msPage || x.msY > it.msY))
+      .sort((a, b) => a.msPage - b.msPage || a.msY - b.msY)[0] : null;
+    const next = later || data.items.filter(x => x.ms === it.ms && !x.part && x.q > it.q && x.msPage).sort((a, b) => a.q - b.q)[0];
+    const H = pn => size(pn)[1];
+    const start = [it.msPage, (it.msY || 0) * H(it.msPage)];
+    let end = next ? [next.msPage, next.msY * H(next.msPage)] : [it.part ? it.msPage : Math.min(pages, it.msPage + 2), H(it.msPage) * 0.92];
+    if (it.part && !later && next && next.msPage > it.msPage) end = [it.msPage, H(it.msPage) * 0.92];
+    /* the next question (or part) usually opens with its own heading row: stop above it */
+    if (next && end[0] === next.msPage) end[1] -= data.spec === "9701" ? 24 : 16;
+    if (next && next.msY < 0.12) end = [next.msPage - 1, H(Math.max(1, next.msPage - 1)) * 0.92];
+    const out = [];
+    for (let pn = start[0]; pn <= Math.max(start[0], end[0]) && pn <= pages; pn++) {
+      const t = pn === start[0] ? start[1] : H(pn) * 0.09, b = pn === end[0] ? Math.min(end[1], H(pn) * 0.92) : H(pn) * 0.92;
+      if (b - t > 8) out.push([pn, t, b]);
+    }
+    return out;
+  }
+  async function qbAnswer(el, it, data) {
+    el.innerHTML = `<p class="qb-ans-msg">Loading the mark scheme…</p>`;
+    const token = el._ans = Math.random();
+    try {
+      await window.Viewer.withDoc(it.ms, async doc => {
+        const sizes = {};
+        const size = pn => sizes[pn];
+        for (let pn = it.msPage; pn <= Math.min(doc.numPages, it.msPage + 4); pn++) { const vp = (await doc.getPage(pn)).getViewport({ scale: 1 }); sizes[pn] = [vp.width, vp.height]; }
+        const bands = qbAnsBands(it, data, pn => sizes[pn] || sizes[it.msPage], doc.numPages);
+        const frag = document.createDocumentFragment(), cssW = el.clientWidth || 700, dpr = Math.min(window.devicePixelRatio || 1, 2);
+        for (const [pn, t, b] of bands) {
+          if (el._ans !== token) return;
+          const page = await doc.getPage(pn), [W] = size(pn), x0 = W * 0.04, bw = W * 0.92, sc = cssW / bw;
+          const cv = document.createElement("canvas");
+          cv.width = Math.round(bw * sc * dpr); cv.height = Math.round((b - t) * sc * dpr);
+          cv.style.width = "100%"; cv.style.height = "auto";
+          await page.render({ canvasContext: cv.getContext("2d"), viewport: page.getViewport({ scale: sc * dpr, offsetX: -x0 * sc * dpr, offsetY: -t * sc * dpr }) }).promise;
+          frag.appendChild(cv);
+        }
+        if (el._ans !== token) return;
+        el.replaceChildren(frag);
+        const note = document.createElement("p"); note.className = "qb-ans-note";
+        note.innerHTML = `Mark scheme · ${esc(it.series)} ${esc(it.paper)} Q${it.q}${it.part ? ` part (${it.part})` : ""}. Then mark how it went below.`;
+        el.prepend(note);
+      });
+    } catch (e) {
+      if (el._ans === token) el.innerHTML = `<p class="qb-ans-msg">The mark scheme couldn't load. Check your connection and try again.</p>`;
+    }
   }
   /* answer buttons for a multiple-choice question (no answer key for the paper: no Check) */
   function qbMcq(i) {
