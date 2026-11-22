@@ -16,6 +16,7 @@ from extract_caie import bbox_words
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LABEL = re.compile(r"(?:(\d{1,2})\s*)?\(([a-z])\)(?:\(.*)?")
+BARE = re.compile(r"(\d{1,2})([a-h])(?:[ivx]+)?\*?")
 _sizes = {}
 
 
@@ -42,10 +43,12 @@ def labels(path, q, start, end):
             t = w["text"]
             if re.fullmatch(r"\d{1,2}", t) and k + 1 < len(ws) and abs(ws[k + 1]["top"] - w["top"]) < 3:
                 continue   # the number; its "(b)" follows
-            m = LABEL.fullmatch(t)
+            m = LABEL.fullmatch(t) or BARE.fullmatch(t)   # "3(b)", "(b)" or, with the number, "3b" / "3bii"
             if not m or (m.group(1) and int(m.group(1)) != q):
                 continue
-            out.append((m.group(2), pn, round(max(0, w["top"] - 6) / H, 4)))
+            # a row with its own "Question Number" header (Biology B) starts at the header
+            head = [h["top"] for h in ws if h["text"] == "Question" and 0 < w["top"] - h["top"] < 45]
+            out.append((m.group(2), pn, round(max(0, (max(head) if head else w["top"]) - 6) / H, 4)))
     return out
 
 
