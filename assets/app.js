@@ -163,6 +163,11 @@
     const [l, t, s] = k.split("/"), c = course(l, t, s);
     return `<a class="sc s-${subj(s).color}-q" href="${url.subject(l, t, s)}"><span class="sc-name">${esc(subj(s).name)} <span class="sc-code">${esc(c.code)}</span></span><span class="sc-sub">${esc(track(l, t).full)}</span>${icon.arrow}</a>`;
   };
+  /* a subject as a small pill: its colour, name and code (with the board when it stands alone) */
+  const subjChip = (k, board) => {
+    const [l, t, s] = k.split("/");
+    return `<a class="chip-s s-${subj(s).color}-q" href="${url.subject(l, t, s)}"><i></i>${esc(subj(s).name)} <b>${esc(course(l, t, s).code)}</b>${board ? `<small>${esc(track(l, t).name)}</small>` : ""}</a>`;
+  };
   /* the strip of tabs on every subject page */
   function subjHead(l, t, s, tab) {
     const c = course(l, t, s), T = track(l, t), k = K(l, t, s); noteSubject(k);
@@ -226,8 +231,9 @@
       <p class="lede">Every past paper question, sorted by topic and checked against the mark scheme.</p>
       <p class="home-free"><span>Free</span><span>No ads</span><span>No sign-up</span></p>
       ${cont}
-      ${mine.length ? `<section class="home-sec"><h2>Your subjects</h2><div class="sc-grid">${mine.map(subjCard).join("")}</div></section>` : ""}
-      ${liveLevels().map(L => `<section class="home-sec"><h2>${esc(L.name)}</h2><div class="sc-grid">${liveTracks(L).flatMap(t => liveSubjects(L.id, t).map(s => K(L.id, t, s))).filter(k => !mine.includes(k)).map(subjCard).join("")}</div></section>`).join("").replace(/<section class="home-sec"><h2>[^<]*<\/h2><div class="sc-grid"><\/div><\/section>/g, "")}
+      ${mine.length ? `<section class="home-sec"><h2>Your subjects</h2><div class="chips">${mine.map(k => subjChip(k, true)).join("")}</div></section>` : ""}
+      <section class="home-sec"><h2>All subjects</h2><div class="boards-list">${liveLevels().flatMap(L => liveTracks(L).map(t =>
+        `<div class="bl-row"><span class="bl-name">${esc(L.tracks[t].full)}</span><div class="chips">${liveSubjects(L.id, t).map(s => subjChip(K(L.id, t, s))).join("")}</div></div>`)).join("")}</div></section>
       <section class="home-tutor" aria-labelledby="tutor-h">
         <div><h2 id="tutor-h">Want one-to-one help?</h2>
           <p>Online tutoring in all subjects for GCSE, IGCSE, A Level and IB, and preparation for university admissions tests. Message us on WhatsApp to book your demo.</p></div>
