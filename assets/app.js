@@ -105,26 +105,27 @@
     const path = location.pathname;
     let h = `<a class="brand" href="/"><img src="/assets/favicon.svg" alt="">${esc(S.name)}</a>
       <a class="nav ${path === "/" ? "on" : ""}" href="/">${icon.home}Home</a>
-      <button class="nav" data-act="search">${icon.search}Search</button>
-      <div class="side-label">Qualifications</div>`;
-    for (const L of S.levels) {
+      <button class="nav" data-act="search">${icon.search}Search</button>`;
+    const mine = mySubjects();
+    if (mine.length) h += `<div class="side-label">My subjects</div>` + mine.map(k => {
+      const [l, t, s] = k.split("/"), on = r.l === l && r.t === t && r.s === s;
+      return `<a class="nav ${on ? "on" : ""}" href="${url.subject(l, t, s)}"><span class="side-dot s-${subj(s).color}-v"></span>${esc(subj(s).name)} <span class="side-code">${esc(course(l, t, s).code)}</span></a>`;
+    }).join("");
+    h += `<div class="side-label">All subjects</div>`;
+    for (const L of liveLevels()) {
       const open = openGroups[L.id] ?? (r.l === L.id && !r.quiet);
       h += `<div class="group ${open ? "open" : ""}"><button class="nav ${r.l === L.id && !r.t && !r.quiet ? "on" : ""}" data-act="group" data-id="${L.id}">${icon.chev}${esc(L.short || L.name)}</button><div class="group-kids">`;
-      for (const g of L.groups) for (const t of g.tracks) {
-        h += `<a class="nav ${r.l === L.id && r.t === t ? "on" : ""}" href="${url.track(L.id, t)}">${esc(L.tracks[t].name)}</a>`;
-      }
+      for (const t of liveTracks(L)) h += `<a class="nav ${r.l === L.id && r.t === t ? "on" : ""}" href="${url.track(L.id, t)}">${esc(L.tracks[t].name)}</a>`;
       h += `</div></div>`;
     }
-    h += `<div class="side-label">Exam prep</div>
-      <a class="nav ${path === "/question-banks" ? "on" : ""}" href="/question-banks">${icon.bank}Question bank</a>
-      <a class="nav ${path === "/past-papers" || path.startsWith("/past-papers/") ? "on" : ""}" href="/past-papers">${icon.paper}Past papers</a>
-      <a class="nav ${path === "/formula-sheets" ? "on" : ""}" href="/formula-sheets">${icon.sigma}Formula sheets</a>
-      <a class="nav ${path === "/exam-dates" ? "on" : ""}" href="/exam-dates">${icon.clock}Exam dates</a>
-      <div class="side-label">PDF bookmarks</div>`;
+    const tools = [Object.keys(S.formulaSheets || {}).length && `<a class="nav ${path === "/formula-sheets" ? "on" : ""}" href="/formula-sheets">${icon.sigma}Formula sheets</a>`,
+      (S.examDates || []).length && `<a class="nav ${path === "/exam-dates" ? "on" : ""}" href="/exam-dates">${icon.clock}Exam dates</a>`].filter(Boolean);
+    if (tools.length) h += `<div class="side-label">Exam prep</div>` + tools.join("");
     const bms = window.Viewer ? window.Viewer.Bookmarks.all() : [];
+    if (bms.length) h += `<div class="side-label">PDF bookmarks</div>`;
     h += bms.length
       ? bms.slice(0, 12).map(b => `<div class="bm"><button class="nav" data-bm='${esc(JSON.stringify({ src: b.src, page: b.page }))}' title="${esc(b.title)} · page ${b.page}">${bmIcon}<span class="bm-t">${esc(b.title)}</span><span class="bm-p">p.${b.page}</span></button><button class="bm-x" data-bm-x='${esc(JSON.stringify({ src: b.src, page: b.page }))}' aria-label="Remove bookmark">×</button></div>`).join("")
-      : `<p class="side-hint">Open any PDF and tap Bookmark to save a page. It will show here.</p>`;
+      : "";
     $("#side").innerHTML = h;
   }
   function crumbs(parts) {
@@ -148,6 +149,29 @@
           ${icon.arrow}
         </a>`).join("") + `</div>`;
   const paperCount = (l, t, s) => Object.keys(S.papers[K(l, t, s)] || {}).length;
+  /* only what has something in it is shown: a subject with papers, a question bank or files; the boards and levels
+     holding one. The rest stay in data.js and appear by themselves once they get content. */
+  const hasBank = (l, t, s) => !!(S.qbanks || {})[K(l, t, s)];
+  const isLive = (l, t, s) => !!course(l, t, s) && (hasBank(l, t, s) || paperCount(l, t, s) > 0 || (S.formulaSheets || {})[K(l, t, s)] || course(l, t, s).topics.some((_, i) => liveCount(l, t, s, i + 1)));
+  const liveSubjects = (l, t) => Object.keys(track(l, t).subjects).filter(s => isLive(l, t, s));
+  const liveTracks = L => L.groups.flatMap(g => g.tracks).filter(t => liveSubjects(L.id, t).length);
+  const liveLevels = () => S.levels.filter(L => liveTracks(L).length);
+  /* subjects this person uses: the ones they chose, then the ones they've opened lately */
+  const mySubjects = () => [...new Set([...store.get("qb-mine", []), ...store.get("subj-recent", [])])].filter(k => isLive(...k.split("/"))).slice(0, 6);
+  const noteSubject = k => store.set("subj-recent", [k, ...store.get("subj-recent", []).filter(x => x !== k)].slice(0, 6));
+  const subjCard = k => {
+    const [l, t, s] = k.split("/"), c = course(l, t, s);
+    return `<a class="sc s-${subj(s).color}-q" href="${url.subject(l, t, s)}"><span class="sc-name">${esc(subj(s).name)} <span class="sc-code">${esc(c.code)}</span></span><span class="sc-sub">${esc(track(l, t).full)}</span>${icon.arrow}</a>`;
+  };
+  /* the strip of tabs on every subject page */
+  function subjHead(l, t, s, tab) {
+    const c = course(l, t, s), T = track(l, t), k = K(l, t, s); noteSubject(k);
+    const tabs = [["topics", "Topics", url.subject(l, t, s)], hasBank(l, t, s) && ["questions", "Questions", url.qbank(l, t, s)],
+      paperCount(l, t, s) && ["papers", "Past papers", url.papers(l, t, s)], hasBank(l, t, s) && ["quiz", "Quiz", url.qbank(l, t, s) + "?mix=1"]].filter(Boolean);
+    return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span></h1>
+      <div class="facts"><span>${esc(T.full)}</span>${tab === "questions" || tab === "quiz" ? `<span data-qb-count>Loading questions…</span>` : `<span><b>${c.topics.length}</b> topics</span>`}</div>
+      ${tabs.length > 1 ? `<nav class="stabs" aria-label="${esc(subj(s).name)}">${tabs.map(([id, label, href]) => `<a class="stab ${id === tab ? "on" : ""}" data-stab="${id}" href="${href}" ${id === tab ? 'aria-current="page"' : ""}>${label}</a>`).join("")}</nav>` : ""}`;
+  }
 
   /* the specs this person uses, chosen on the question bank page (kept on this device) */
   const qbKeys = () => Object.keys(S.qbanks || {}).filter(k => course(...k.split("/")));
@@ -193,26 +217,17 @@
 
   function vHome() {
     crumbs([{ t: "Home" }]); setTitle();
+    const last = store.get("qb-last", null), lastOk = last && hasBank(...last.k.split("/"));
+    const cont = lastOk ? (() => { const [l, t, s] = last.k.split("/"), c = course(l, t, s);
+      return `<a class="home-cont s-${subj(s).color}-q" href="${url.qbank(l, t, s)}"><small>Continue where you left off</small><b>${esc(subj(s).name)} ${esc(c.code)}${last.name ? ` · ${last.num ? last.num + " " : ""}${esc(last.name)}` : ""}</b>${icon.arrow}</a>`; })() : "";
+    const mine = mySubjects();
     return `<div class="home">
       <h1>What are you revising?</h1>
       <p class="lede">Every past paper question, sorted by topic and checked against the mark scheme.</p>
       <p class="home-free"><span>Free</span><span>No ads</span><span>No sign-up</span></p>
-      ${homeMine()}
-      <div class="lvl-grid">` + S.levels.map(L => `
-        <a class="lvl lv-${L.id}" href="${url.level(L.id)}">
-          <span class="lvl-name">${L.name}</span>
-          <span class="lvl-boards">${L.groups.flatMap(g => g.tracks.map(t => esc(L.tracks[t].name))).join(" · ")}</span>
-          ${icon.arrow}
-        </a>`).join("") + `</div>
-      <div class="subj-tiles home-tiles">
-        ${Object.keys(S.qbanks || {}).length ? `<a class="subj-tile primary" href="/question-banks">${icon.bank}<span><b>Question bank</b><small>Past paper questions by spec topic</small></span>${icon.arrow}</a>` : ""}
-        <a class="subj-tile" href="/past-papers">${icon.paper}<span><b>Past papers</b><small>Question papers and mark schemes</small></span>${icon.arrow}</a>
-      </div>
-      <div class="home-links">
-        <a href="/formula-sheets">${icon.sigma}Formula sheets</a>
-        <a href="/exam-dates">${icon.clock}Exam dates</a>
-        <button data-act="search">${icon.search}Search a topic<kbd>⌘K</kbd></button>
-      </div>
+      ${cont}
+      ${mine.length ? `<section class="home-sec"><h2>Your subjects</h2><div class="sc-grid">${mine.map(subjCard).join("")}</div></section>` : ""}
+      ${liveLevels().map(L => `<section class="home-sec"><h2>${esc(L.name)}</h2><div class="sc-grid">${liveTracks(L).flatMap(t => liveSubjects(L.id, t).map(s => K(L.id, t, s))).filter(k => !mine.includes(k)).map(subjCard).join("")}</div></section>`).join("").replace(/<section class="home-sec"><h2>[^<]*<\/h2><div class="sc-grid"><\/div><\/section>/g, "")}
       <section class="home-tutor" aria-labelledby="tutor-h">
         <div><h2 id="tutor-h">Want one-to-one help?</h2>
           <p>Online tutoring in all subjects for GCSE, IGCSE, A Level and IB, and preparation for university admissions tests. Message us on WhatsApp to book your demo.</p></div>
@@ -233,13 +248,14 @@
     let h = t
       ? `<div class="eyebrow lv-${l}"><span class="lv-dot"></span>${esc(L.name)}</div><h1>${esc(track(l, t).full)}${pp ? " past papers" : ""}</h1><p class="lede">Pick a subject.</p>`
       : `<div class="eyebrow lv-${l}"><span class="lv-dot"></span>${pp ? "Past papers" : "Qualification"}</div><h1>${L.name}${pp ? " past papers" : ""}</h1><p class="lede">Choose your exam board.</p>`;
-    if (!t) h += L.groups.map(g => `<h2>${esc(g.name)}</h2><div class="boards">` + g.tracks.map(id => {
-      const T = L.tracks[id], n = Object.keys(T.subjects).length;
+    const lt = liveTracks(L);
+    if (!t) h += L.groups.filter(g => g.tracks.some(id => lt.includes(id))).map(g => `<h2>${esc(g.name)}</h2><div class="boards">` + g.tracks.filter(id => lt.includes(id)).map(id => {
+      const T = L.tracks[id], n = liveSubjects(l, id).length;
       return `<a class="board lv-${l} ${id === t ? "on" : ""}" href="${trackHref(id)}"><b>${esc(T.name)}</b><small>${n} subject${n > 1 ? "s" : ""}</small></a>`;
     }).join("") + `</div>`).join("");
     if (t) {
       const T = track(l, t);
-      h += `<div class="list" style="margin-top:28px">` + Object.entries(T.subjects).map(([s, c]) => {
+      h += `<div class="list" style="margin-top:28px">` + Object.entries(T.subjects).filter(([s]) => isLive(l, t, s)).map(([s, c]) => {
         if (!pp) return `<a class="row" href="${url.subject(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code s-${subj(s).color}-t">(${c.code})</span></span><span class="aside">${c.topics.length} topics</span></a>`;
         const n = paperCount(l, t, s);
         return `<a class="row" href="${url.papers(l, t, s)}"><span class="grow">${esc(subj(s).name)} <span class="code s-${subj(s).color}-t">(${c.code})</span></span><span class="aside">${n ? `${n} files` : "Coming soon"}</span></a>`;
@@ -248,34 +264,27 @@
     return h;
   }
 
-  /* the subject's progress: questions tried in its question bank (once some are), otherwise topics marked done */
-  function qbSubjProg(l, t, s, c, nDone) {
+  /* the subject's progress: questions tried in its question bank */
+  function qbSubjProg(l, t, s) {
     const sum = Object.values(store.get("qbsum:" + K(l, t, s), {}) || {});
     const tried = sum.reduce((a, x) => a + x[0], 0), total = sum.reduce((a, x) => a + x[1], 0), got = sum.reduce((a, x) => a + x[2], 0);
-    if (tried) return `<div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(tried / total) * 100}%"></i></div><span><b>${tried}</b> of ${total} questions tried · ${got} got it</span></div>`;
-    return `<div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(nDone / c.topics.length) * 100}%"></i></div><span>${nDone}/${c.topics.length} done</span></div>`;
+    return tried ? `<div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(tried / total) * 100}%"></i></div><span><b>${tried}</b> of ${total} questions tried · ${got} got it</span></div>` : "";
   }
 
   function vSubject({ l, t, s }) {
-    const c = course(l, t, s), T = track(l, t), name = `${T.full} ${subj(s).name}`;
+    const c = course(l, t, s), T = track(l, t), name = `${T.full} ${subj(s).name}`, bank = hasBank(l, t, s);
     crumbs([...trackCrumbs(l, t), { t: subj(s).name }]); setTitle(name);
-    const nDone = c.topics.filter((_, i) => done[K(l, t, s, i + 1)]).length;
-    return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span></h1>
-      <div class="facts"><span>${esc(T.full)}</span><span><b>${c.topics.length}</b> topics</span></div>
-      <div class="subj-tiles ${(S.qbanks || {})[K(l, t, s)] ? "three" : ""}">
-        ${(S.qbanks || {})[K(l, t, s)] ? `<a class="subj-tile primary" href="${url.qbank(l, t, s)}">${icon.bank}<span><b>Question bank</b><small>Past paper questions by spec topic</small></span>${icon.arrow}</a>` : ""}
-        ${(S.qbanks || {})[K(l, t, s)] ? `<a class="subj-tile" href="${url.qbank(l, t, s)}?mix=1">${icon.bank}<span><b>Mixed quiz</b><small>Questions from across the topics, one at a time</small></span>${icon.arrow}</a>` : ""}
-        <a class="subj-tile" href="${url.papers(l, t, s)}">${icon.paper}<span><b>Past papers</b><small>Question papers and mark schemes</small></span>${icon.arrow}</a>
-      </div>
-      ${qbSubjProg(l, t, s, c, nDone)}
-      <h2>Topics</h2><div class="list">` +
+    const sum = store.get("qbsum:" + K(l, t, s), {}) || {};
+    return subjHead(l, t, s, "topics") + qbSubjProg(l, t, s) +
+      `<div class="list topic-list">` +
       c.topics.map((tp, i) => {
-        const n = i + 1, k = K(l, t, s, n), live = liveCount(l, t, s, n);
+        const n = i + 1, live = liveCount(l, t, s, n);
         const head = (c.topicGroups || []).find(([from]) => from === n);
-        const qb = (S.qbanks || {})[K(l, t, s)] ? `<a class="row-q" href="${url.qbank(l, t, s)}?topic=${n}" aria-label="Questions on ${esc(tp)}">Questions →</a>` : "";
-        const ts = (store.get("qbsum:" + K(l, t, s), {}) || {})[n];
+        const ts = sum[n];
         const tbar = ts && ts[0] ? `<span class="row-prog" title="${ts[0]} of ${ts[1]} questions tried, ${ts[2]} got it"><i style="width:${(ts[0] / ts[1]) * 100}%"></i></span>` : "";
-        return `${head ? `<div class="list-head">${esc(head[1])}</div>` : ""}<div class="row-wrap"><a class="row" href="${url.topic(l, t, s, n)}"><span class="num s-${subj(s).color}-t">${String(n).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span><span class="aside hide-sm">${live ? `${live} file${live > 1 ? "s" : ""}` : ""}</span>${tbar}<span class="tick ${done[k] ? "on" : ""}" aria-label="${done[k] ? "Done" : "Not done"}"></span></a>${qb}</div>`;
+        /* a topic opens its questions; one with notes or files of its own opens its page */
+        const href = bank && !live ? `${url.qbank(l, t, s)}?topic=${n}` : url.topic(l, t, s, n);
+        return `${head ? `<div class="list-head">${esc(head[1])}</div>` : ""}<a class="row" href="${href}"><span class="num s-${subj(s).color}-t">${String(n).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span>${live ? `<span class="aside hide-sm">${live} file${live > 1 ? "s" : ""}</span>` : ""}${tbar}${icon.arrow}</a>`;
       }).join("") + `</div>`;
   }
 
@@ -285,8 +294,7 @@
     recent = [{ l, t, s, n }, ...recent.filter(x => K(x.l, x.t, x.s, x.n) !== k)].slice(0, 8); store.set("recent2", recent);
     let h = `<div class="eyebrow"><span>${esc(T.full)} ${esc(subj(s).name)} (${c.code}) · Topic ${n} of ${c.topics.length}</span></div>
       <h1>${esc(title)}</h1>
-      <button class="done-toggle ${done[k] ? "on" : ""}" data-act="done" data-k="${k}"><span class="tick ${done[k] ? "on" : ""}"></span>${done[k] ? "Done" : "Mark as done"}</button>
-      ${(S.qbanks || {})[K(l, t, s)] ? `<div class="subj-tiles"><a class="subj-tile primary" href="${url.qbank(l, t, s)}?topic=${n}">${icon.bank}<span><b>Practise this topic</b><small>Past paper questions on ${esc(title)}</small></span>${icon.arrow}</a></div>` : ""}`;
+      ${hasBank(l, t, s) ? `<div class="subj-tiles"><a class="subj-tile primary" href="${url.qbank(l, t, s)}?topic=${n}">${icon.bank}<span><b>Questions</b><small>Past paper questions on ${esc(title)}</small></span>${icon.arrow}</a></div>` : ""}`;
     /* only what's there: items without a file, and sections with none, are left out until they arrive */
     for (const g0 of resources(l, t, s, n)) {
       const g = { ...g0, items: g0.items.filter(i => i.href) };
@@ -322,14 +330,12 @@
       return `<a class="chip chip-${ty.toLowerCase()}" ${pdfAttrs({ src: u, title: `${name} (${ty})`, desc: `${kind} · ${T.full} ${subj(s).name} ${c.code}`, ms })} title="${esc(`${name} · ${kind}`)}">${ty}</a>`;
     };
     const rows = seriesRows.map(ser => `<tr><td>${ser}</td>${cols.map(([id]) => `<td>${cell(ser, id, "QP")}${cell(ser, id, "MS")}</td>`).join("")}${hasER ? `<td>${cell(ser, 0, "ER")}</td>` : ""}</tr>`).join("");
-    return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span> past papers</h1>
-      <div class="facts"><span>${esc(T.full)}</span></div>
+    return subjHead(l, t, s, "papers") + `
       <h2>By series</h2>
       <div class="pp"><table><thead><tr><th>Series</th>${cols.map(([, label]) => `<th>${esc(label)}</th>`).join("")}${hasER ? "<th>Report</th>" : ""}</tr></thead><tbody>${rows}</tbody></table></div>
       ${c.paperNote ? `<p class="legend">${esc(c.paperNote)}</p>` : ""}
       <p class="legend">QP question paper · MS mark scheme${hasER ? " · ER examiner report" : ""}. Highlighted codes are available.</p>
-      <p class="legend owner">${esc(ownerNote(t))}</p>
-      ${(S.qbanks || {})[K(l, t, s)] ? `<a class="qb-cta" href="${url.qbank(l, t, s)}"><b>Question bank</b><span>Every question from these papers, sorted by spec topic →</span></a>` : ""}`;
+      <p class="legend owner">${esc(ownerNote(t))}</p>`;
   }
 
   /* ---------- Question bank ---------- */
@@ -346,13 +352,11 @@
   const qbState = store.get("qb", { topic: null, ptype: "all", year: "all" });
   function vQbank({ l, t, s }) {
     const c = course(l, t, s), T = track(l, t);
-    crumbs([...trackCrumbs(l, t), { t: subj(s).name, href: url.subject(l, t, s) }, { t: "Question bank" }]);
+    crumbs([...trackCrumbs(l, t), { t: subj(s).name, href: url.subject(l, t, s) }, { t: "Questions" }]);
     setTitle(`${T.full} ${subj(s).name} question bank`);
     const src = S.qbanks[K(l, t, s)];
     setTimeout(() => qbMount(src, K(l, t, s)), 0);
-    return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span> question bank</h1>
-      <div class="facts"><span>${esc(T.full)}</span><span data-qb-count>Loading questions…</span><a href="${url.papers(l, t, s)}" class="link">Past papers →</a>
-        ${qbSwitch(K(l, t, s))}</div>
+    return subjHead(l, t, s, new URLSearchParams(location.search).has("mix") ? "quiz" : "questions") + `
       <div class="qb" id="qb"><div class="qb-loading">Loading the question bank…</div></div>
       <p class="legend owner">${esc(ownerNote(t))}</p>`;
   }
@@ -534,21 +538,36 @@
       qbSummary(data, key);
       qzList = list;
       box.classList.toggle("qz-on", !!qz);
+      document.querySelectorAll("[data-stab]").forEach(a => { const on = a.dataset.stab === (qz && (qz.setup || qz.mix) ? "quiz" : "questions"); a.classList.toggle("on", on); on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
       if (qz && qz.setup) { box.innerHTML = setupView(); return; }
       if (qz) { box.innerHTML = quizView(tp); qbObserve(box, data); qzNav(); return; }
       const qn = quizPool(list).length;
-      const quizBox = qn ? `<div class="qz-start"><span><b>Quiz me</b> one question at a time</span><span class="qz-ns">${[5, 10, 20].filter(n => n < qn).map(n => `<button type="button" class="qb-btn" data-qz-n="${n}">${n}</button>`).join("")}${qn <= 20 ? `<button type="button" class="qb-btn" data-qz-n="${qn}">All ${qn}</button>` : ""}<small>questions</small></span></div>` : "";
-      const specBox = pts.length ? `<fieldset class="qb-specfilter"><legend>Spec points${picked.length ? ` <button type="button" class="qb-clear" data-qb-clear>Clear</button>` : ` <button type="button" class="qb-clear" data-qb-all>Select all</button>`}</legend>
+      /* filters (year, paper, difficulty) sit behind one button; spec points fold away once chosen */
+      const nOn = (st.year !== "all") + (paperOf() !== "all") + (st.diff !== "all");
+      const yearSel = id => `<label class="qb-select"><span>Year</span><select id="${id}">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>`;
+      const filters = m => `<details class="qb-filters" data-qb-fbox ${st._fopen ? "open" : ""}><summary><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3.5 5.5h13M6 10h8M8.5 14.5h3"/></svg>Filters${nOn ? `<b>${nOn}</b>` : ""}</summary>
+          <div class="qb-filters-in">${yearSel("qb-year" + m)}${paperSel("qb-paper" + m)}${diffSel("qb-diff" + m)}${nOn ? `<button type="button" class="qb-clear" data-qb-freset>Reset filters</button>` : ""}</div></details>`;
+      const specSum = picked.length === pts.length ? `All ${pts.length}` : picked.length ? picked.join(", ") : "Tick to load questions";
+      const specBox = pts.length > 1 ? `<details class="qb-specfilter" data-qb-sbox ${waiting || st._sopen ? "open" : ""}><summary><span>Spec points</span><em>${specSum}</em></summary>
+          <div class="qb-specacts">${picked.length < pts.length ? `<button type="button" class="qb-clear" data-qb-all>Select all</button>` : ""}${picked.length ? `<button type="button" class="qb-clear" data-qb-clear>Clear</button>` : ""}</div>
           <div class="qb-speclist">${pts.map(([c, name]) => {
             const n = inTopic.filter(i => (i.spec || []).includes(c)).length;
             return `<label class="qb-specopt ${n ? "" : "none"}"><input type="checkbox" id="qb-spec-${c.replace(".", "-")}" data-qb-spec="${c}" ${picked.includes(c) ? "checked" : ""} ${n ? "" : "disabled"}><b>${c}</b><span>${esc(name)}</span><small data-qb-sprog="${c}">${qbSpecProg(inTopic, c)}</small></label>`;
-          }).join("")}</div></fieldset>` : "";
+          }).join("")}</div></details>` : "";
+      /* one row: what to show, then Quiz me and the worksheet tools, each behind a button */
+      const toolbar = waiting ? "" : `<div class="qb-toolbar">
+          <div class="qb-show" role="group" aria-label="Show">${[["all", "All"], ["new", "Not tried"], ["weak", "Missed or partly"], ["got", "Got it"]].map(([v, l]) => `<button type="button" class="qb-showbtn ${st.show === v ? "on" : ""}" data-qb-show="${v}" aria-pressed="${st.show === v}">${l}</button>`).join("")}</div>
+          <div class="qb-acts">
+            ${qn ? `<details class="qb-menu"><summary class="qb-btn primary">Quiz me</summary><div class="qb-pop"><p>One question at a time, missed and new ones first.</p><div class="qz-ns">${[5, 10, 20].filter(n => n < qn).map(n => `<button type="button" class="qb-btn" data-qz-n="${n}">${n}</button>`).join("")}${qn <= 20 ? `<button type="button" class="qb-btn" data-qz-n="${qn}">All ${qn}</button>` : ""}<small>questions</small></div></div></details>` : ""}
+            ${list.length || qbSaved().length ? `<details class="qb-menu"><summary class="qb-btn">Worksheet</summary><div class="qb-pop">
+              ${list.length ? `<button type="button" class="qb-btn" data-qb-wsall></button>
+              <span class="qb-fill"><label for="qb-fill-n">Fill to</label><input id="qb-fill-n" type="number" min="1" max="300" value="${store.get("ws-fill", 40)}" inputmode="numeric"><span>marks</span><button type="button" class="qb-btn" data-qb-fill>Fill</button></span>` : ""}
+              ${qbSaved().length ? `<button type="button" class="qb-btn" data-qb-saved>Saved worksheets (${qbSaved().length})</button>` : ""}
+            </div></details>` : ""}
+          </div></div>`;
       box.innerHTML = `
         <aside class="qb-topics" aria-label="Topics">
-          <button type="button" class="qz-mixbtn" data-qz-setup><b>Mixed quiz</b><small>Questions from across the topics</small></button>
-          <label class="qb-select"><span>Year</span><select id="qb-year">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
-          ${paperSel("qb-paper")}
-          ${diffSel("qb-diff")}
+          ${filters("")}
           ${data.modular ? `<div class="qb-units" role="group" aria-label="Unit" style="--n:${groups.length}">${groups.map(([g, name]) => `<button class="qb-unit ${g === unitOf(st.topic) ? "on" : ""}" data-qb-unit="${g}" title="${esc(name)}" aria-pressed="${g === unitOf(st.topic)}">${esc(name.split(" ·")[0])}</button>`).join("")}</div>` : ""}
           ${shown().map(([g, name]) => `<div class="qb-group"><div class="qb-gname">${name}</div>${data.topics.filter(t => t.group === g).map(t => {
             const n = filtered(t.id).length;
@@ -556,22 +575,21 @@
           }).join("")}</div>`).join("")}
         </aside>
         <section class="qb-main">
-          <button type="button" class="qz-mixbtn qz-mixm" data-qz-setup><b>Mixed quiz</b><small>Questions from across the topics</small></button>
-          <div class="qb-mobile">${data.modular ? `<label class="qb-select"><span>Unit</span><select id="qb-unit">${groups.map(([g, name]) => `<option value="${g}" ${g === unitOf(st.topic) ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : ""}<label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
-          ${paperSel("qb-paper-m")}
-          ${diffSel("qb-diff-m")}
-          <label class="qb-select"><span>Topic</span><select id="qb-topic">${shown().map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
-          <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${waiting ? `${inTopic.length} question${inTopic.length === 1 ? "" : "s"}` : `${list.length}${picked.length || st.show !== "all" ? ` of ${inTopic.length}` : ""} question${list.length === 1 ? "" : "s"}`}</span></div>
+          <div class="qb-mobile">${data.modular ? `<label class="qb-select"><span>Unit</span><select id="qb-unit">${groups.map(([g, name]) => `<option value="${g}" ${g === unitOf(st.topic) ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : ""}
+          <label class="qb-select"><span>Topic</span><select id="qb-topic">${shown().map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label>
+          ${filters("-m")}</div>
+          <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${waiting ? `${inTopic.length} question${inTopic.length === 1 ? "" : "s"}` : `${list.length}${picked.length < pts.length || st.show !== "all" ? ` of ${inTopic.length}` : ""} question${list.length === 1 ? "" : "s"}`}</span></div>
           <p class="qb-tprog" data-qb-hprog>${qbHeadProg(inTopic)}</p>
           ${specBox}
-          ${waiting ? "" : `<div class="qb-show" role="group" aria-label="Show">${[["all", "All"], ["new", "Not tried"], ["weak", "Missed or partly"], ["got", "Got it"]].map(([v, l]) => `<button type="button" class="qb-showbtn ${st.show === v ? "on" : ""}" data-qb-show="${v}" aria-pressed="${st.show === v}">${l}</button>`).join("")}</div>`}
-          ${quizBox}
-          ${list.length ? `<div class="qb-wsall"><span class="qb-fill"><label for="qb-fill-n">Fill a worksheet to</label><input id="qb-fill-n" type="number" min="1" max="300" value="${store.get("ws-fill", 40)}" inputmode="numeric"><span>marks</span><button type="button" class="qb-btn" data-qb-fill>Fill</button></span>${qbSaved().length ? `<button type="button" class="qb-btn" data-qb-saved>Saved worksheets (${qbSaved().length})</button>` : ""}<button type="button" class="qb-btn" data-qb-wsall></button></div>` : ""}
-          ${waiting ? `<p class="qb-empty qb-pick">Tick one or more spec points above to load their questions.</p>` : list.length ? list.map(i => qbCard(i, data)).join("") : (st.show !== "all" && bySpec.length ? `<p class="qb-empty">${{ new: "You've tried every question here.", weak: "Nothing missed here. 🎉", got: "None marked Got it yet." }[st.show]}</p>` : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`)}
+          ${toolbar}
+          ${waiting ? `<p class="qb-empty qb-pick">Tick one or more spec points above to load their questions.</p>` : list.length ? list.map(i => qbCard(i, data)).join("") : (st.show !== "all" && bySpec.length ? `<p class="qb-empty">${{ new: "You've tried every question here.", weak: "Nothing missed here. 🎉", got: "None marked Got it yet." }[st.show]}</p>` : `<p class="qb-empty">No questions for this topic${nOn ? " with these filters" : ""} yet.</p>`)}
         </section>`;
       qbObserve(box, data); qbWsAll(box);
     };
     box.onclick = e => {
+      /* folding boxes: note the new state straight away (a redraw can come before the toggle event) */
+      const fs = e.target.closest("[data-qb-fbox] > summary, [data-qb-sbox] > summary");
+      if (fs) { const d = fs.parentElement; st[d.matches("[data-qb-fbox]") ? "_fopen" : "_sopen"] = !d.open; }
       const qn = e.target.closest("[data-qz-n]");
       if (qn) { quizGo(quizPool(qzList).slice(0, +qn.dataset.qzN)); return; }
       if (e.target.closest("[data-qz-setup]")) { mixSetup(); return; }
@@ -605,6 +623,7 @@
         }
       }
       if (e.target.closest("[data-qb-saved]")) { qbSavedDialog(false); return; }
+      if (e.target.closest("[data-qb-freset]")) { st.year = "all"; st.paper = "all"; st.diff = "all"; render(); return; }
       if (e.target.closest("[data-qb-fill]")) {
         /* questions shown here, in random order, until the marks reach the target (never a question that would go well past it) */
         const n = Math.max(1, Math.min(300, +box.querySelector("#qb-fill-n").value || 40)); store.set("ws-fill", n);
@@ -668,6 +687,7 @@
         qbWsAll(box); return;
       }
       const ab = e.target.closest("[data-qb-ans]");
+      if (ab) ab.closest("[data-qb-card]")?.classList.add("seen");
       if (ab) {
         const el = box.querySelector(`[data-qb-ansbox="${CSS.escape(ab.dataset.qbAns)}"]`), open = el.hidden;
         el.hidden = !open; ab.textContent = open ? "Hide answer" : "Show answer"; ab.setAttribute("aria-expanded", open); ab.classList.toggle("on", open);
@@ -680,10 +700,11 @@
       const ub = e.target.closest("[data-qb-unit]");
       if (ub) { st.topic = (data.topics.find(t => t.group === ub.dataset.qbUnit && filtered(t.id).length) || data.topics.find(t => t.group === ub.dataset.qbUnit)).id; render(); return; }
       const tb = e.target.closest("[data-qb-topic]");
-      if (tb) { st.topic = tb.dataset.qbTopic; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+      if (tb) { st.topic = tb.dataset.qbTopic; st._sopen = false; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
       if (e.target.closest("[data-qb-clear]")) { st.specs[st.topic] = []; render(); return; }
       if (e.target.closest("[data-qb-all]")) { st.specs[st.topic] = [...box.querySelectorAll("[data-qb-spec]:not(:disabled)")].map(x => x.dataset.qbSpec); render(); return; }
       const act = e.target.closest("[data-qb-open]");
+      if (act) act.closest("[data-qb-card]")?.classList.add("seen");
       if (act) {
         const it = data.items.find(x => x.id === act.dataset.qbId);
         const name = `${it.series} · ${it.paper} · Q${it.q}`;
@@ -700,6 +721,11 @@
         }
       }
     };
+    /* folding boxes remember whether they're open across redraws */
+    box.ontoggle = null;
+    if (!box._tg) { box._tg = true; box.addEventListener("toggle", e => {
+      if (e.target.matches(".qb-menu") && e.target.open) box.querySelectorAll(".qb-menu[open]").forEach(d => d !== e.target && (d.open = false));
+    }, true); }
     box.onchange = e => {
       if (qz && qz.setup) {
         const keep = window.scrollY;
@@ -712,11 +738,11 @@
       if (e.target.id === "qb-year" || e.target.id === "qb-year-m") { st.year = e.target.value; render(); }
       if (e.target.id === "qb-paper" || e.target.id === "qb-paper-m") { st.paper = e.target.value; render(); }
       if (e.target.id === "qb-diff" || e.target.id === "qb-diff-m") { st.diff = e.target.value; render(); }
-      if (e.target.id === "qb-topic") { st.topic = e.target.value; render(); }
+      if (e.target.id === "qb-topic") { st.topic = e.target.value; st._sopen = false; render(); }
       if (e.target.id === "qb-unit") { const g = e.target.value; st.topic = (data.topics.find(t => t.group === g && filtered(t.id).length) || data.topics.find(t => t.group === g)).id; render(); }
       if (e.target.dataset.qbSpec) {
         const keep = window.scrollY;
-        st.specs[st.topic] = [...box.querySelectorAll("[data-qb-spec]:checked")].map(x => x.dataset.qbSpec);
+        st.specs[st.topic] = [...box.querySelectorAll("[data-qb-spec]:checked")].map(x => x.dataset.qbSpec); st._sopen = true;
         render(); window.scrollTo(0, keep);
         $("#qb-spec-" + e.target.dataset.qbSpec.replace(".", "-"))?.focus({ preventScroll: true });
       }
@@ -1142,8 +1168,8 @@
       ${i.mcq ? "" : `<div class="qb-markrow"><span>How did it go?</span>${[["got", "✓ Got it"], ["part", "◐ Partly"], ["miss", "✗ Missed it"]].map(([v, l]) => `<button type="button" class="qb-stbtn st-${v} ${qbProg.map[i.id] === v ? "on" : ""}" data-qb-st="${v}" aria-pressed="${qbProg.map[i.id] === v}">${l}</button>`).join("")}</div>`}
       <footer class="qb-card-foot">
         ${qbHasAns(i) ? `<button class="qb-btn ans" data-qb-ans="${i.id}" aria-expanded="false">Show answer</button>` : ""}
-        ${i.ms ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">${qbHasAns(i) ? "Full mark scheme" : "Mark scheme"}</button>` : ""}
-        <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open question</button>
+        ${i.ms && !qbHasAns(i) && !i.mcq ? `<button class="qb-btn ms" data-qb-open="ms" data-qb-id="${i.id}">Mark scheme</button>` : ""}
+        <button class="qb-btn" data-qb-open="paper" data-qb-id="${i.id}">Open paper</button>
         ${qbPartsHtml(i)}${qbWsButton(i.id)}
       </footer>
     </article>`;
@@ -1390,7 +1416,9 @@
   function vTool(kind) {
     if (kind === "past-papers") {
       crumbs([{ t: "Past papers" }]); setTitle("Past papers");
-      return `<div class="home"><h1>Past papers</h1><p class="lede">Question papers and mark schemes for every series, opened right here to annotate.</p>${levelCards(url.ppLevel)}</div>`;
+      const keys = liveLevels().flatMap(L => liveTracks(L).flatMap(t => liveSubjects(L.id, t).filter(s => paperCount(L.id, t, s)).map(s => K(L.id, t, s))));
+      return `<div class="home"><h1>Past papers</h1><p class="lede">Question papers and mark schemes for every series, opened right here to annotate.</p>
+        <div class="sc-grid">${keys.map(k => { const [l, t, s] = k.split("/"); return subjCard(k).replace(`href="${url.subject(l, t, s)}"`, `href="${url.papers(l, t, s)}"`); }).join("")}</div></div>`;
     }
     if (kind === "question-banks") {
       crumbs([{ t: "Question bank" }]); setTitle("Question bank");
@@ -1412,9 +1440,8 @@
     if (kind === "formula-sheets") {
       crumbs([{ t: "Formula sheets" }]); setTitle("Formula sheets");
       return `<h1>Formula sheets</h1><p class="lede">Official data booklets and equation sheets.</p>` +
-        byLevel((L, t, s, c) => { const u = S.formulaSheets[K(L.id, t, s)], label = `${esc(subj(s).name)} (${c.code}) · ${esc(L.tracks[t].name)}`;
-          return u ? `<a class="row" href="${esc(u)}" target="_blank" rel="noopener"><span class="grow">${label}</span><span class="open">Open ↗</span></a>`
-                   : `<div class="row off"><span class="grow">${label}</span><span class="soon">Coming soon</span></div>`; });
+        (Object.keys(S.formulaSheets || {}).length ? byLevel((L, t, s, c) => { const u = S.formulaSheets[K(L.id, t, s)], label = `${esc(subj(s).name)} (${c.code}) · ${esc(L.tracks[t].name)}`;
+          return u ? `<a class="row" href="${esc(u)}" target="_blank" rel="noopener"><span class="grow">${label}</span><span class="open">Open ↗</span></a>` : ""; }).replace(/<h2>[^<]*<\/h2><div class="list"><\/div>/g, "") : `<p class="legend">None added yet.</p>`);
     }
     if (kind === "exam-dates") {
       crumbs([{ t: "Exam dates" }]); setTitle("Exam dates");
@@ -1426,7 +1453,6 @@
 
   function render() {
     const r = parse(location.pathname);
-    renderSide(r);
     $("#app").classList.remove("nav-open");
     if (r.kind !== "qbank") { $("#qb-ws-bar")?.remove(); document.body.classList.remove("ws-on"); }
     const page = $("#page");
@@ -1442,6 +1468,7 @@
     const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers, qbank: vQbank };
     page.style.animation = "none"; void page.offsetWidth; page.style.animation = "";
     page.innerHTML = views[r.kind] ? views[r.kind](r) : vTool(r.kind);
+    renderSide(r);   /* after the page: it lists the subjects opened lately, this one included */
     /* search engines: a page that isn't there isn't indexed; the address of this page without a trailing slash */
     let rb = document.querySelector('meta[name="robots"]');
     if (r.kind === "notfound") { if (!rb) { rb = document.createElement("meta"); rb.name = "robots"; document.head.appendChild(rb); } rb.content = "noindex"; } else rb?.remove();
@@ -1451,10 +1478,11 @@
   /* ---------- Search ---------- */
   const INDEX = [];
   eachCourse((L, t, s, c) => {
-    const T = L.tracks[t], where = `${T.full} · ${subj(s).name}`;
+    if (!isLive(L.id, t, s)) return;
+    const T = L.tracks[t], where = `${T.full} · ${subj(s).name}`, bank = hasBank(L.id, t, s);
     INDEX.push({ s, type: "Subjects", text: `${subj(s).name}`, sub: `${T.full} ${c.code}`, href: url.subject(L.id, t, s) });
-    INDEX.push({ s, type: "Past papers", text: `${subj(s).name} past papers`, sub: `${T.full} ${c.code}`, href: url.papers(L.id, t, s) });
-    c.topics.forEach((tp, i) => INDEX.push({ s, type: "Topics", text: tp, sub: where, hay: `${c.code} ${L.name}`, href: url.topic(L.id, t, s, i + 1) }));
+    if (paperCount(L.id, t, s)) INDEX.push({ s, type: "Past papers", text: `${subj(s).name} past papers`, sub: `${T.full} ${c.code}`, href: url.papers(L.id, t, s) });
+    c.topics.forEach((tp, i) => INDEX.push({ s, type: "Topics", text: tp, sub: where, hay: `${c.code} ${L.name}`, href: bank && !liveCount(L.id, t, s, i + 1) ? `${url.qbank(L.id, t, s)}?topic=${i + 1}` : url.topic(L.id, t, s, i + 1) }));
   });
   let sel = 0, hits = [];
   function runSearch() {
@@ -1484,6 +1512,8 @@
 
   /* ---------- Events ---------- */
   document.addEventListener("click", e => {
+    /* an open menu (Quiz me, Worksheet) closes on a click anywhere else */
+    document.querySelectorAll("details.qb-menu[open]").forEach(d => { if (!d.contains(e.target)) d.open = false; });
     const pdf = e.target.closest("[data-pdf]");
     if (pdf && !e.metaKey && !e.ctrlKey && !e.shiftKey && window.Viewer) { e.preventDefault(); window.Viewer.open(JSON.parse(pdf.dataset.pdf)); return; }
     const bmX = e.target.closest("[data-bm-x]");
