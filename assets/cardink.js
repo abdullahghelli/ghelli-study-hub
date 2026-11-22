@@ -10,7 +10,8 @@
   const get = k => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } };
   const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
   const W = { pen: 0.0032, highlighter: 0.02 };
-  const COLORS = ["ink", "coral", "green", "purple"];
+  /* the paper viewer's own colours, in its order */
+  const COLORS = Object.keys(window.Viewer?.Ink?.PALETTE || { green: 1, coral: 1, yellow: 1, purple: 1, ink: 1 });
   const BLOCK = 0.42;   /* height of one block of extra space, as a fraction of the width */
   const has = d => d && ((d.s && d.s.length) || (d.x && d.x.length));
   const siteDark = () => { const t = (document.documentElement.dataset.theme || "").replace(/"/g, ""); return t === "dark" || (t !== "light" && matchMedia("(prefers-color-scheme: dark)").matches); };
@@ -25,7 +26,7 @@
 
   let ctx = { key: "local", sync: null, readOnly: false, preset: null };   /* set by app.js for the questions on screen */
   const state = {};   /* per question id: { data, undo: [] } */
-  const prefs = (() => { const p = get("gsh-cink-prefs") || {}; return { tool: p.tool || "pen", color: COLORS.includes(p.color) ? p.color : "ink" }; })();
+  const prefs = (() => { const p = get("gsh-cink-prefs") || {}; return { tool: p.tool || "pen", color: COLORS.includes(p.color) ? p.color : "green" }; })();
   let penSeen = false;
 
   function dataFor(id) {
@@ -140,7 +141,7 @@
     return `<div class="qb-inkbar" role="toolbar" aria-label="Writing tools">
       ${["pen", "highlighter", "eraser"].map(t => `<button type="button" class="qb-ibtn ${prefs.tool === t ? "on" : ""}" data-ink-tool="${t}" title="${t[0].toUpperCase() + t.slice(1)}" aria-label="${t}" aria-pressed="${prefs.tool === t}">${svg(t)}</button>`).join("")}
       <span class="qb-isep"></span>
-      ${COLORS.map(c => `<button type="button" class="qb-icol ${prefs.color === c ? "on" : ""}" data-ink-color="${c}" aria-label="${c === "ink" ? "Black" : c}" aria-pressed="${prefs.color === c}"><i style="background:${window.Viewer.Ink.colorOf(c, dark)}"></i></button>`).join("")}
+      ${COLORS.map(c => `<button type="button" class="qb-icol ${prefs.color === c ? "on" : ""}" data-ink-color="${c}" title="${esc(c === "ink" ? (dark ? "White" : "Black") : window.Viewer.Ink.PALETTE[c].name)}" aria-label="${esc(c === "ink" ? (dark ? "White" : "Black") : window.Viewer.Ink.PALETTE[c].name)}" aria-pressed="${prefs.color === c}"><i style="background:${window.Viewer.Ink.colorOf(c, dark)}"></i></button>`).join("")}
       <span class="qb-isep"></span>
       <button type="button" class="qb-ibtn" data-ink-undo title="Undo" aria-label="Undo" ${st.undo.length ? "" : "disabled"}>${svg("undo")}</button>
       <button type="button" class="qb-itext" data-ink-more>+ More space</button>
