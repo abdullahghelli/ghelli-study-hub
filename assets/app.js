@@ -255,8 +255,9 @@
     const nDone = c.topics.filter((_, i) => done[K(l, t, s, i + 1)]).length;
     return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span></h1>
       <div class="facts"><span>${esc(T.full)}</span><span><b>${c.topics.length}</b> topics</span></div>
-      <div class="subj-tiles">
+      <div class="subj-tiles ${(S.qbanks || {})[K(l, t, s)] ? "three" : ""}">
         ${(S.qbanks || {})[K(l, t, s)] ? `<a class="subj-tile primary" href="${url.qbank(l, t, s)}">${icon.bank}<span><b>Question bank</b><small>Past paper questions by spec topic</small></span>${icon.arrow}</a>` : ""}
+        ${(S.qbanks || {})[K(l, t, s)] ? `<a class="subj-tile" href="${url.qbank(l, t, s)}?mix=1">${icon.bank}<span><b>Mixed quiz</b><small>Questions from across the topics, one at a time</small></span>${icon.arrow}</a>` : ""}
         <a class="subj-tile" href="${url.papers(l, t, s)}">${icon.paper}<span><b>Past papers</b><small>Question papers and mark schemes</small></span>${icon.arrow}</a>
       </div>
       ${qbSubjProg(l, t, s, c, nDone)}
@@ -386,6 +387,8 @@
       history.replaceState(history.state, "", location.pathname);
     }
     if (!st.topic || !data.topics.some(t => t.id === st.topic)) st.topic = data.topics[0].id;
+    const askMix = new URLSearchParams(location.search).has("mix");
+    if (askMix) history.replaceState(history.state, "", location.pathname);
     /* modular courses (IAL): units are separate papers, so the bank shows one unit's topics at a time */
     const unitOf = id => (data.topics.find(t => t.id === id) || {}).group;
     const shown = () => data.modular ? groups.filter(([g]) => g === unitOf(st.topic)) : groups;
@@ -403,7 +406,47 @@
       const by = f => shuffle(ok.filter(f));
       return [...by(i => ["miss", "part"].includes(qbProg.map[i.id])), ...by(i => !qbProg.map[i.id]), ...by(i => qbProg.map[i.id] === "got")].map(i => i.id);
     };
-    const quizGo = ids => { qz = ids.length ? { ids, k: 0, res: {} } : null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); };
+    const quizGo = (ids, mix) => { qz = ids.length ? { ids, k: 0, res: {}, mix } : null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); };
+    /* ----- Mixed quiz: questions from several topics, taken in turn from each so no one topic fills it ----- */
+    const mixKey = "qz-mix:" + src;
+    const mixItems = (tid, paper) => data.items.filter(i => i.topic === tid && (!data.papers || paper === "all" || i.ptype === paper));
+    const mixPool = m => {
+      const per = shuffle([...m.topics]).map(tid => quizPool(mixItems(tid, m.paper)));
+      const fresh = per.map(ids => ids.filter(id => qbProg.map[id] !== "got")), got = per.map(ids => ids.filter(id => qbProg.map[id] === "got"));
+      const out = [], take = lists => { for (let r = 0; lists.some(l => l.length > r); r++) lists.forEach(l => { if (l[r]) out.push(l[r]); }); };
+      take(fresh); take(got);
+      return out;
+    };
+    const mixSetup = () => {
+      const saved = store.get(mixKey, null) || {};
+      /* units of a modular course are sat separately: start with the unit being looked at */
+      const start = data.modular ? data.topics.filter(t => t.group === unitOf(st.topic)).map(t => t.id) : data.topics.map(t => t.id);
+      const topics = (saved.topics || start).filter(id => data.topics.some(t => t.id === id));
+      qz = { setup: true, m: { topics, paper: data.papers && data.papers.some(([p]) => p === saved.paper) ? saved.paper : "all" } };
+      render(); box.scrollIntoView({ block: "start", behavior: "smooth" });
+    };
+    const setupView = () => {
+      const m = qz.m, cnt = tid => quizPool(mixItems(tid, m.paper)).length;
+      const total = m.topics.reduce((a, tid) => a + cnt(tid), 0);
+      return `<section class="qb-main qz" aria-label="Mixed quiz">
+        <div class="qz-done qz-setup">
+          <small>${esc(data.label || "")}</small>
+          <h2>Mixed quiz</h2><button type="button" class="qb-btn qz-cancel" data-qz-back>Cancel</button>
+          <p class="qz-sum">Questions from across the topics you tick, taken in turn from each. Ones you missed or haven't tried come first.</p>
+          ${data.papers ? `<label class="qb-select qz-paper"><span>Paper</span><select id="qz-paper">${[["all", "All papers"], ...data.papers].map(([p, name]) => `<option value="${p}" ${m.paper === p ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : ""}
+          <div class="qz-quick"><span>Topics</span>
+            <button type="button" class="qb-btn" data-qz-mall>All</button><button type="button" class="qb-btn" data-qz-mnone>None</button>
+            ${groups.length > 1 ? groups.map(([g, name]) => `<button type="button" class="qb-btn" data-qz-mg="${g}">${esc(name.split(" ·")[0])} only</button>`).join("") : ""}
+          </div>
+          ${groups.map(([g, name]) => `<fieldset class="qz-group"><legend>${esc(name)}</legend><div class="qz-tlist">${data.topics.filter(t => t.group === g).map(t => {
+            const n = cnt(t.id);
+            return `<label class="qb-specopt ${n ? "" : "none"}"><input type="checkbox" data-qz-mt="${t.id}" ${m.topics.includes(t.id) && n ? "checked" : ""} ${n ? "" : "disabled"}>${t.num ? `<b>${t.num}</b>` : "<b></b>"}<span>${esc(t.name)}</span><small>${n}</small></label>`;
+          }).join("")}</div></fieldset>`).join("")}
+          <div class="qz-go"><span><b>${m.topics.filter(cnt).length}</b> topics · ${total} questions</span>
+            <span class="qz-ns"><small>Start with</small>${[10, 20, 30].map(n => `<button type="button" class="qb-btn primary" data-qz-mn="${n}" ${total ? "" : "disabled"}>${n}</button>`).join("")}<small>questions</small></span></div>
+        </div>
+      </section>`;
+    };
     const QZ_L = { ...QB_ST, skip: "Skipped" };
     const qzBar = () => qz.ids.map((id, k) => `<i class="${qz.res[id] ? "b-" + qz.res[id] : k === qz.k ? "now" : ""}"></i>`).join("");
     const qzDone = () => qz.ids.slice(0, qz.k + (qz.k < qz.ids.length && qz.res[qz.ids[qz.k]] ? 1 : 0));
@@ -419,8 +462,8 @@
       const n = qz.ids.length;
       if (!qz.end && qz.k < n) {
         const it = data.items.find(x => x.id === qz.ids[qz.k]);
-        return `<section class="qb-main qz" aria-label="Quiz">
-          <div class="qz-head"><div class="qz-title"><small>Quiz · ${esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
+        return `<section class="qb-main qz ${qz.mix ? "mix" : ""}" aria-label="Quiz">
+          <div class="qz-head"><div class="qz-title"><small>${qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
             <button type="button" class="qb-btn" data-qz-end>End quiz</button></div>
           <div class="qz-bar" data-qz-bar style="--n:${n}">${qzBar()}</div>
           ${qbCard(it, data)}
@@ -431,12 +474,20 @@
       done.forEach(id => c[qz.res[id] || "skip"]++);
       const weak = done.filter(id => ["miss", "part"].includes(qz.res[id]));
       const item = id => data.items.find(x => x.id === id);
+      /* mixed quiz: how each topic went, weakest first, each a link to its questions */
+      const byTopic = {};
+      done.forEach(id => { const t = item(id).topic, b = byTopic[t] = byTopic[t] || { n: 0, got: 0, weak: 0 }; b.n++; if (qz.res[id] === "got") b.got++; if (["miss", "part"].includes(qz.res[id])) b.weak++; });
+      const topicRows = qz.mix ? Object.entries(byTopic).sort((a, b) => a[1].got / a[1].n - b[1].got / b[1].n || b[1].n - a[1].n).map(([tid, b]) => {
+        const t = data.topics.find(x => x.id === tid);
+        return `<li class="${b.got === b.n ? "all" : b.weak ? "weak" : ""}"><button type="button" class="qz-tlink" data-qz-topic="${tid}">${t.num ? `<b>${t.num}</b> ` : ""}${esc(t.name)}</button><span>${b.got}/${b.n}</span></li>`;
+      }).join("") : "";
       return `<section class="qb-main qz" aria-label="Quiz results">
         <div class="qz-done">
-          <small>Quiz · ${esc(tp.name)}</small>
+          <small>${qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small>
           <h2>${c.got === done.length ? "Every one right 🎉" : "Quiz done"}</h2>
           <p class="qz-sum"><b>${c.got}</b> of ${done.length} got it${c.part ? ` · ${c.part} partly` : ""}${c.miss ? ` · ${c.miss} missed` : ""}${c.skip ? ` · ${c.skip} skipped` : ""}</p>
           <div class="qz-bar big" style="--n:${done.length}">${done.map(id => `<i class="b-${qz.res[id] || "skip"}"></i>`).join("")}</div>
+          ${topicRows ? `<h3 class="qz-h3">By topic</h3><ul class="qz-topics">${topicRows}</ul><h3 class="qz-h3">Questions</h3>` : ""}
           <ol class="qz-list">${done.map(id => { const i = item(id); return `<li><span>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` (${i.part})` : ""}</span><span class="qb-stbadge"><span class="b-${qz.res[id] || "skip"}">${QZ_L[qz.res[id] || "skip"]}</span></span></li>`; }).join("")}</ol>
           <div class="qz-actions">
             ${weak.length ? `<button type="button" class="qb-btn primary" data-qz-retry>Retry ${weak.length === 1 ? "the one" : `the ${weak.length}`} I missed or got partly</button>` : ""}
@@ -471,6 +522,7 @@
       qbSummary(data, key);
       qzList = list;
       box.classList.toggle("qz-on", !!qz);
+      if (qz && qz.setup) { box.innerHTML = setupView(); return; }
       if (qz) { box.innerHTML = quizView(tp); qbObserve(box, data); qzNav(); return; }
       const qn = quizPool(list).length;
       const quizBox = qn ? `<div class="qz-start"><span><b>Quiz me</b> one question at a time</span><span class="qz-ns">${[5, 10, 20].filter(n => n < qn).map(n => `<button type="button" class="qb-btn" data-qz-n="${n}">${n}</button>`).join("")}${qn <= 20 ? `<button type="button" class="qb-btn" data-qz-n="${qn}">All ${qn}</button>` : ""}<small>questions</small></span></div>` : "";
@@ -481,6 +533,7 @@
           }).join("")}</div></fieldset>` : "";
       box.innerHTML = `
         <aside class="qb-topics" aria-label="Topics">
+          <button type="button" class="qz-mixbtn" data-qz-setup><b>Mixed quiz</b><small>Questions from across the topics</small></button>
           <label class="qb-select"><span>Year</span><select id="qb-year">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
           ${paperSel("qb-paper")}
           ${data.modular ? `<div class="qb-units" role="group" aria-label="Unit" style="--n:${groups.length}">${groups.map(([g, name]) => `<button class="qb-unit ${g === unitOf(st.topic) ? "on" : ""}" data-qb-unit="${g}" title="${esc(name)}" aria-pressed="${g === unitOf(st.topic)}">${esc(name.split(" ·")[0])}</button>`).join("")}</div>` : ""}
@@ -490,6 +543,7 @@
           }).join("")}</div>`).join("")}
         </aside>
         <section class="qb-main">
+          <button type="button" class="qz-mixbtn qz-mixm" data-qz-setup><b>Mixed quiz</b><small>Questions from across the topics</small></button>
           <div class="qb-mobile">${data.modular ? `<label class="qb-select"><span>Unit</span><select id="qb-unit">${groups.map(([g, name]) => `<option value="${g}" ${g === unitOf(st.topic) ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : ""}<label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
           ${paperSel("qb-paper-m")}
           <label class="qb-select"><span>Topic</span><select id="qb-topic">${shown().map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
@@ -506,13 +560,28 @@
     box.onclick = e => {
       const qn = e.target.closest("[data-qz-n]");
       if (qn) { quizGo(quizPool(qzList).slice(0, +qn.dataset.qzN)); return; }
+      if (e.target.closest("[data-qz-setup]")) { mixSetup(); return; }
+      if (qz && qz.setup) {
+        const m = qz.m, avail = () => data.topics.filter(t => quizPool(mixItems(t.id, m.paper)).length).map(t => t.id);
+        const keep = window.scrollY, redo = () => { store.set(mixKey, { topics: m.topics, paper: m.paper }); render(); window.scrollTo(0, keep); };
+        if (e.target.closest("[data-qz-mall]")) { m.topics = avail(); redo(); return; }
+        if (e.target.closest("[data-qz-mnone]")) { m.topics = []; redo(); return; }
+        const mg = e.target.closest("[data-qz-mg]");
+        if (mg) { m.topics = avail().filter(id => data.topics.find(t => t.id === id).group === mg.dataset.qzMg); redo(); return; }
+        const mn = e.target.closest("[data-qz-mn]");
+        if (mn) { store.set(mixKey, { topics: m.topics, paper: m.paper }); const mix = { ...m }; quizGo(mixPool(mix).slice(0, +mn.dataset.qzMn), mix); return; }
+        if (e.target.closest("[data-qz-back]")) { qz = null; render(); return; }
+        return;
+      }
       if (qz) {
+        const tl = e.target.closest("[data-qz-topic]");
+        if (tl) { st.topic = tl.dataset.qzTopic; st.specs = st.specs || {}; st.specs[st.topic] = []; qz = null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
         if (e.target.closest("[data-qz-end]")) { if (qzDone().length) qz.end = true; else qz = null; render(); return; }
         if (e.target.closest("[data-qz-next]")) { const id = qz.ids[qz.k]; if (!qz.res[id]) qz.res[id] = "skip"; qz.k++; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
         if (e.target.closest("[data-qz-back]")) { qz = null; render(); return; }
-        if (e.target.closest("[data-qz-again]")) { quizGo(quizPool(qzList).slice(0, qz.ids.length)); return; }
+        if (e.target.closest("[data-qz-again]")) { quizGo(qz.mix ? mixPool(qz.mix).slice(0, qz.ids.length) : quizPool(qzList).slice(0, qz.ids.length), qz.mix); return; }
         const weak = () => qzDone().filter(id => ["miss", "part"].includes(qz.res[id]));
-        if (e.target.closest("[data-qz-retry]")) { quizGo(shuffle(weak())); return; }
+        if (e.target.closest("[data-qz-retry]")) { quizGo(shuffle(weak()), qz.mix); return; }
         const qw = e.target.closest("[data-qz-ws]");
         if (qw) {
           const add = weak().filter(id => !qbWs.ids.includes(id));
@@ -617,6 +686,14 @@
       }
     };
     box.onchange = e => {
+      if (qz && qz.setup) {
+        const keep = window.scrollY;
+        if (e.target.id === "qz-paper") qz.m.paper = e.target.value;
+        if (e.target.dataset.qzMt) qz.m.topics = [...box.querySelectorAll("[data-qz-mt]:checked")].map(x => x.dataset.qzMt);
+        store.set(mixKey, { topics: qz.m.topics, paper: qz.m.paper }); render(); window.scrollTo(0, keep);
+        if (e.target.dataset.qzMt) box.querySelector(`[data-qz-mt="${CSS.escape(e.target.dataset.qzMt)}"]`)?.focus({ preventScroll: true });
+        return;
+      }
       if (e.target.id === "qb-year" || e.target.id === "qb-year-m") { st.year = e.target.value; render(); }
       if (e.target.id === "qb-paper" || e.target.id === "qb-paper-m") { st.paper = e.target.value; render(); }
       if (e.target.id === "qb-topic") { st.topic = e.target.value; render(); }
@@ -628,7 +705,7 @@
         $("#qb-spec-" + e.target.dataset.qbSpec.replace(".", "-"))?.focus({ preventScroll: true });
       }
     };
-    render();
+    if (askMix) mixSetup(); else render();
   }
   /* ----- Worksheet builder: pick questions, then download one PDF with their pages and, at the back,
      their mark scheme pages. Picks are kept per question bank in this browser. ----- */
