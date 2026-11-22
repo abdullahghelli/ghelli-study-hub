@@ -52,6 +52,26 @@
     if (e.target.closest("[data-acct-out]")) signOut();
   });
 
+  /* ---------- Home page: a line about your own work ---------- */
+  A.homeCard = async el => {
+    if (!el || !user) return;
+    const firstName = String(user.name || "").trim().split(/\s+/)[0];
+    const card = (href, title, sub) => `<a class="home-acard" href="${href}"><small>Welcome back${firstName ? ", " + G.esc(firstName) : ""}</small><b>${title}</b>${sub ? `<span>${sub}</span>` : ""}<svg class="arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 10h10m-4-4 4 4-4 4"/></svg></a>`;
+    try {
+      if (user.role === "teacher") {
+        const [{ assignments: list }, sts] = await Promise.all([api("assignments"), loadStudents(true)]);
+        const open = list.filter(a => a.done < a.students).length;
+        el.innerHTML = card("/teacher", `${sts.length} student${sts.length === 1 ? "" : "s"} · ${open ? `${open} piece${open === 1 ? "" : "s"} of work in progress` : list.length ? "all work finished" : "no work set yet"}`,
+          sts.length ? "Open your Teacher page" : "Add your students on your Teacher page");
+      } else {
+        const list = (await api("assignments")).assignments, todo = list.filter(a => a.status !== "done").sort((a, b) => (a.due || "9999").localeCompare(b.due || "9999"));
+        const next = todo[0], late = next && next.due && next.due < today();
+        el.innerHTML = card("/my-work", todo.length ? `${todo.length} piece${todo.length === 1 ? "" : "s"} of work to do` : list.length ? "All your work is done" : "No work set yet",
+          next ? `Next: ${G.esc(next.title)}${next.due ? ` · <span class="${late ? "late" : ""}">${late ? "overdue, was due" : "due"} ${day(next.due)}</span>` : ""}` : "Open My work");
+      }
+    } catch (e) { el.remove(); }
+  };
+
   /* ---------- Small helpers ---------- */
   const day = d => d ? new Date(d + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) : "";
   const today = () => new Date().toISOString().slice(0, 10);

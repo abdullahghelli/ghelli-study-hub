@@ -1078,3 +1078,10 @@ body.pen-seen .qb-card.writing canvas.qb-ink{touch-action:pan-y}
 @media (pointer:coarse){.qb-ibtn{width:42px;height:42px}.qb-icol{width:38px;height:38px}.qb-itext{height:42px}}
 @media (max-width:600px){.qb-ihint{display:none}.qb-inkbar{gap:2px;padding:6px 8px}.qb-isep{margin:0 2px}.qb-idone{height:40px}}
 .qb-card.writing{overflow:clip}
+.home-acct{min-height:76px;margin:0 0 28px}
+.home-acard{position:relative;display:flex;flex-direction:column;gap:3px;padding:14px 48px 14px 18px;border-radius:14px;background:var(--accent-soft);color:var(--fg);text-decoration:none;max-width:560px;transition:box-shadow .15s}
+.home-acard:hover{box-shadow:inset 0 0 0 1px var(--accent)}
+.home-acard small{font-size:12.5px;color:var(--accent);font-weight:600}
+.home-acard b{font-size:16px;font-weight:600}
+.home-acard span{font-size:13.5px;color:var(--muted)} .home-acard span.late{color:var(--miss);font-weight:500}
+.home-acard .arrow{position:absolute;right:16px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--accent)}

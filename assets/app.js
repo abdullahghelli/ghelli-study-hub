@@ -231,10 +231,14 @@
     const cont = lastOk ? (() => { const [l, t, s] = last.k.split("/"), c = course(l, t, s);
       return `<a class="home-cont s-${subj(s).color}-q" href="${url.qbank(l, t, s)}"><small>Continue where you left off</small><b>${esc(subj(s).name)} ${esc(c.code)}${last.name ? ` · ${last.num ? last.num + " " : ""}${esc(last.name)}` : ""}</b>${icon.arrow}</a>`; })() : "";
     const mine = mySubjects(), chosen = chosenSpecs();
+    /* signed in: a line about their own work (filled in by account.js) */
+    const acct = window.GSHAccount?.user();
+    if (acct) setTimeout(() => window.GSHAccount.homeCard($("#home-acct")), 0);
     return `<div class="home">
+      ${acct ? `<div class="home-acct" id="home-acct" aria-live="polite"></div>` : ""}
       <h1>What are you revising?</h1>
       <p class="lede">Every past paper question, sorted by topic and checked against the mark scheme.</p>
-      <p class="home-free"><span>Free</span><span>No ads</span><span>No sign-up</span></p>
+      <p class="home-free"><span>Free</span><span>No ads</span><span>No sign-up needed</span></p>
       ${cont}
       <section class="home-sec">
         <div class="sec-head"><h2>Your specs</h2><button type="button" class="qb-btn ${homePicking ? "primary" : ""}" data-home-edit>${homePicking ? "Done" : chosen.length ? "Change" : "Choose your specs"}</button></div>
@@ -1682,7 +1686,7 @@
     refresh: () => {
       const k = parse(location.pathname).kind;
       if ($("#qb-ws-bar")) qbWsBar();
-      if (k === "papers" || ACCT.includes(k)) render();
+      if (k === "papers" || k === "home" || ACCT.includes(k)) render();
     },
   });
   render();
