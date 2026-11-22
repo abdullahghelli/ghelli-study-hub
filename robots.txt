@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ghelli-study-hub.pages.dev/sitemap.xml

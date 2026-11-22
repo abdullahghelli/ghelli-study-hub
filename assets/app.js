@@ -72,7 +72,7 @@
 
   /* ---------- Routing ---------- */
   function parse(path) {
-    const p = path.replace(/\/+$/, "").split("/").filter(Boolean);
+    const p = path.replace(/\/+$/, "").replace(/\.html$/, "").split("/").filter(Boolean);
     if (!p.length) return { kind: "home" };
     if (p[0] === "viewer") return { kind: "viewer" };
     if (p.length === 1 && ["past-papers", "question-banks", "formula-sheets", "exam-dates"].includes(p[0])) return { kind: p[0] };
@@ -374,11 +374,12 @@
     const papers = new Set(data.items.map(i => i.src));
     $("[data-qb-count]").innerHTML = `<b>${data.items.filter(i => !i.part).length}</b> questions from ${papers.size} papers`;
     const years = [...new Set(data.items.map(i => i.year))].sort((a, b) => b - a);
+    qbDifficulty(data);
     const groups = data.groups || [["pure", "Pure"], ["stats", "Statistics"], ["mech", "Mechanics"]];
     const st = qbState;
     qbProg = { key: "qbp:" + src, map: store.get("qbp:" + src, {}) };
     st.show = ["all", "new", "weak", "got"].includes(st.show) ? st.show : "all";
-    qbWs = { key: "ws:" + src, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)), parts: store.get("ws:" + src + ":parts", {}) };
+    qbWs = { key: "ws:" + src, bank: key, data, ids: store.get("ws:" + src, []).filter(id => data.items.some(i => i.id === id)), parts: store.get("ws:" + src + ":parts", {}) };
     qbWsBar();
     const want = +new URLSearchParams(location.search).get("topic");
     if (want) {
@@ -388,13 +389,17 @@
     }
     if (!st.topic || !data.topics.some(t => t.id === st.topic)) st.topic = data.topics[0].id;
     const askMix = new URLSearchParams(location.search).has("mix");
+    const shared = new URLSearchParams(location.search).get("ws"), sharedTitle = new URLSearchParams(location.search).get("t");
+    if (shared) { history.replaceState(history.state, "", location.pathname); setTimeout(() => qbSharedOffer(shared, sharedTitle), 300); }
     if (askMix) history.replaceState(history.state, "", location.pathname);
     /* modular courses (IAL): units are separate papers, so the bank shows one unit's topics at a time */
     const unitOf = id => (data.topics.find(t => t.id === id) || {}).group;
     const shown = () => data.modular ? groups.filter(([g]) => g === unitOf(st.topic)) : groups;
     /* banks covering several papers (Cambridge 9701: Paper 1 multiple choice, Papers 2 and 4) can show one paper at a time */
     const paperOf = () => data.papers && data.papers.some(([p]) => p === st.paper) ? st.paper : "all";
-    const filtered = topicId => data.items.filter(i => (!topicId || i.topic === topicId) && (st.year === "all" || i.year === +st.year) && (paperOf() === "all" || i.ptype === paperOf()));
+    st.diff = ["all", "1", "2", "3"].includes(String(st.diff)) ? String(st.diff) : "all";
+    const filtered = topicId => data.items.filter(i => (!topicId || i.topic === topicId) && (st.year === "all" || i.year === +st.year) && (paperOf() === "all" || i.ptype === paperOf()) && (st.diff === "all" || i.diff === +st.diff));
+    const diffSel = id => `<label class="qb-select"><span>Difficulty</span><select id="${id}">${[["all", "Any difficulty"], ["1", "Easier"], ["2", "Medium"], ["3", "Harder"]].map(([v, l]) => `<option value="${v}" ${st.diff === v ? "selected" : ""}>${l}</option>`).join("")}</select></label>`;
     const paperSel = id => data.papers ? `<label class="qb-select"><span>Paper</span><select id="${id}">${[["all", "All papers"], ...data.papers].map(([p, name]) => `<option value="${p}" ${paperOf() === p ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : "";
     /* ----- Quiz me: the questions shown here, one at a time (missed or partly first, then not tried, Got it last) ----- */
     let qz = null, qzList = [];
@@ -536,6 +541,7 @@
           <button type="button" class="qz-mixbtn" data-qz-setup><b>Mixed quiz</b><small>Questions from across the topics</small></button>
           <label class="qb-select"><span>Year</span><select id="qb-year">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
           ${paperSel("qb-paper")}
+          ${diffSel("qb-diff")}
           ${data.modular ? `<div class="qb-units" role="group" aria-label="Unit" style="--n:${groups.length}">${groups.map(([g, name]) => `<button class="qb-unit ${g === unitOf(st.topic) ? "on" : ""}" data-qb-unit="${g}" title="${esc(name)}" aria-pressed="${g === unitOf(st.topic)}">${esc(name.split(" ·")[0])}</button>`).join("")}</div>` : ""}
           ${shown().map(([g, name]) => `<div class="qb-group"><div class="qb-gname">${name}</div>${data.topics.filter(t => t.group === g).map(t => {
             const n = filtered(t.id).length;
@@ -546,13 +552,14 @@
           <button type="button" class="qz-mixbtn qz-mixm" data-qz-setup><b>Mixed quiz</b><small>Questions from across the topics</small></button>
           <div class="qb-mobile">${data.modular ? `<label class="qb-select"><span>Unit</span><select id="qb-unit">${groups.map(([g, name]) => `<option value="${g}" ${g === unitOf(st.topic) ? "selected" : ""}>${esc(name)}</option>`).join("")}</select></label>` : ""}<label class="qb-select"><span>Year</span><select id="qb-year-m">${["all", ...years].map(y => `<option value="${y}" ${String(st.year) === String(y) ? "selected" : ""}>${y === "all" ? "All years" : y}</option>`).join("")}</select></label>
           ${paperSel("qb-paper-m")}
+          ${diffSel("qb-diff-m")}
           <label class="qb-select"><span>Topic</span><select id="qb-topic">${shown().map(([g, name]) => `<optgroup label="${name}">${data.topics.filter(t => t.group === g).map(t => `<option value="${t.id}" ${t.id === st.topic ? "selected" : ""}>${t.num ? t.num + " " : ""}${esc(t.name)} (${filtered(t.id).length})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
           <div class="qb-head"><h2>${tp.num ? `<span class="qb-num">${tp.num}</span>` : ""}${esc(tp.name)}</h2><span>${waiting ? `${inTopic.length} question${inTopic.length === 1 ? "" : "s"}` : `${list.length}${picked.length || st.show !== "all" ? ` of ${inTopic.length}` : ""} question${list.length === 1 ? "" : "s"}`}</span></div>
           <p class="qb-tprog" data-qb-hprog>${qbHeadProg(inTopic)}</p>
           ${specBox}
           ${waiting ? "" : `<div class="qb-show" role="group" aria-label="Show">${[["all", "All"], ["new", "Not tried"], ["weak", "Missed or partly"], ["got", "Got it"]].map(([v, l]) => `<button type="button" class="qb-showbtn ${st.show === v ? "on" : ""}" data-qb-show="${v}" aria-pressed="${st.show === v}">${l}</button>`).join("")}</div>`}
           ${quizBox}
-          ${list.length ? `<div class="qb-wsall"><span class="qb-fill"><label for="qb-fill-n">Fill a worksheet to</label><input id="qb-fill-n" type="number" min="1" max="300" value="${store.get("ws-fill", 40)}" inputmode="numeric"><span>marks</span><button type="button" class="qb-btn" data-qb-fill>Fill</button></span><button type="button" class="qb-btn" data-qb-wsall></button></div>` : ""}
+          ${list.length ? `<div class="qb-wsall"><span class="qb-fill"><label for="qb-fill-n">Fill a worksheet to</label><input id="qb-fill-n" type="number" min="1" max="300" value="${store.get("ws-fill", 40)}" inputmode="numeric"><span>marks</span><button type="button" class="qb-btn" data-qb-fill>Fill</button></span>${qbSaved().length ? `<button type="button" class="qb-btn" data-qb-saved>Saved worksheets (${qbSaved().length})</button>` : ""}<button type="button" class="qb-btn" data-qb-wsall></button></div>` : ""}
           ${waiting ? `<p class="qb-empty qb-pick">Tick one or more spec points above to load their questions.</p>` : list.length ? list.map(i => qbCard(i, data)).join("") : (st.show !== "all" && bySpec.length ? `<p class="qb-empty">${{ new: "You've tried every question here.", weak: "Nothing missed here. 🎉", got: "None marked Got it yet." }[st.show]}</p>` : `<p class="qb-empty">No questions for this topic${st.year === "all" ? "" : ` in ${st.year}`} yet.</p>`)}
         </section>`;
       qbObserve(box, data); qbWsAll(box);
@@ -590,6 +597,7 @@
           qw.disabled = true; return;
         }
       }
+      if (e.target.closest("[data-qb-saved]")) { qbSavedDialog(false); return; }
       if (e.target.closest("[data-qb-fill]")) {
         /* questions shown here, in random order, until the marks reach the target (never a question that would go well past it) */
         const n = Math.max(1, Math.min(300, +box.querySelector("#qb-fill-n").value || 40)); store.set("ws-fill", n);
@@ -696,6 +704,7 @@
       }
       if (e.target.id === "qb-year" || e.target.id === "qb-year-m") { st.year = e.target.value; render(); }
       if (e.target.id === "qb-paper" || e.target.id === "qb-paper-m") { st.paper = e.target.value; render(); }
+      if (e.target.id === "qb-diff" || e.target.id === "qb-diff-m") { st.diff = e.target.value; render(); }
       if (e.target.id === "qb-topic") { st.topic = e.target.value; render(); }
       if (e.target.id === "qb-unit") { const g = e.target.value; st.topic = (data.topics.find(t => t.group === g && filtered(t.id).length) || data.topics.find(t => t.group === g)).id; render(); }
       if (e.target.dataset.qbSpec) {
@@ -802,6 +811,7 @@
         const b = e.target.closest("button"); if (!b) return;
         if (b.dataset.ws === "clear") { const was = qbWs.ids; qbWs.ids = []; qbWs.parts = {}; qbWsSave(); was.forEach(qbRefreshCard); qbWsBar(); }
         if (b.dataset.ws === "build") qbWsDialog();
+        if (b.dataset.ws === "save") qbSavedDialog(true);
       };
       document.body.appendChild(bar);
     }
@@ -809,7 +819,100 @@
     const marks = qbWs.ids.reduce((a, id) => a + qbWsMarks(id), 0);
     bar.innerHTML = `<span><b>Worksheet</b> · ${n} question${n === 1 ? "" : "s"}${marks ? `<i class="wsm" style="font-style:normal"> · ${marks} marks</i>` : ""}</span>
       <button class="qb-btn" data-ws="clear">Clear</button>
+      <button class="qb-btn" data-ws="save">Save<span class="ws-long"> or share</span></button>
       <button class="qb-btn primary" data-ws="build">Build PDF</button>`;
+  }
+  /* ----- Saved worksheets (kept in this browser, per question bank) and share links that rebuild the same set ----- */
+  const qbSavedKey = () => "ws-saved:" + qbWs.key;
+  const qbSaved = () => store.get(qbSavedKey(), []).filter(w => w && Array.isArray(w.ids));
+  /* a worksheet in a link: question ids, each with its picked parts after "~" (3 to 4 KB for 40 questions) */
+  const qbWsEncode = (ids, parts) => ids.map(id => id + (parts[id] ? "~" + parts[id].join("") : "")).join(".");
+  const qbWsDecode = (str, data) => {
+    const ids = [], parts = {};
+    for (const bit of String(str || "").split(".")) {
+      const [id, pl] = bit.split("~"), it = data.items.find(x => x.id === id);
+      if (!it || ids.includes(id)) continue;
+      ids.push(id);
+      const ok = (pl || "").split("").filter(l => (it.parts || []).some(p => p.l === l));
+      if (ok.length) parts[id] = ok;
+    }
+    return { ids, parts };
+  };
+  const qbWsLink = (ids, parts, title) => `${location.origin}${url.qbank(...qbWs.bank.split("/"))}?ws=${encodeURIComponent(qbWsEncode(ids, parts))}${title ? `&t=${encodeURIComponent(title)}` : ""}`;
+  const qbSetWs = (ids, parts) => {
+    const was = qbWs.ids; qbWs.ids = [...ids]; qbWs.parts = JSON.parse(JSON.stringify(parts || {}));
+    qbWsSave(); qbWsBar(); [...new Set([...was, ...ids])].forEach(qbRefreshCard);
+    const box = $("#qb"); if (box) qbWsAll(box);
+  };
+  function qbSavedDialog(withCurrent) {
+    const data = qbWs.data, topic = (data.topics.find(t => t.id === qbState.topic) || {}).name || "";
+    const dlg = document.createElement("div"); dlg.className = "qb-dlg-wrap";
+    const draw = () => {
+      const list = qbSaved(), n = qbWs.ids.length;
+      const marks = ids => ids.reduce((a, id) => a + qbWsMarks(id), 0);
+      dlg.innerHTML = `<div class="qb-dlg qb-saved" role="dialog" aria-modal="true" aria-labelledby="qb-sv-h">
+        <h2 id="qb-sv-h">${withCurrent && n ? "Save or share this worksheet" : "Saved worksheets"}</h2>
+        ${withCurrent && n ? `<form class="qb-sv-save" data-sv-form>
+            <label class="qb-field"><span>Name</span><input name="name" value="${esc(`${data.spec} · ${topic}`)}" maxlength="80"></label>
+            <button type="submit" class="qb-btn primary">Save</button></form>
+          <div class="qb-field"><span>Share link <small>Anyone with the link gets these ${n} questions${Object.keys(qbWs.parts).length ? " and the parts picked" : ""}</small></span>
+            <div class="qb-sv-link"><input readonly value="${esc(qbWsLink(qbWs.ids, qbWs.parts, ""))}" data-sv-link><button type="button" class="qb-btn" data-sv-copy>Copy</button></div></div>` : ""}
+        ${list.length ? `<h3>Saved in this browser</h3><ul class="qb-sv-list">${list.map((w, k) => `<li><span><b>${esc(w.name)}</b><small>${w.ids.length} question${w.ids.length === 1 ? "" : "s"} · ${marks(w.ids)} marks · ${new Date(w.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</small></span>
+            <button type="button" class="qb-btn" data-sv-load="${k}">Open</button><button type="button" class="qb-btn" data-sv-share="${k}">Copy link</button><button type="button" class="qb-btn qb-sv-del" data-sv-del="${k}" aria-label="Delete ${esc(w.name)}">Delete</button></li>`).join("")}</ul>`
+          : `<p class="qb-sv-none">${withCurrent && n ? "Saved worksheets appear here, ready to open again or share." : "No saved worksheets yet. Add questions to a worksheet, then choose Save or share."}</p>`}
+        <div class="qb-dlg-btns"><button type="button" class="qb-btn" data-x>Close</button></div>
+      </div>`;
+    };
+    draw();
+    document.body.appendChild(dlg);
+    const close = () => dlg.remove();
+    const copy = async (text, btn) => {
+      try { await navigator.clipboard.writeText(text); qbToast("Link copied"); }
+      catch (e) { const i = dlg.querySelector("[data-sv-link]"); if (i) { i.select(); } qbToast("Select the link and copy it"); }
+      if (btn) { const was = btn.textContent; btn.textContent = "Copied"; setTimeout(() => { if (btn.isConnected) btn.textContent = was; }, 1500); }
+    };
+    dlg.onclick = e => {
+      if (e.target === dlg || e.target.closest("[data-x]")) return close();
+      if (e.target.closest("[data-sv-link]")) return e.target.select();
+      const c = e.target.closest("[data-sv-copy]"); if (c) { const nm = dlg.querySelector("[data-sv-form] [name=name]")?.value.trim() || ""; const link = qbWsLink(qbWs.ids, qbWs.parts, nm); dlg.querySelector("[data-sv-link]").value = link; return copy(link, c); }
+      const list = qbSaved();
+      const sh = e.target.closest("[data-sv-share]"); if (sh) { const w = list[+sh.dataset.svShare]; return copy(qbWsLink(w.ids, w.parts || {}, w.name), sh); }
+      const ld = e.target.closest("[data-sv-load]");
+      if (ld) { const w = list[+ld.dataset.svLoad]; const d = qbWsDecode(qbWsEncode(w.ids, w.parts || {}), qbWs.data); qbSetWs(d.ids, d.parts); qbToast(`Opened “${w.name}” · ${d.ids.length} questions`); return close(); }
+      const del = e.target.closest("[data-sv-del]");
+      if (del) { list.splice(+del.dataset.svDel, 1); store.set(qbSavedKey(), list); draw(); }
+    };
+    dlg.onsubmit = e => {
+      e.preventDefault();
+      const name = e.target.elements.name.value.trim() || "Worksheet", list = qbSaved().filter(w => w.name !== name);
+      list.unshift({ name, ids: [...qbWs.ids], parts: JSON.parse(JSON.stringify(qbWs.parts)), at: Date.now() });
+      store.set(qbSavedKey(), list.slice(0, 30)); qbToast(`Saved “${name}”`); draw();
+    };
+    dlg.onkeydown = e => { if (e.key === "Escape") close(); };
+  }
+  /* a shared link: offer its questions as this browser's worksheet */
+  function qbSharedOffer(str, title, after) {
+    const d = qbWsDecode(str, qbWs.data); if (!d.ids.length) return;
+    const n = qbWs.ids.length, marks = d.ids.reduce((a, id) => { const it = qbWs.data.items.find(x => x.id === id), sel = d.parts[id];
+      return a + (sel && it.parts ? it.parts.filter(p => sel.includes(p.l)).reduce((b, p) => b + (p.m || 0), 0) : it.marks || 0); }, 0);
+    const dlg = document.createElement("div"); dlg.className = "qb-dlg-wrap";
+    dlg.innerHTML = `<div class="qb-dlg" role="dialog" aria-modal="true" aria-labelledby="qb-sh-h">
+      <h2 id="qb-sh-h">Shared worksheet</h2>
+      <p class="qb-sv-none"><b>${esc(title || "A worksheet")}</b><br>${d.ids.length} question${d.ids.length === 1 ? "" : "s"} · ${marks} marks</p>
+      ${n ? `<p class="qb-sv-none">You already have ${n} question${n === 1 ? "" : "s"} on your worksheet.</p>` : ""}
+      <div class="qb-dlg-btns"><button type="button" class="qb-btn" data-x>Not now</button>
+        ${n ? `<button type="button" class="qb-btn" data-sh="add">Add to mine</button><button type="button" class="qb-btn primary" data-sh="replace">Replace mine</button>` : `<button type="button" class="qb-btn primary" data-sh="replace">Open it</button>`}</div>
+    </div>`;
+    document.body.appendChild(dlg);
+    dlg.onclick = e => {
+      const b = e.target.closest("[data-sh]");
+      if (e.target === dlg || e.target.closest("[data-x]") || b) dlg.remove();
+      if (!b) return;
+      if (b.dataset.sh === "replace") qbSetWs(d.ids, d.parts);
+      else { const parts = { ...qbWs.parts }; d.ids.forEach(id => { if (!qbWs.ids.includes(id) && d.parts[id]) parts[id] = d.parts[id]; }); qbSetWs([...qbWs.ids, ...d.ids.filter(id => !qbWs.ids.includes(id))], parts); }
+      qbToast(`Worksheet now has ${qbWs.ids.length} questions · Build PDF when ready`);
+      after && after();
+    };
   }
   /* The worksheet is built afresh: each question is cut from its paper (only its own lines, with the space and
      diagrams between them) and laid onto clean A4 pages, numbered 1, 2, 3… in worksheet order under a line naming
@@ -972,7 +1075,8 @@
             /* the page as seen: a page stored on its side is seen the other way round */
             const seen = pn => { const pg = msDoc.getPage(pn - 1), r = pg.getRotation().angle % 180 !== 0; return r ? [pg.getHeight(), pg.getWidth()] : [pg.getWidth(), pg.getHeight()]; };
             /* the question's rows, as Show answer finds them */
-            const bands = qbAnsBands(it, data, seen, pc).map(([pn, t, b]) => { const [pw] = seen(pn); return [pn, pw * 0.04, pw * 0.96, t, b]; });
+            const pk = pick(it), by = pk && pk.w.msPage && pk.w.parts.every(p => p.mp) ? pk.w : it;
+            const bands = qbAnsBands(by, data, seen, pc, pk && by === pk.w ? pk.sel : undefined).map(([pn, t, b]) => { const [pw] = seen(pn); return [pn, pw * 0.04, pw * 0.96, t, b]; });
             if (!bands.length) continue;
             /* the heading stays with the first rows */
             const [, fx0, fx1, ft, fb] = bands[0];
@@ -1023,7 +1127,7 @@
         <div class="qb-title"><b>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` <span class="qb-part">part (${i.part})</span>` : ""}</b>
           ${spec ? `<div class="qb-specs">${spec}</div>` : ""}
           ${i.part ? `<small>Shown with the question's opening lines</small>` : ""}</div>
-        <span class="qb-headr"><span class="qb-stbadge" data-qb-badge>${qbBadge(i.id)}</span>${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}</span>
+        <span class="qb-headr"><span class="qb-stbadge" data-qb-badge>${qbBadge(i.id)}</span>${i.diff ? `<span class="qb-diff d${i.diff}" title="Estimated from the marks and where the question comes in its paper">${QB_DIFF[i.diff]}</span>` : ""}${i.marks ? `<span class="qb-marks">${i.marks} mark${i.marks === 1 ? "" : "s"}</span>` : ""}</span>
       </header>
       <div class="qb-snip" data-qb-snip="${i.id}" style="--ar:${qbAspect(i, data)}"></div>
       ${qbHasAns(i) ? `<div class="qb-ans" data-qb-ansbox="${i.id}" hidden></div>` : ""}
@@ -1036,6 +1140,23 @@
         ${qbPartsHtml(i)}${qbWsButton(i.id)}
       </footer>
     </article>`;
+  }
+  /* ----- Difficulty, estimated: later in the paper and more marks reads as harder. Ranked within each kind of paper
+     and split into thirds: Easier, Medium, Harder. Multiple choice is left unlabelled (its order follows the syllabus). */
+  const QB_DIFF = ["", "Easier", "Medium", "Harder"];
+  function qbDifficulty(data) {
+    if (data._diff) return; data._diff = true;
+    const last = {};
+    data.items.forEach(i => { last[i.src] = Math.max(last[i.src] || 1, i.q); });
+    const groups = {};
+    data.items.filter(i => !i.mcq).forEach(i => (groups[i.ptype || "all"] ||= []).push(i));
+    for (const its of Object.values(groups)) {
+      const ms = its.map(i => i.marks || 0).sort((a, b) => a - b);
+      const pct = m => { let lo = 0, hi = ms.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (ms[mid] < m) lo = mid + 1; else hi = mid; } return lo / Math.max(1, ms.length - 1); };
+      its.forEach(i => { i._ds = 0.55 * ((i.q - 1) / Math.max(1, last[i.src] - 1)) + 0.45 * pct(i.marks || 0); });
+      const sc = its.map(i => i._ds).sort((a, b) => a - b), cut1 = sc[Math.floor(sc.length / 3)], cut2 = sc[Math.floor(2 * sc.length / 3)];
+      its.forEach(i => { i.diff = i._ds < cut1 ? 1 : i._ds < cut2 ? 2 : 3; });
+    }
   }
   /* ----- Progress: each question marked Got it / Partly / Missed it (multiple choice: from Check), kept per bank
      in this browser. Shown on cards, topics, spec points and the subject page. ----- */
@@ -1080,10 +1201,11 @@
       card.querySelectorAll("[data-qb-st]").forEach(b => { const on = b.dataset.qbSt === v; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
     }
     /* refresh the bars and counts in place (re-drawing the page would redraw every question) */
-    const st = qbState, inTopic = data.items.filter(i => i.topic === st.topic && (st.year === "all" || i.year === +st.year) && (!data.papers || !st.paper || st.paper === "all" || i.ptype === st.paper));
+    const st = qbState, keep = i => (st.year === "all" || i.year === +st.year) && (!data.papers || !st.paper || st.paper === "all" || i.ptype === st.paper) && (!st.diff || st.diff === "all" || i.diff === +st.diff);
+    const inTopic = data.items.filter(i => i.topic === st.topic && keep(i));
     box.querySelectorAll("[data-qb-tprog]").forEach(el => {
       const tid = el.dataset.qbTprog;
-      el.innerHTML = qbBar(data.items.filter(i => i.topic === tid && (st.year === "all" || i.year === +st.year) && (!data.papers || !st.paper || st.paper === "all" || i.ptype === st.paper)));
+      el.innerHTML = qbBar(data.items.filter(i => i.topic === tid && keep(i)));
     });
     box.querySelectorAll("[data-qb-sprog]").forEach(el => el.innerHTML = qbSpecProg(inTopic, el.dataset.qbSprog));
     const h = box.querySelector("[data-qb-hprog]"); if (h) h.innerHTML = qbHeadProg(inTopic);
@@ -1093,7 +1215,7 @@
   const qbHasAns = i => !i.mcq && i.ms && i.msPage;
   /* where a question's answer runs in its mark scheme: [page, top, bottom] in points on the page as seen.
      From where it starts to where the next question starts (a part card: to the foot of its first page). */
-  function qbAnsBands(it, data, size, pages) {
+  function qbAnsBands(it, data, size, pages, picked) {
     /* a part card stops where a later part of the same question starts (when the bank lists one), else at the next question */
     const later = it.part ? data.items.filter(x => x.ms === it.ms && x.q === it.q && x.part > it.part && x.msPage && (x.msPage > it.msPage || x.msY > it.msY))
       .sort((a, b) => a.msPage - b.msPage || a.msY - b.msY)[0] : null;
@@ -1105,12 +1227,29 @@
     /* the next question (or part) usually opens with its own heading row: stop above it */
     if (next && end[0] === next.msPage) end[1] -= data.spec === "9701" ? 24 : 16;
     if (next && next.msY < 0.12) end = [next.msPage - 1, H(Math.max(1, next.msPage - 1)) * 0.92];
-    const out = [];
-    for (let pn = start[0]; pn <= Math.max(start[0], end[0]) && pn <= pages; pn++) {
-      const t = pn === start[0] ? start[1] : H(pn) * 0.09, b = pn === end[0] ? Math.min(end[1], H(pn) * 0.92) : H(pn) * 0.92;
-      if (b - t > 8) out.push([pn, t, b]);
+    const between = (start, end) => {
+      const out = [];
+      for (let pn = start[0]; pn <= Math.max(start[0], end[0]) && pn <= pages; pn++) {
+        const t = pn === start[0] ? start[1] : H(pn) * 0.09, b = pn === end[0] ? Math.min(end[1], H(pn) * 0.92) : H(pn) * 0.92;
+        if (b - t > 8) out.push([pn, t, b]);
+      }
+      return out;
+    };
+    /* a worksheet keeping only some parts: just their rows, each from where it starts to where the next part starts */
+    const ps = it.parts || [];
+    if (picked && picked.length && ps.length && ps.every(p => p.mp)) {
+      const out = [];
+      ps.forEach((p, k) => {
+        if (!picked.includes(p.l)) return;
+        const e = ps[k + 1] ? [ps[k + 1].mp[0], ps[k + 1].mp[1] * H(ps[k + 1].mp[0])] : end;
+        for (const band of between([p.mp[0], p.mp[1] * H(p.mp[0])], e)) {
+          const last = out[out.length - 1];
+          if (last && last[0] === band[0] && Math.abs(last[2] - band[1]) < 2) last[2] = band[2]; else out.push(band);
+        }
+      });
+      if (out.length) return out;
     }
-    return out;
+    return between(start, end);
   }
   async function qbAnswer(el, it, data) {
     el.innerHTML = `<p class="qb-ans-msg">Loading the mark scheme…</p>`;
@@ -1296,6 +1435,10 @@
     const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers, qbank: vQbank };
     page.style.animation = "none"; void page.offsetWidth; page.style.animation = "";
     page.innerHTML = views[r.kind] ? views[r.kind](r) : vTool(r.kind);
+    /* search engines: a page that isn't there isn't indexed; the address of this page without a trailing slash */
+    let rb = document.querySelector('meta[name="robots"]');
+    if (r.kind === "notfound") { if (!rb) { rb = document.createElement("meta"); rb.name = "robots"; document.head.appendChild(rb); } rb.content = "noindex"; } else rb?.remove();
+    const cl = document.querySelector('link[rel="canonical"]'); if (cl) cl.href = location.origin + (location.pathname.replace(/\/+$/, "").replace(/\.html$/, "").replace(/\/index$/, "") || "/");
   }
 
   /* ---------- Search ---------- */

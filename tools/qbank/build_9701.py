@@ -7,6 +7,7 @@ Papers 1 (multiple choice), 2 (AS structured) and 4 (A Level structured), 2021 t
   - keys_9701.json: Paper 1 answer keys (the A-D answer each multiple-choice question carries as "ans").
 
 Usage: python3 tools/qbank/build_9701.py ext_dir out.json
+  then: python3 tools/qbank/add_ms_parts.py out.json   (where each part starts in the mark scheme)
   ext_dir holds the ext-p<paper><variant>.json files from extract_caie.py.
 """
 import glob, json, os, re, sys
@@ -24,7 +25,7 @@ TOTAL = {"1": 40, "2": 60, "4": 100}
 LABEL = re.compile(r"(\d{1,2})(?:\(([a-z])\))?(?:\(.*)?")
 
 
-def ms_pages(path, nq):
+def ms_pages(path, nq, col=0.13):
     """Where each question (and part) starts in a Cambridge mark scheme: {(q, part or None): (page, y fraction)}.
     Labels such as "3", "3(b)" or "3(b)(ii)" sit in the left-hand "Question" column; reading starts at the first
     page with that heading, and a question counts only once the previous one has been found."""
@@ -38,7 +39,8 @@ def ms_pages(path, nq):
             started = any(w["text"] == "Question" for w in ws)
             if not started:
                 continue
-        for w in sorted((w for w in ws if w["x0"] < 0.2 * W and 0.05 * H < w["top"] < 0.95 * H), key=lambda w: (w["top"], w["x0"])):
+        # the "Question" column only (a subscript "2" in the answer column is not question 2)
+        for w in sorted((w for w in ws if w["x0"] < col * W and 0.05 * H < w["top"] < 0.95 * H), key=lambda w: (w["top"], w["x0"])):
             m = LABEL.fullmatch(w["text"])
             if not m:
                 continue
@@ -50,6 +52,71 @@ def ms_pages(path, nq):
             if q == cur and part:
                 at.setdefault((q, part), pos)
     return at
+
+
+MARKS = re.compile(r"\[(\d{1,2})\]$")
+
+
+def mark_sum(path, segs, cy):
+    """The marks ("[n]" at the right) inside a part's segments."""
+    tot = 0
+    for pn, y0, y1 in segs:
+        ws = bbox_words(path, pn - 1)
+        W = max((w["x1"] for w in ws), default=600)
+        for w in ws:
+            m = MARKS.search(w["text"])
+            if m and w["x1"] > 0.75 * W and y0 - 2 <= w["top"] + cy <= y1 + 4 and not w["text"].lower().startswith("[total"):
+                tot += int(m.group(1))
+    return tot
+
+
+PLABEL = re.compile(r"^\(([a-z])\)")
+
+
+def rebound(path, ps, cy):
+    """Where each part really starts: after the last "[n]" of the part before it (lines leading into a part belong to
+    it). The extractor's boundaries are off where it missed a mark, so a part could take in the end of the one before;
+    the parts' segments are cut again at these points."""
+    pieces = sorted([tuple(x) for p in ps for x in p["s"]])
+    if not pieces:
+        return
+    pages = sorted({x[0] for x in pieces})
+    words = []
+    for pn in pages:
+        ws = bbox_words(path, pn - 1)
+        W = max((w["x1"] for w in ws), default=600)
+        for w in ws:
+            y = w["top"] + cy
+            if not any(x[0] == pn and x[1] - 3 <= y <= x[2] + 3 for x in pieces):
+                continue
+            m = PLABEL.match(w["text"])
+            if m and w["x0"] < 0.16 * W:
+                words.append(("l", m.group(1), pn, y, y))
+            elif MARKS.search(w["text"]) and w["x1"] > 0.75 * W:
+                words.append(("m", None, pn, y, w["bottom"] + cy))
+    words.sort(key=lambda e: (e[2], e[3]))
+    cuts, prev = [], (0, 0)
+    for k in range(1, len(ps)):
+        lab = next(((e[2], e[3]) for e in words if e[0] == "l" and e[1] == ps[k]["l"] and (e[2], e[3]) > prev), None)
+        if not lab:
+            return
+        marks = [(e[2], e[4]) for e in words if e[0] == "m" and prev < (e[2], e[3]) < lab]
+        cuts.append((marks[-1][0], marks[-1][1] + 6) if marks else (lab[0], lab[1] - 4))
+        prev = lab
+    out = [[] for _ in ps]
+    for pn, y0, y1 in pieces:
+        k = 0
+        while k < len(cuts) and (pn, y0) >= cuts[k]:
+            k += 1
+        while k < len(cuts) and cuts[k][0] == pn and y0 < cuts[k][1] < y1:
+            if cuts[k][1] - y0 > 2:
+                out[k].append([pn, round(y0, 1), round(cuts[k][1], 1)])
+            y0 = cuts[k][1]; k += 1
+        if y1 - y0 > 2:
+            out[k].append([pn, round(y0, 1), round(y1, 1)])
+    if all(out):
+        for p, segs in zip(ps, out):
+            p["s"] = segs
 
 
 def main():
@@ -72,7 +139,7 @@ def main():
         msf = f.replace("-qp-", "-ms-")
         has_ms = os.path.exists(os.path.join(PAPERS, msf))
         ms = WEB + msf if has_ms else None
-        msp = ms_pages(os.path.join(PAPERS, msf), len(r["questions"])) if has_ms else {}
+        msp = ms_pages(os.path.join(PAPERS, msf), len(r["questions"]), 0.2 if paper == "1" else 0.13) if has_ms else {}
         with pdfplumber.open(os.path.join(PAPERS, f)) as pdf:
             cb, mb = pdf.pages[1].cropbox, pdf.pages[1].mediabox
         x1 = r.get("x1") or round(0.935 * r["W"], 1)
@@ -107,13 +174,26 @@ def main():
             if at and ms:
                 it.update(msPage=at[0], msY=at[1])
             # parts, so a worksheet can keep just the ones picked (see add_parts.py)
-            ps = [x for x in q.get("parts") or [] if x.get("segs")]
-            # only where the reading is clearly right: letters a, b, c... in order and the part marks add up to the total
-            good = [x["label"] for x in ps] == [chr(97 + k) for k in range(len(ps))] and all(x["marks"] for x in ps) \
-                and sum(x["marks"] for x in ps) == (q["marks"] or -1)
-            if paper != "1" and len(ps) >= 2 and good:
-                it["stem"] = q.get("stem") or []
-                it["parts"] = [dict(l=x["label"], m=x["marks"], s=x["segs"]) for x in ps]
+            ps = [dict(l=x["label"], m=x["marks"], s=x["segs"]) for x in q.get("parts") or [] if x.get("segs")]
+            stem = q.get("stem") or []
+            # "1 (a) ..." on one line: the (a) sits behind the question number and isn't read as a part; it is
+            # everything before (b)
+            if ps and ps[0]["l"] == "b" and stem:
+                ps = [dict(l="a", m=None, s=stem)] + ps; stem = []
+            if paper != "1" and len(ps) >= 2 and [x["l"] for x in ps] == [chr(97 + k) for k in range(len(ps))] and q["marks"]:
+                # marks: the "[n]"s in each part, read again from the page (the extractor misses some), else the
+                # extractor's, with one part's left out filled from the total
+                rebound(os.path.join(PAPERS, f), ps, pdfs[src]["cy"])
+                again = [mark_sum(os.path.join(PAPERS, f), x["s"], pdfs[src]["cy"]) for x in ps]
+                if all(again) and sum(again) == q["marks"]:
+                    for x, m in zip(ps, again): x["m"] = m
+                else:
+                    gap = [x for x in ps if not x["m"]]
+                    if len(gap) == 1 and q["marks"] - sum(x["m"] for x in ps if x["m"]) > 0:
+                        gap[0]["m"] = q["marks"] - sum(x["m"] for x in ps if x["m"])
+                if all(x["m"] for x in ps) and sum(x["m"] for x in ps) == q["marks"]:
+                    it["stem"] = stem
+                    it["parts"] = ps
             if paper == "1":
                 it["mcq"] = True
                 if key:
