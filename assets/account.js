@@ -183,13 +183,14 @@
     const { close, d } = dialog(`<form class="qb-dlg" role="dialog" aria-modal="true" aria-labelledby="aw-p-h">
       <h2 id="aw-p-h">${G.esc(a.title)}</h2>
       <p class="qb-sv-none">${G.esc(p.name || "Past paper")}${a.due ? ` · due ${day(a.due)}` : ""}</p>
+      <p class="qb-sv-none">Write your answers on the paper with <b>Write on it</b> (best with a stylus or mouse), or on paper as usual. What you write on it saves to your account and your teacher can see it.</p>
       <div class="aw-open"><button type="button" class="qb-btn primary" data-aw-open="qp">Open the paper</button>${p.ms ? `<button type="button" class="qb-btn" data-aw-open="ms">Open the mark scheme</button>` : ""}</div>
       <div class="aw-score"><label class="qb-field"><span>Your marks <small>After marking it with the mark scheme (optional)</small></span>
         <span class="aw-of"><input name="score" type="number" min="0" max="1000" inputmode="numeric" value="${a.score ?? ""}"> out of <input name="total" type="number" min="0" max="1000" inputmode="numeric" value="${a.total ?? ""}"></span></label></div>
       <div class="qb-dlg-btns"><button type="button" class="qb-btn" data-x>Close</button>${isDone ? `<button type="button" class="qb-btn" data-aw-undo>Not done after all</button>` : ""}<button type="submit" class="qb-btn primary">${isDone ? "Save marks" : "Mark as done"}</button></div></form>`,
       async (e, close) => {
         const o = e.target.closest("[data-aw-open]");
-        if (o) { close(); window.Viewer?.open(o.dataset.awOpen === "ms" ? { src: p.ms, title: `${p.name} mark scheme`, desc: p.desc } : { src: p.src, title: p.name, desc: p.desc, ms: p.ms }); return; }
+        if (o) { close(); if (o.dataset.awOpen === "ms") window.Viewer?.open({ src: p.ms, title: `${p.name} mark scheme`, desc: p.desc }); else A.openWithInk({ src: p.src, title: p.name, desc: p.desc, ms: p.ms }, a.id); return; }
         if (e.target.closest("[data-aw-undo]")) { try { await api(`assignments/${a.id}/done`, "PUT", { undo: true }); close(); mountMyWork(); } catch (err) { G.toast(err.message); } }
       });
     d.querySelector("form").onsubmit = async e => {
@@ -197,6 +198,37 @@
       try { await api(`assignments/${a.id}/done`, "PUT", { score: f.score.value, total: f.total.value }); close(); G.toast(isDone ? "Marks saved" : "Marked as done"); mountMyWork(); }
       catch (err) { G.toast(err.message); }
     };
+  }
+
+  /* ---------- Writing on papers of set work: saved to the account (gzip-packed) so the teacher can see it ---------- */
+  const hasInk = ann => Object.values(ann || {}).some(a => a && a.length);
+  const b64 = buf => { const u = new Uint8Array(buf); let s = ""; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+  async function pack(ann) {
+    if (!hasInk(ann)) return "";
+    const j = JSON.stringify(ann);
+    if (!window.CompressionStream) return "js:" + j;
+    return "gz:" + b64(await new Response(new Blob([j]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer());
+  }
+  async function unpack(d) {
+    if (!d) return null;
+    if (d.startsWith("js:")) return JSON.parse(d.slice(3));
+    const bytes = Uint8Array.from(atob(d.slice(3)), c => c.charCodeAt(0));
+    return JSON.parse(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).text());
+  }
+  /* a student opening a paper of their work: their saved writing comes back, and what they write saves as they go */
+  A.openWithInk = async (info, workId) => {
+    let initial = null;
+    try { initial = await unpack((await api(`assignments/${workId}/ink?src=${encodeURIComponent(info.src)}`)).data); }
+    catch (e) { G.toast("Couldn't load your saved writing: " + e.message); }
+    window.Viewer?.open({ ...info, inkSync: { initial, save: async ann => api(`assignments/${workId}/ink`, "PUT", { src: info.src, data: await pack(ann) }) } });
+  };
+  /* the teacher: one student's writing on one paper, read-only */
+  async function viewInk(aid, sid, name, info) {
+    try {
+      const j = await api(`assignments/${aid}/ink?student=${sid}&src=${encodeURIComponent(info.src)}`), ann = await unpack(j.data);
+      if (!ann) { G.toast("Nothing written on that paper"); return; }
+      window.Viewer?.open({ ...info, title: `${name}'s writing · ${info.title}`, view: { ann, label: `${name}'s writing · view only` } });
+    } catch (e) { G.toast(e.message); }
   }
 
   /* ---------- Work in the question bank (app.js runs it as a quiz over the set questions) ---------- */
@@ -313,11 +345,18 @@
         : c.marked ? `${c.got} got it · ${c.part} partly · ${c.miss} missed${c.skip ? ` · ${c.skip} skipped` : ""}` : "";
       const marks = a.kind === "qs" && c.marked ? `<button type="button" class="qb-link" data-aw-sm>Show questions</button><ol class="aw-marks" hidden>${a.payload.items.map(x => {
         const m = s.marks[x.id]; return `<li><span>${G.esc(qLabel(item(x.id), x.id))}${x.parts ? ` · part${x.parts.length > 1 ? "s" : ""} ${x.parts.join(", ")}` : ""}</span><span class="qb-stbadge">${m ? `<span class="b-${m}">${MK[m]}</span>` : `<span class="b-skip">Not marked</span>`}</span></li>`; }).join("")}</ol>` : "";
-      return `<li class="aw-srow ${s.status}"><span class="aw-sname"><b>${name}</b><small>${status}</small></span><span class="aw-sres">${a.kind === "qs" ? bar(c) : ""}<small>${result}</small></span>${marks}</li>`;
+      /* papers this student wrote on: the paper itself, or for questions each paper a question came from */
+      const inkBtns = (s.ink || []).map(k => {
+        const it = data?.items.find(x => x.src === k.src), label = a.kind === "paper" ? "See their writing" : `See their writing${it ? ` · ${it.series} ${it.paper}` : ""}`;
+        const info = a.kind === "paper" ? { src: k.src, title: a.payload.name, desc: a.payload.desc, ms: a.payload.ms } : { src: k.src, title: it ? `${it.series} · ${it.paper}` : "Paper", desc: data?.label || "", ms: it?.ms || "" };
+        return `<button type="button" class="qb-btn aw-ink" data-aw-ink='${G.esc(JSON.stringify({ sid: s.id, name: s.name || s.email, info }))}'>${label}</button>`;
+      }).join("");
+      return `<li class="aw-srow ${s.status}"><span class="aw-sname"><b>${name}</b><small>${status}</small></span><span class="aw-sres">${a.kind === "qs" ? bar(c) : ""}<small>${result}</small></span>${inkBtns ? `<span class="aw-inks">${inkBtns}</span>` : ""}${marks}</li>`;
     }).join("");
     det.innerHTML = `<ul class="aw-slist2">${rows}</ul>
       <div class="aw-dacts">${waLink(workText(a), "Share on WhatsApp")}${a.kind === "qs" ? `<a class="qb-btn" href="${workHref(a)}">See the questions</a>` : `<button type="button" class="qb-btn" data-aw-view='${G.esc(JSON.stringify(a.payload))}'>Open the paper</button>`}
         <button type="button" class="qb-btn danger" data-aw-del="${a.id}">Delete</button></div>`;
+    det.querySelectorAll("[data-aw-ink]").forEach(b => b.addEventListener("click", () => { const k = JSON.parse(b.dataset.awInk); viewInk(a.id, k.sid, k.name, k.info); }));
     det.querySelector("[data-aw-view]")?.addEventListener("click", e => { const p = JSON.parse(e.currentTarget.dataset.awView); window.Viewer?.open({ src: p.src, title: p.name, desc: p.desc, ms: p.ms }); });
   }
 

@@ -25,6 +25,8 @@ const SCHEMA = [
      score REAL, total REAL, started_at INTEGER, done_at INTEGER, PRIMARY KEY (assignment_id, student_id))`,
   `CREATE TABLE IF NOT EXISTS marks (assignment_id INTEGER NOT NULL, student_id INTEGER NOT NULL, item TEXT NOT NULL, mark TEXT NOT NULL,
      at INTEGER NOT NULL, PRIMARY KEY (assignment_id, student_id, item))`,
+  `CREATE TABLE IF NOT EXISTS ink (assignment_id INTEGER NOT NULL, student_id INTEGER NOT NULL, src TEXT NOT NULL, data TEXT NOT NULL,
+     updated INTEGER NOT NULL, PRIMARY KEY (assignment_id, student_id, src))`,
   `CREATE INDEX IF NOT EXISTS users_teacher ON users (teacher_id)`,
   `CREATE INDEX IF NOT EXISTS assignees_student ON assignees (student_id)`,
 ];
@@ -247,7 +249,9 @@ async function route(ctx, parts) {
         const { results: rows } = await db.prepare(`SELECT u.id, u.email, u.name, x.status, x.score, x.total, x.started_at, x.done_at
           FROM assignees x JOIN users u ON u.id = x.student_id WHERE x.assignment_id = ? ORDER BY LOWER(COALESCE(u.name, u.email))`).bind(aid).all();
         const { results: marks } = await db.prepare("SELECT student_id, item, mark FROM marks WHERE assignment_id = ?").bind(aid).all();
-        return json({ assignment: shape(as), students: rows.map(s => ({ ...s, marks: Object.fromEntries(marks.filter(m => m.student_id === s.id).map(m => [m.item, m.mark])) })) });
+        const { results: inks } = await db.prepare("SELECT student_id, src, updated FROM ink WHERE assignment_id = ? ORDER BY src").bind(aid).all();
+        return json({ assignment: shape(as), students: rows.map(s => ({ ...s, marks: Object.fromEntries(marks.filter(m => m.student_id === s.id).map(m => [m.item, m.mark])),
+          ink: inks.filter(k => k.student_id === s.id).map(k => ({ src: k.src, updated: k.updated })) })) });
       }
       const x = await db.prepare("SELECT status, score, total, done_at FROM assignees WHERE assignment_id = ? AND student_id = ?").bind(aid, me.id).first();
       const { results: marks } = await db.prepare("SELECT item, mark FROM marks WHERE assignment_id = ? AND student_id = ?").bind(aid, me.id).all();
@@ -255,11 +259,27 @@ async function route(ctx, parts) {
     }
     if (!c && method === "DELETE") {
       if (!teacher) return fail(403, "teachers_only", "Only teachers can delete work.");
-      await db.batch(["marks", "assignees"].map(t => db.prepare(`DELETE FROM ${t} WHERE assignment_id = ?`).bind(aid))
+      await db.batch(["marks", "ink", "assignees"].map(t => db.prepare(`DELETE FROM ${t} WHERE assignment_id = ?`).bind(aid))
         .concat(db.prepare("DELETE FROM assignments WHERE id = ?").bind(aid)));
       return json({ ok: true });
     }
+    /* writing on a paper of the work: the student's own, or (for the teacher) a given student's */
+    if (c === "ink" && method === "GET") {
+      const src = new URL(req.url).searchParams.get("src") || "", sid = teacher ? +new URL(req.url).searchParams.get("student") : me.id;
+      const row = await db.prepare("SELECT data, updated FROM ink WHERE assignment_id = ? AND student_id = ? AND src = ?").bind(aid, sid, src).first();
+      return json({ data: row ? row.data : null, updated: row ? row.updated : null });
+    }
     if (teacher) return fail(403, "students_only", "That's for students.");
+    if (c === "ink" && method === "PUT") {
+      const p = await body(), src = clean(p.src, 300), data = typeof p.data === "string" ? p.data : "";
+      if (!/^\/files\/[\w./-]+\.pdf$/.test(src) || (as.kind === "paper" && src !== JSON.parse(as.payload).src)) return fail(400, "bad_src", "That paper isn't part of this work.");
+      if (data.length > 1900000) return fail(413, "too_big", "There's too much writing on this paper to save online. It's still saved in this browser.");
+      if (!data) await db.prepare("DELETE FROM ink WHERE assignment_id = ? AND student_id = ? AND src = ?").bind(aid, me.id, src).run();
+      else await db.batch([
+        db.prepare("INSERT INTO ink (assignment_id, student_id, src, data, updated) VALUES (?, ?, ?, ?, ?) ON CONFLICT (assignment_id, student_id, src) DO UPDATE SET data = excluded.data, updated = excluded.updated").bind(aid, me.id, src, data, now()),
+        db.prepare("UPDATE assignees SET status = CASE WHEN status = 'todo' THEN 'started' ELSE status END, started_at = COALESCE(started_at, ?) WHERE assignment_id = ? AND student_id = ?").bind(now(), aid, me.id)]);
+      return json({ ok: true });
+    }
     /* a student marking a question of the work, or finishing it */
     if (c === "mark" && method === "PUT") {
       const p = await body(), item = clean(p.item, 80), mark = p.mark;
@@ -282,7 +302,7 @@ async function route(ctx, parts) {
   return fail(404, "not_found", "No such page.");
 }
 async function wipeStudent(db, sid) {
-  await db.batch(["marks WHERE student_id", "assignees WHERE student_id", "sessions WHERE user_id", "users WHERE id"]
+  await db.batch(["marks WHERE student_id", "ink WHERE student_id", "assignees WHERE student_id", "sessions WHERE user_id", "users WHERE id"]
     .map(w => db.prepare(`DELETE FROM ${w} = ?`).bind(sid)));
 }
 

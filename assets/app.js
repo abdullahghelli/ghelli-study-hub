@@ -524,7 +524,7 @@
           <div class="qz-head"><div class="qz-title"><small>${qz.work ? "Set work · " + esc(qz.work.title) : qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
             ${qz.work ? `<button type="button" class="qb-btn" data-qz-print>Worksheet PDF</button><a class="qb-btn" href="/my-work">Save and leave</a>` : `<button type="button" class="qb-btn" data-qz-end>End quiz</button>`}</div>
           <div class="qz-bar" data-qz-bar style="--n:${n}">${qzBar()}</div>
-          ${qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Show the answer when you're done, then mark how it went. Your teacher sees your marks.</p>` : ""}
+          ${qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Use <b>Open paper</b> and <b>Write on it</b> to answer on the paper (your teacher sees what you write), then show the answer and mark how it went.</p>` : ""}
           ${qbCard(it, data)}
           <div class="qz-nav"><button type="button" class="qb-btn qz-next" data-qz-next></button></div>
         </section>`;
@@ -768,7 +768,9 @@
           const y = s0 && m.H ? Math.max(0, (s0[1] - (m.cy || 0) - 18) / (m.H - 2 * (m.cy || 0))) : 0;
           /* opens just the page(s) the question is on; "Whole paper" in the viewer shows the rest */
           const pages = [...new Set(it.segs.map(sg => sg[0]))];
-          window.Viewer.open({ src: it.src, title: `${name}${part}`, desc: `Question · ${data.label || "Edexcel A Level Maths 9MA0"}`, ms: it.ms || "", page: s0 ? s0[0] : 1, y, msPage: it.msPage || 1, msY: it.msY || 0, pages, msPages });
+          const info = { src: it.src, title: `${name}${part}`, desc: `Question · ${data.label || "Edexcel A Level Maths 9MA0"}`, ms: it.ms || "", page: s0 ? s0[0] : 1, y, msPage: it.msPage || 1, msY: it.msY || 0, pages, msPages };
+          /* set work: what the student writes on the paper saves to their account for their teacher */
+          if (qz && qz.work && window.GSHAccount) window.GSHAccount.openWithInk(info, qz.work.id); else window.Viewer.open(info);
         }
       }
     };
