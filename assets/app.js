@@ -213,6 +213,13 @@
         <a href="/exam-dates">${icon.clock}Exam dates</a>
         <button data-act="search">${icon.search}Search a topic<kbd>⌘K</kbd></button>
       </div>
+      <section class="home-tutor" aria-labelledby="tutor-h">
+        <div><h2 id="tutor-h">Want one-to-one help?</h2>
+          <p>Online tutoring for A Level, IGCSE and GCSE. Message us on WhatsApp to ask about lessons.</p></div>
+        <a class="tutor-btn" href="https://wa.me/923323332003?text=${encodeURIComponent("Hi, I found Ghelli Study Hub and I'd like to ask about tutoring.")}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 3.2a6.8 6.8 0 0 0-5.9 10.2L3.3 16.8l3.5-.8A6.8 6.8 0 1 0 10 3.2Z" stroke-linejoin="round"/><path d="M7.6 7.4c.2 1.9 2.4 4.4 4.9 5l.8-1.3-1.4-.8-.6.6c-.9-.4-1.8-1.3-2.2-2.2l.6-.6-.8-1.4-1.3.7Z" fill="currentColor" stroke="none"/></svg>
+          Contact us on WhatsApp</a>
+      </section>
     </div>`;
   }
 
