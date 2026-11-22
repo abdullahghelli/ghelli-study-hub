@@ -1485,7 +1485,9 @@
       return;
     }
     const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers, qbank: vQbank };
-    page.style.animation = "none"; void page.offsetWidth; page.style.animation = "";
+    /* fade the page in only when it's a different page, not when this one redraws (ticking a spec, say) */
+    if (page.dataset.path !== location.pathname) { page.style.animation = "none"; void page.offsetWidth; page.style.animation = ""; }
+    page.dataset.path = location.pathname;
     page.innerHTML = views[r.kind] ? views[r.kind](r) : vTool(r.kind);
     renderSide(r);   /* after the page: it lists the subjects opened lately, this one included */
     /* search engines: a page that isn't there isn't indexed; the address of this page without a trailing slash */
