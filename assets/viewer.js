@@ -235,8 +235,8 @@
 
   /* ---------- One scrollable PDF ---------- */
   class Pane {
-    constructor(el, { src, title, annotate, startPage, startY, onChange, only, inkSync, viewAnn }) {
-      Object.assign(this, { el, src, title, annotate, onChange, inkSync });
+    constructor(el, { src, title, annotate, startPage, startY, onChange, only }) {
+      Object.assign(this, { el, src, title, annotate, onChange });
       /* question view: only these page numbers are shown (notes still belong to the real page numbers) */
       this.only = only && only.length ? only : null;
       this.startPage = startPage || 1; this.startY = startY || 0;
@@ -245,14 +245,6 @@
       this.pages = []; this.bytes = null; this.current = 1;
       this.key = "gsh-ann:" + src;
       this.ann = (annotate && store.get(this.key)) || {};
-      /* set work, signed in: the copy saved to the account wins (it may come from another device); writing that's
-         only in this browser goes up to the account once the paper opens */
-      if (inkSync) {
-        if (inkSync.initial && Object.keys(inkSync.initial).length) this.ann = inkSync.initial;
-        else if (this.hasNotes()) { this.dirty = true; setTimeout(() => this.flush(), 1500); }
-      }
-      /* a teacher looking at a student's writing: shown as it is, nothing kept in this browser */
-      if (viewAnn) { this.ann = viewAnn; this.readOnly = true; }
       this.undo = []; this.redo = [];
       this.matches = []; this.matchIdx = -1;
       this.cancelInk = []; this.pinching = false;
@@ -658,12 +650,8 @@
     }
     flush() {
       clearTimeout(this._t);
-      if (!this.dirty || !this.annotate || this.readOnly) return;
+      if (!this.dirty || !this.annotate) return;
       this.dirty = false; this.saved = store.set(this.key, this.ann); this.onChange?.();
-      if (this.inkSync) {
-        this.synced = "saving"; this.onChange?.();
-        Promise.resolve(this.inkSync.save(this.ann)).then(() => { this.synced = "ok"; this.onChange?.(); }, e => { this.synced = e?.message || "failed"; this.onChange?.(); });
-      }
     }
     redrawAll() { this.pages.forEach((p, i) => this.drawInk(p, i)); this.onChange?.(); }
     setDark(on) {
@@ -967,7 +955,7 @@
 
   function open(info) {
     close();
-    const { src, title = "Paper", desc = "", ms = "", page = 1, y = 0, msPage = 1, msY = 0, pages = null, msPages = null, wholeLabel = "Whole paper", inkSync = null, view = null } = info || {};
+    const { src, title = "Paper", desc = "", ms = "", page = 1, y = 0, msPage = 1, msY = 0, pages = null, msPages = null, wholeLabel = "Whole paper" } = info || {};
     if (!src) return;
     const root = document.createElement("div");
     root.className = "pv-scrim";
@@ -994,7 +982,7 @@
         </div>
         ${pages && pages.length ? `<button class="pv-pill" data-do="whole" title="Show every page">${svg("pages")}<span>${esc(wholeLabel)}</span></button>` : ""}
         <button class="pv-pill" data-do="bookmark">${svg("bookmark")}<span>Bookmark</span></button>
-        ${view ? `<span class="pv-viewing">${svg("annotate")}<span>${esc(view.label || "Viewing their writing")}</span></span>` : `<button class="pv-pill" data-do="annotate">${svg("annotate")}<span>${inkSync ? "Write on it" : "Annotate"}</span></button>`}
+        <button class="pv-pill" data-do="annotate">${svg("annotate")}<span>Annotate</span></button>
         ${ms ? `<button class="pv-pill" data-do="ms">${svg("ms")}<span>Mark scheme</span></button>` : ""}
         <button class="pv-pill" data-do="dark" title="Dark mode (D)">${svg("moon")}<span>Dark mode</span></button>
         <div class="pv-zoom">
@@ -1054,7 +1042,8 @@
       const wb2 = $('[data-do="whole"]'); if (wb2) wb2.hidden = !p.only;
       const bm = n && Bookmarks.has(src, p.current), bb = $('[data-do="bookmark"]');
       bb.classList.toggle("on", !!bm); bb.innerHTML = `${svg("bookmark", bm)}<span>${bm ? "Bookmarked" : "Bookmark"}</span>`; bb.disabled = !n;
-      const ab = $('[data-do="annotate"]'); if (ab) { ab.classList.toggle("on", st.annotating); ab.disabled = !n; }
+      $('[data-do="annotate"]').classList.toggle("on", st.annotating);
+      $('[data-do="annotate"]').disabled = !n;
       $(".pv-tools").hidden = !st.annotating;
       root.querySelectorAll("[data-tool]").forEach(b => b.classList.toggle("on", b.dataset.tool === p.tool));
       const sizeFor = p.drawTool === "highlighter" ? "highlighter" : "pen";
@@ -1068,18 +1057,15 @@
       $('[data-do="redo"]').disabled = !p.redo.length;
       $('[data-do="download"]').disabled = !p.bytes;
       $("[data-zoom]").textContent = Math.round(p.zoom * 100) + "%";
-      $("[data-save]").textContent = (p.penSeen ? "Pencil writes, finger scrolls · " : "") + (p.inkSync
-        ? (p.synced === "saving" ? "Saving…" : p.synced && p.synced !== "ok" ? "Not saved online: " + p.synced : !p.hasNotes() ? "Your writing saves to your account, so your teacher can see it" : "Saved · your teacher can see it")
-        : !p.hasNotes() ? "Notes save in this browser" : p.saved === false ? "Couldn't save notes" : "Saved");
+      $("[data-save]").textContent = (p.penSeen ? "Pencil writes, finger scrolls · " : "") + (!p.hasNotes() ? "Notes save in this browser" : p.saved === false ? "Couldn't save notes" : "Saved");
       const q = $("#pv-find-input").value.trim();
       $("[data-count]").textContent = !q ? "" : p.matches.length ? `${p.matchIdx + 1} of ${p.matches.length}` : "No matches";
     };
-    st.main = new Pane($(".vw-pane.main"), { src, title, annotate: true, startPage: page, startY: y, onChange: sync, only: pages, inkSync, viewAnn: view && view.ann });
+    st.main = new Pane($(".vw-pane.main"), { src, title, annotate: true, startPage: page, startY: y, onChange: sync, only: pages });
     applyDark(siteDark());
     sync();
 
     const setAnnotate = on => {
-      if (st.main.readOnly) return;
       st.annotating = on;
       st.main.setTool(on ? st.main.drawTool : "hand");
     };

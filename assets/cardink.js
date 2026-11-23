@@ -33,7 +33,8 @@
     if (!state[id]) {
       const pre = ctx.preset ? ctx.preset[id] : undefined;
       const d = pre !== undefined ? pre : (ctx.readOnly ? null : get(KEY(id)));
-      state[id] = { data: Object.assign({ s: [], x: [], n: 0 }, d || {}), undo: [] };
+      /* set work: a writing space under every question from the start, for the answer */
+      state[id] = { data: Object.assign({ s: [], x: [], n: ctx.sync ? 1 : 0 }, d || {}), undo: [] };
     }
     return state[id];
   }
@@ -165,6 +166,9 @@
   }
 
   document.addEventListener("click", e => {
+    /* tapping the writing space starts writing there */
+    const sp = e.target.closest(".qb-card:not(.writing) .qb-xspace");
+    if (sp && !ctx.readOnly) { setWriting(sp.closest("[data-qb-card]"), true); return; }
     const wb = e.target.closest("[data-qb-write]");
     if (wb) { const card = wb.closest("[data-qb-card]"); setWriting(card, !card.classList.contains("writing")); return; }
     const card = e.target.closest(".qb-card.writing"); if (!card) return;

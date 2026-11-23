@@ -1048,8 +1048,6 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 :root[data-theme="dark"] .qb-btn.wa{color:#5be39a}
 .aw-added{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:12px 0 0;padding:12px 14px;border-radius:12px;background:var(--accent-soft);font-size:14px}
 .aw-added span{flex:1;min-width:220px}
-.pv-viewing{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;white-space:nowrap}
-.pv-viewing svg{width:15px;height:15px}
 .aw-inks{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px}
 .qb-btn.aw-ink{height:28px;font-size:12.5px;color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
 /* ---------- Writing on question cards ---------- */
@@ -1058,7 +1056,7 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .qb-card.writing .qb-inkwrap>canvas.qb-ink,.qb-card.writing .qb-xspace canvas{pointer-events:auto;touch-action:none;cursor:crosshair}
 body.pen-seen .qb-card.writing canvas.qb-ink{touch-action:pan-y}
 .qb-card.writing .qb-inkwrap{box-shadow:inset 0 0 0 2px var(--accent)}
-.qb-xspace{position:relative;background:#fff repeating-linear-gradient(to bottom,transparent 0 31px,#dfe3e1 31px 32px);border-top:1px dashed #cfd5d2}
+.qb-xspace{position:relative;cursor:text;background:#fff repeating-linear-gradient(to bottom,transparent 0 31px,#dfe3e1 31px 32px);border-top:1px dashed #cfd5d2}
 .qb-xspace canvas{position:absolute;left:0;top:0;pointer-events:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .qb-xspace{background:#1b1d1c repeating-linear-gradient(to bottom,transparent 0 31px,#2c302e 31px 32px);border-top-color:#2c302e}}
 :root[data-theme="dark"] .qb-xspace{background:#1b1d1c repeating-linear-gradient(to bottom,transparent 0 31px,#2c302e 31px 32px);border-top-color:#2c302e}
@@ -1085,3 +1083,4 @@ body.pen-seen .qb-card.writing canvas.qb-ink{touch-action:pan-y}
 .home-acard b{font-size:16px;font-weight:600}
 .home-acard span{font-size:13.5px;color:var(--muted)} .home-acard span.late{color:var(--miss);font-weight:500}
 .home-acard .arrow{position:absolute;right:16px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--accent)}
+.qz.work [data-qb-open="paper"]{display:none}

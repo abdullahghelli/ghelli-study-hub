@@ -538,11 +538,11 @@
       if (!qz.end && qz.k < n) {
         const it = data.items.find(x => x.id === qz.ids[qz.k]);
         const wp = qz.work && qz.work.parts[it.id];
-        return `<section class="qb-main qz ${qz.mix ? "mix" : ""}" aria-label="Quiz">
+        return `<section class="qb-main qz ${qz.mix ? "mix" : ""} ${qz.work ? "work" : ""}" aria-label="Quiz">
           <div class="qz-head"><div class="qz-title"><small>${qz.work?.review ? `${esc(qz.work.review)}'s work · ${esc(qz.work.title)}` : qz.work ? "Set work · " + esc(qz.work.title) : qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
             ${qz.work?.review ? `<a class="qb-btn" href="/teacher">Back to Teacher page</a>` : qz.work ? `<button type="button" class="qb-btn" data-qz-print>Worksheet PDF</button><a class="qb-btn" href="/my-work">Save and leave</a>` : `<button type="button" class="qb-btn" data-qz-end>End quiz</button>`}</div>
           <div class="qz-bar" data-qz-bar style="--n:${n}">${qzBar()}</div>
-          ${qz.work?.review ? `<p class="qz-work">Their mark: <b>${{ got: "Got it", part: "Partly", miss: "Missed it", skip: "Skipped" }[qz.res[it.id]] || "not marked"}</b>${wp ? ` · set just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")}` : ""}. Their writing shows on the question; anything on the paper itself is under See their writing on your Teacher page.</p>` : qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Tap <b>✎ Write</b> to answer on the question (add <b>More space</b> for working). Your teacher sees what you write. Then show the answer and mark how it went.</p>` : ""}
+          ${qz.work?.review ? `<p class="qz-work">Their mark: <b>${{ got: "Got it", part: "Partly", miss: "Missed it", skip: "Skipped" }[qz.res[it.id]] || "not marked"}</b>${wp ? ` · set just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")}` : ""}. Their answer is written on the question and in the space below it.</p>` : qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Tap <b>✎ Write</b> and answer in the space below the question (or on its answer lines). Your teacher sees what you write. Then show the answer and mark how it went.</p>` : ""}
           ${qbCard(it, data)}
           <div class="qz-nav"><button type="button" class="qb-btn qz-next" data-qz-next></button></div>
         </section>`;
@@ -789,8 +789,7 @@
           /* opens just the page(s) the question is on; "Whole paper" in the viewer shows the rest */
           const pages = [...new Set(it.segs.map(sg => sg[0]))];
           const info = { src: it.src, title: `${name}${part}`, desc: `Question · ${data.label || "Edexcel A Level Maths 9MA0"}`, ms: it.ms || "", page: s0 ? s0[0] : 1, y, msPage: it.msPage || 1, msY: it.msY || 0, pages, msPages };
-          /* set work: what the student writes on the paper saves to their account for their teacher */
-          if (qz && qz.work && window.GSHAccount) window.GSHAccount.openWithInk(info, qz.work.id); else window.Viewer.open(info);
+          window.Viewer.open(info);
         }
       }
     };
