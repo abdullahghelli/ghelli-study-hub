@@ -326,6 +326,7 @@
     try { tab === "students" ? await drawStudents(body) : await drawWork(body); } catch (e) { body.innerHTML = errBox(e); }
   }
 
+  /* Work set, by student: each student's work under their name, with how far they've got */
   async function drawWork(body) {
     const [{ assignments: list }, sts] = await Promise.all([api("assignments"), loadStudents(true)]);
     const how = `<div class="aw-how"><b>To set work</b>
@@ -333,48 +334,60 @@
       <span><b>A past paper:</b> open a subject's Past papers and choose <b>Assign a paper</b>.</span>
       ${sts.length ? "" : `<span>First, <a class="link" href="/teacher?tab=students">add your students</a>.</span>`}</div>`;
     if (!list.length) { body.innerHTML = `<p class="lede">Nothing set yet.</p>${how}`; return; }
-    body.innerHTML = `<ul class="aw-list">${list.map(a => `<li class="aw-row aw-t" data-aw-a="${a.id}">
-        <button type="button" class="aw-main aw-toggle" aria-expanded="false"><b>${G.esc(a.title)}</b><small>${G.esc(what(a))}</small><small class="aw-state">${dueTag(a, a.done === a.students)}${a.done} of ${a.students} done</small></button>
-        <span class="aw-count ${a.done === a.students ? "all" : ""}">${a.done}/${a.students}</span>
-        <div class="aw-detail" hidden></div></li>`).join("")}</ul>${how}`;
+    const byStudent = sts.map(s => ({ s, work: list.flatMap(a => (a.who || []).filter(w => w.id === s.id).map(w => ({ a, w }))) }))
+      .map(g => ({ ...g, work: g.work.sort((p, q) => (p.w.status === "done") - (q.w.status === "done") || (p.a.due || "9999").localeCompare(q.a.due || "9999")) }));
+    const row = (a, w, s) => {
+      const isDone = w.status === "done", n = a.kind === "qs" ? a.payload.items.length : 0;
+      const state = a.kind === "paper" ? (isDone ? `Done${w.score != null ? ` · ${w.score}${w.total ? "/" + w.total : ""} marks` : ""}` : "Not done yet")
+        : isDone ? `Done · ${w.got} of ${n} got it${w.part ? `, ${w.part} partly` : ""}` : w.marked ? `${w.marked} of ${n} marked` : "Not started";
+      const go = a.kind === "qs" && (w.marked || w.inked) ? `<a class="qb-btn aw-ink" href="${workHref(a)}&s=${s.id}">Go through${w.inked ? " their work" : ""}</a>` : "";
+      return `<li class="aw-row aw-t ${isDone ? "done" : ""}" data-aw-a="${a.id}" data-aw-sid="${s.id}">
+        <span class="aw-main"><b>${G.esc(a.title)}</b><small>${G.esc(what(a))}</small><small class="aw-state">${dueTag(a, isDone)}${G.esc(state)}</small></span>
+        ${go}<button type="button" class="qb-btn aw-more" data-aw-more aria-expanded="false" aria-label="More for ${G.esc(a.title)}">⋯</button>
+        <div class="aw-detail" hidden></div></li>`;
+    };
+    const groups = byStudent.filter(g => g.work.length), idle = byStudent.filter(g => !g.work.length);
+    body.innerHTML = groups.map(({ s, work }) => {
+      const done = work.filter(x => x.w.status === "done").length;
+      return `<section class="aw-stu"><div class="aw-shead"><b>${G.esc(s.name || s.email)}</b><small>${G.esc(s.name ? s.email : "")}${s.name ? " · " : ""}${done} of ${work.length} done</small>
+          <span class="aw-count ${done === work.length ? "all" : ""}">${done}/${work.length}</span></div>
+        <ul class="aw-list">${work.map(({ a, w }) => row(a, w, s)).join("")}</ul></section>`;
+    }).join("") + (idle.length ? `<p class="aw-hint">No work set yet: ${idle.map(g => G.esc(g.s.name || g.s.email)).join(", ")}</p>` : "") + how;
     body.onclick = async e => {
-      const t = e.target.closest(".aw-toggle");
-      if (t) {
-        const li = t.closest("[data-aw-a]"), det = li.querySelector(".aw-detail"), open = det.hidden;
-        det.hidden = !open; t.setAttribute("aria-expanded", open); li.classList.toggle("aw-on", open);
-        if (open && !det.dataset.done) { det.innerHTML = loading(); try { await drawDetail(det, +li.dataset.awA); det.dataset.done = 1; } catch (err) { det.innerHTML = errBox(err); } }
+      const mb = e.target.closest("[data-aw-more]");
+      if (mb) {
+        const li = mb.closest("[data-aw-a]"), det = li.querySelector(".aw-detail"), open = det.hidden;
+        det.hidden = !open; mb.setAttribute("aria-expanded", open); li.classList.toggle("aw-on", open);
+        if (open) { det.innerHTML = loading(); try { await drawOne(det, list.find(a => a.id === +li.dataset.awA), +li.dataset.awSid); } catch (err) { det.innerHTML = errBox(err); } }
         return;
       }
-      const del = e.target.closest("[data-aw-del]");
-      if (del) confirmBox("Delete this work?", "It disappears for every student it was set for, along with their marks. This can't be undone.", "Delete", async () => { await api("assignments/" + del.dataset.awDel, "DELETE", {}); G.toast("Deleted"); drawWork(body); });
+      const rm = e.target.closest("[data-aw-rm]");
+      if (rm) {
+        const [aid, sid, name, title] = JSON.parse(rm.dataset.awRm);
+        confirmBox(`Remove “${title}” for ${name}?`, "It goes from their My work, along with their marks and writing on it. Anyone else it was set for keeps it. This can't be undone.", "Remove",
+          async () => { await api(`assignments/${aid}/students/${sid}`, "DELETE", {}); G.toast("Removed"); drawWork(body); });
+        return;
+      }
       const sm = e.target.closest("[data-aw-sm]");
-      if (sm) { const el = sm.parentElement.querySelector(".aw-marks"); el.hidden = !el.hidden; sm.textContent = el.hidden ? "Show questions" : "Hide questions"; }
+      if (sm) { const el = sm.parentElement.querySelector(".aw-marks"); el.hidden = !el.hidden; sm.textContent = el.hidden ? "Show each question" : "Hide each question"; }
     };
   }
-  /* one piece of work: each student's status, marks and, for questions, how they marked each one */
-  async function drawDetail(det, id) {
-    const j = await api("assignments/" + id), a = j.assignment, data = a.kind === "qs" ? await bankData(a.bank) : null;
-    const item = iid => data?.items.find(x => x.id === iid);
-    const n = a.kind === "qs" ? a.payload.items.length : 0;
-    const rows = j.students.map(s => {
-      const c = tally(s.marks, n), name = G.esc(s.name || s.email);
-      const status = s.status === "done" ? `Done ${s.done_at ? new Date(s.done_at * 1000).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : ""}` : s.status === "started" ? "Started" : "Not started";
-      const result = a.kind === "paper" ? (s.score != null ? `${s.score}${s.total ? "/" + s.total : ""} marks` : "")
-        : c.marked ? `${c.got} got it · ${c.part} partly · ${c.miss} missed${c.skip ? ` · ${c.skip} skipped` : ""}` : "";
-      const marks = a.kind === "qs" && c.marked ? `<button type="button" class="qb-link" data-aw-sm>Show questions</button><ol class="aw-marks" hidden>${a.payload.items.map(x => {
-        const m = s.marks[x.id]; return `<li><span>${G.esc(qLabel(item(x.id), x.id))}${x.parts ? ` · part${x.parts.length > 1 ? "s" : ""} ${x.parts.join(", ")}` : ""}</span><span class="qb-stbadge">${m ? `<span class="b-${m}">${MK[m]}</span>` : `<span class="b-skip">Not marked</span>`}</span></li>`; }).join("")}</ol>` : "";
-      /* papers this student wrote on: the paper itself, or for questions each paper a question came from */
-      const cardInk = (s.ink || []).some(k => k.src.startsWith("q:"));
-      const review = a.kind === "qs" && (c.marked || cardInk) ? `<a class="qb-btn aw-ink" href="${workHref(a)}&s=${s.id}">Go through their work${cardInk ? " and writing" : ""}</a>` : "";
-      const inkBtns = review;
-      return `<li class="aw-srow ${s.status}"><span class="aw-sname"><b>${name}</b><small>${status}</small></span><span class="aw-sres">${a.kind === "qs" ? bar(c) : ""}<small>${result}</small></span>${inkBtns ? `<span class="aw-inks">${inkBtns}</span>` : ""}${marks}</li>`;
-    }).join("");
-    det.innerHTML = `<ul class="aw-slist2">${rows}</ul>
-      <div class="aw-dacts">${waLink(workText(a), "Share on WhatsApp")}${a.kind === "qs" ? `<a class="qb-btn" href="${workHref(a)}">See the questions</a>` : `<button type="button" class="qb-btn" data-aw-view='${G.esc(JSON.stringify(a.payload))}'>Open the paper</button>`}
-        <button type="button" class="qb-btn danger" data-aw-del="${a.id}">Delete</button></div>`;
-    det.querySelector("[data-aw-view]")?.addEventListener("click", e => { const p = JSON.parse(e.currentTarget.dataset.awView); window.Viewer?.open({ src: p.src, title: p.name, desc: p.desc, ms: p.ms }); });
+  /* one student's one piece of work: their mark for each question, and what you can do with it */
+  async function drawOne(det, a, sid) {
+    const s = (students || []).find(x => x.id === sid) || {}, name = s.name || s.email || "this student";
+    let marks = "";
+    if (a.kind === "qs") {
+      const [j, data] = await Promise.all([api("assignments/" + a.id), bankData(a.bank)]);
+      const me = j.students.find(x => x.id === sid) || { marks: {} };
+      const item = iid => data?.items.find(x => x.id === iid);
+      marks = Object.keys(me.marks).length ? `<button type="button" class="qb-link" data-aw-sm>Show each question</button><ol class="aw-marks" hidden>${a.payload.items.map(x => {
+        const m = me.marks[x.id]; return `<li><span>${G.esc(qLabel(item(x.id), x.id))}${x.parts ? ` · part${x.parts.length > 1 ? "s" : ""} ${x.parts.join(", ")}` : ""}</span><span class="qb-stbadge">${m ? `<span class="b-${m}">${MK[m]}</span>` : `<span class="b-skip">Not marked</span>`}</span></li>`; }).join("")}</ol>` : "";
+    }
+    det.innerHTML = `${marks}<div class="aw-dacts">${waLink(workText(a), "Share on WhatsApp")}
+        ${a.kind === "qs" ? `<a class="qb-btn" href="${workHref(a)}">See the questions</a>` : `<button type="button" class="qb-btn" data-aw-view>Open the paper</button>`}
+        <button type="button" class="qb-btn danger" data-aw-rm='${G.esc(JSON.stringify([a.id, sid, name, a.title]))}'>Remove for ${G.esc(name.split(/[\s@]/)[0])}</button></div>`;
+    det.querySelector("[data-aw-view]")?.addEventListener("click", () => window.Viewer?.open({ src: a.payload.src, title: a.payload.name, desc: a.payload.desc, ms: a.payload.ms }));
   }
-
   async function drawStudents(body) {
     const list = await loadStudents(true);
     body.innerHTML = `<form class="aw-add" id="aw-add">

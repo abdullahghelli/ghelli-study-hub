@@ -1101,3 +1101,9 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .qb-idel{display:inline-flex;align-items:center;gap:5px;color:var(--miss)} .qb-idel svg{width:16px;height:16px}
 .qb-ihint.flash{color:var(--accent);font-weight:500}
 @media (pointer:coarse){.qb-esize{width:38px;height:38px}}
+.aw-stu{margin:0 0 30px}
+.aw-shead{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;padding:0 0 8px}
+.aw-shead b{font-size:17px;font-weight:650} .aw-shead small{font-size:13px;color:var(--muted)} .aw-shead .aw-count{margin-left:auto}
+.aw-stu .aw-row{padding:11px 0}
+.qb-btn.aw-more{width:34px;padding:0;font-size:16px;letter-spacing:1px;color:var(--muted)}
+.qb-btn.aw-more[aria-expanded="true"]{background:var(--hover);color:var(--fg)}

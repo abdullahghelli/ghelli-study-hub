@@ -220,7 +220,15 @@ async function route(ctx, parts) {
             (SELECT COUNT(*) FROM assignees x WHERE x.assignment_id = a.id) AS students,
             (SELECT COUNT(*) FROM assignees x WHERE x.assignment_id = a.id AND x.status = 'done') AS done
           FROM assignments a WHERE a.teacher_id = ? ORDER BY a.created_at DESC`).bind(me.id).all();
-        return json({ assignments: results.map(r => ({ ...shape(r), students: r.students, done: r.done })) });
+        /* each student's progress on each piece, for the page that lists work by student */
+        const { results: who } = await db.prepare(`SELECT x.assignment_id, u.id, u.name, u.email, x.status, x.score, x.total, x.done_at,
+            (SELECT COUNT(*) FROM marks m WHERE m.assignment_id = x.assignment_id AND m.student_id = x.student_id) AS marked,
+            (SELECT COUNT(*) FROM marks m WHERE m.assignment_id = x.assignment_id AND m.student_id = x.student_id AND m.mark = 'got') AS got,
+            (SELECT COUNT(*) FROM marks m WHERE m.assignment_id = x.assignment_id AND m.student_id = x.student_id AND m.mark = 'part') AS part,
+            (SELECT COUNT(*) FROM marks m WHERE m.assignment_id = x.assignment_id AND m.student_id = x.student_id AND m.mark = 'miss') AS miss,
+            (SELECT COUNT(*) FROM ink k WHERE k.assignment_id = x.assignment_id AND k.student_id = x.student_id AND k.src LIKE 'q:%') AS inked
+          FROM assignees x JOIN users u ON u.id = x.student_id JOIN assignments a ON a.id = x.assignment_id WHERE a.teacher_id = ?`).bind(me.id).all();
+        return json({ assignments: results.map(r => ({ ...shape(r), students: r.students, done: r.done, who: who.filter(w => w.assignment_id === r.id) })) });
       }
       const { results } = await db.prepare(`SELECT a.*, x.status, x.score, x.total, x.done_at,
           (SELECT COUNT(*) FROM marks m WHERE m.assignment_id = a.id AND m.student_id = x.student_id) AS marked
@@ -256,6 +264,14 @@ async function route(ctx, parts) {
       const x = await db.prepare("SELECT status, score, total, done_at FROM assignees WHERE assignment_id = ? AND student_id = ?").bind(aid, me.id).first();
       const { results: marks } = await db.prepare("SELECT item, mark FROM marks WHERE assignment_id = ? AND student_id = ?").bind(aid, me.id).all();
       return json({ assignment: { ...shape(as), status: x.status, score: x.score, total: x.total, doneAt: x.done_at }, marks: Object.fromEntries(marks.map(m => [m.item, m.mark])) });
+    }
+    /* take one student off a piece of work (the work itself goes once nobody has it) */
+    if (c === "students" && method === "DELETE" && teacher) {
+      const sid = +parts[3];
+      await db.batch(["marks", "ink", "assignees"].map(t => db.prepare(`DELETE FROM ${t} WHERE assignment_id = ? AND ${t === "assignees" ? "student_id" : "student_id"} = ?`).bind(aid, sid)));
+      const left = await db.prepare("SELECT COUNT(*) AS n FROM assignees WHERE assignment_id = ?").bind(aid).first();
+      if (!left.n) await db.prepare("DELETE FROM assignments WHERE id = ?").bind(aid).run();
+      return json({ ok: true });
     }
     if (!c && method === "DELETE") {
       if (!teacher) return fail(403, "teachers_only", "Only teachers can delete work.");
