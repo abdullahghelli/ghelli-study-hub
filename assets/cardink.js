@@ -91,6 +91,16 @@
       const c = sizeCanvas(xs.firstElementChild, w, h);
       window.Viewer.Ink.draw(c, st.data.x.concat(st.live && st.live.area === "x" ? [st.live.it] : []), w, w, dark);
     } else xs?.remove();
+    /* Write sits just above the space and More space just below it, where the writing runs out */
+    const show = st.data.n > 0 && !ctx.readOnly;
+    card.classList.toggle("has-space", st.data.n > 0);
+    let top = card.querySelector(".qb-xtop"), bot = card.querySelector(".qb-xbot");
+    if (show && (!top || !bot)) {
+      top?.remove(); bot?.remove();
+      xs.insertAdjacentHTML("beforebegin", `<div class="qb-xtop"><span>Your answer</span><button type="button" class="qb-btn qb-write" data-qb-write="${esc(id)}"></button></div>`);
+      xs.insertAdjacentHTML("afterend", `<div class="qb-xbot"></div>`);
+      onChange(card);
+    } else if (!show) { top?.remove(); bot?.remove(); }
   }
 
   /* ---------- writing ---------- */
@@ -162,8 +172,7 @@
       ${COLORS.map(c => `<button type="button" class="qb-icol ${prefs.color === c ? "on" : ""}" data-ink-color="${c}" title="${esc(c === "ink" ? (dark ? "White" : "Black") : window.Viewer.Ink.PALETTE[c].name)}" aria-label="${esc(c === "ink" ? (dark ? "White" : "Black") : window.Viewer.Ink.PALETTE[c].name)}" aria-pressed="${prefs.color === c}"><i style="background:${window.Viewer.Ink.colorOf(c, dark)}"></i></button>`).join("")}
       <span class="qb-isep"></span>
       <button type="button" class="qb-ibtn" data-ink-undo title="Undo" aria-label="Undo" ${st.undo.length ? "" : "disabled"}>${svg("undo")}</button>
-      <button type="button" class="qb-itext" data-ink-more>+ More space</button>
-      ${st.data.n ? `<button type="button" class="qb-itext" data-ink-less>Less space</button>` : ""}
+      ${st.data.n ? "" : `<button type="button" class="qb-itext" data-ink-more>+ Writing space</button>`}
       <button type="button" class="qb-itext" data-ink-clear ${has(st.data) ? "" : "disabled"}>Clear</button>
       <span class="qb-ihint">${ctx.sync ? "Saves to your account" : "Saves in this browser"}${penSeen ? " · stylus writes, finger scrolls" : ""}</span>
       <button type="button" class="qb-btn primary qb-idone" data-ink-done>Done</button>
@@ -171,14 +180,15 @@
   }
   function onChange(card) {
     const bar = card.querySelector(".qb-inkbar"); if (bar) bar.outerHTML = toolbar(card);
-    const b = card.querySelector("[data-qb-write]"), d = dataFor(card.dataset.qbCard).data;
-    if (b) b.textContent = card.classList.contains("writing") ? "✎ Writing" : has(d) ? "✎ Edit writing" : "✎ Write";
+    const d = dataFor(card.dataset.qbCard).data, on = card.classList.contains("writing");
+    card.querySelectorAll("[data-qb-write]").forEach(b => { b.textContent = on ? "✓ Done writing" : has(d) ? "✎ Edit writing" : "✎ Write"; b.setAttribute("aria-pressed", on); });
+    const bot = card.querySelector(".qb-xbot");
+    if (bot) bot.innerHTML = `<button type="button" class="qb-btn qb-more" data-ink-more>+ More space</button>${d.n ? `<button type="button" class="qb-itext" data-ink-less>Less space</button>` : ""}`;
   }
   function setWriting(card, on) {
     card.classList.toggle("writing", on);
     card.querySelector(".qb-inkbar")?.remove();
     if (on) card.querySelector(".qb-inkwrap").insertAdjacentHTML("beforebegin", toolbar(card));
-    card.querySelector("[data-qb-write]")?.setAttribute("aria-pressed", on);
     paint(card); onChange(card);
   }
 
@@ -193,13 +203,19 @@
     if (sp && !ctx.readOnly) { setWriting(sp.closest("[data-qb-card]"), true); return; }
     const wb = e.target.closest("[data-qb-write]");
     if (wb) { const card = wb.closest("[data-qb-card]"); setWriting(card, !card.classList.contains("writing")); return; }
-    const card = e.target.closest(".qb-card.writing"); if (!card) return;
+    /* More and Less space work whether or not the card is being written on (More starts writing) */
+    const sc = !ctx.readOnly && e.target.closest("[data-ink-more], [data-ink-less]") ? e.target.closest("[data-qb-card]") : null;
+    const card = sc || e.target.closest(".qb-card.writing"); if (!card) return;
     const id = card.dataset.qbCard, st = dataFor(id);
     const t = e.target.closest("[data-ink-tool]"); if (t) { prefs.tool = t.dataset.inkTool; put("gsh-cink-prefs", prefs); onChange(card); return; }
     const c = e.target.closest("[data-ink-color]"); if (c) { prefs.color = c.dataset.inkColor; if (prefs.tool === "eraser") prefs.tool = "pen"; put("gsh-cink-prefs", prefs); onChange(card); return; }
     const snap = () => { st.undo.push(JSON.stringify(st.data)); if (st.undo.length > 60) st.undo.shift(); };
     if (e.target.closest("[data-ink-undo]")) { if (st.undo.length) { st.data = JSON.parse(st.undo.pop()); paint(card); save(id); onChange(card); } return; }
-    if (e.target.closest("[data-ink-more]")) { snap(); st.data.n = Math.min(8, st.data.n + 1); paint(card); save(id); onChange(card); card.querySelector(".qb-xspace")?.scrollIntoView({ block: "nearest", behavior: "smooth" }); return; }
+    if (e.target.closest("[data-ink-more]")) {
+      snap(); st.data.n = Math.min(12, st.data.n + 1);
+      if (!card.classList.contains("writing")) setWriting(card, true); else { paint(card); onChange(card); }
+      save(id); card.querySelector(".qb-xbot")?.scrollIntoView({ block: "nearest", behavior: "smooth" }); return;
+    }
     if (e.target.closest("[data-ink-less]")) {
       snap(); st.data.n = Math.max(0, st.data.n - 1);
       const lim = st.data.n * BLOCK; st.data.x = st.data.x.filter(it => (it.p || []).every(([, y]) => y <= lim));   /* writing in the removed block goes too (Undo brings it back) */

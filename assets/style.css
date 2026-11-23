@@ -1086,3 +1086,9 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .qz.work [data-qb-ws],.qz.work .qb-parts{display:none}
 .qb-card.writing,.qb-card.writing *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .qb-xspace,.qb-inkwrap canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.qb-xtop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px 8px 16px;border-top:1px solid var(--line);background:var(--bg)}
+.qb-xtop span{font-size:13px;font-weight:600;color:var(--muted)}
+.qb-xbot{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--bg)}
+.qb-btn.qb-more{color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
+.qb-card.has-space .qb-card-foot .qb-write{display:none}
+.qb-card.writing .qb-xtop .qb-write{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
