@@ -90,12 +90,18 @@
   function bind(card, cv, area) {
     const id = card.dataset.qbCard;
     const pos = e => { const b = cv.getBoundingClientRect(); return [+(((e.clientX - b.left) / b.width)).toFixed(5), +(((e.clientY - b.top) / b.width)).toFixed(5)]; };
-    let cur = null, erasing = false, raf = 0;
+    let cur = null, erasing = false, raf = 0, fingerScroll = null;
     const redraw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; paint(card); }); };
     cv.addEventListener("pointerdown", e => {
       if (!card.classList.contains("writing") || ctx.readOnly) return;
       if (e.pointerType === "pen") { penSeen = true; document.body.classList.add("pen-seen"); }
-      if (penSeen && e.pointerType === "touch") return;   /* with a stylus, fingers scroll */
+      /* with a stylus, fingers scroll the page. The writing area keeps every touch to itself (touch-action: none, or
+         iPad would scroll on the Pencil's up-and-down strokes too), so the finger's scroll is done here */
+      if (penSeen && e.pointerType === "touch") {
+        fingerScroll = { y: e.clientY, x: e.clientX, top: scrollY, left: scrollX, id: e.pointerId };
+        try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+        return;
+      }
       if (e.pointerType === "mouse" && e.button !== 0) return;
       e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (err) {}
       const st = dataFor(id), [x, y] = pos(e);
@@ -106,6 +112,7 @@
       st.live = { area, it: cur }; redraw();
     });
     cv.addEventListener("pointermove", e => {
+      if (fingerScroll && e.pointerId === fingerScroll.id) { window.scrollTo(fingerScroll.left, fingerScroll.top - (e.clientY - fingerScroll.y)); return; }
       const st = dataFor(id);
       if (erasing) { const [x, y] = pos(e); if (erase(st, area, x, y)) redraw(); return; }
       if (!cur) return;
@@ -120,7 +127,8 @@
       }
       redraw();
     });
-    const end = () => {
+    const end = e => {
+      if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
       const st = dataFor(id);
       if (erasing) { erasing = false; save(id); onChange(card); return; }
       if (!cur) return;
