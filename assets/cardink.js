@@ -33,8 +33,8 @@
     if (!state[id]) {
       const pre = ctx.preset ? ctx.preset[id] : undefined;
       const d = pre !== undefined ? pre : (ctx.readOnly ? null : get(KEY(id)));
-      /* set work: a writing space under every question from the start, for the answer */
-      state[id] = { data: Object.assign({ s: [], x: [], n: ctx.sync ? 1 : 0 }, d || {}), undo: [] };
+      /* set work and quizzes: a writing space under every question from the start, for the answer */
+      state[id] = { data: Object.assign({ s: [], x: [], n: ctx.sync || ctx.space ? 1 : 0 }, d || {}), undo: [] };
     }
     return state[id];
   }
@@ -194,7 +194,7 @@
     setContext(c) {
       /* a different set of writing (this browser's, a piece of set work, a student under review): start afresh */
       if (c.key !== ctx.key) for (const k in state) delete state[k];
-      ctx = { key: c.key, sync: c.sync || null, readOnly: !!c.readOnly, preset: c.preset || null };
+      ctx = { key: c.key, sync: c.sync || null, readOnly: !!c.readOnly, preset: c.preset || null, space: !!c.space };
     },
     mount(box) {
       box.querySelectorAll("[data-qb-card]").forEach(card => {

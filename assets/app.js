@@ -477,7 +477,7 @@
     const inkContext = () => {
       const w = qz && qz.work;
       if (!window.CardInk) return;
-      if (!w) return window.CardInk.setContext({ key: "local" });
+      if (!w) return window.CardInk.setContext(qz && !qz.setup ? { key: "quiz", space: true } : { key: "local" });
       if (w.review) return window.CardInk.setContext({ key: `review:${w.id}:${reviewSid}`, readOnly: true, preset: w.inks });
       window.CardInk.setContext({ key: "work:" + w.id, preset: w.inks, sync: (iid, d) => { w.inks[iid] = d; window.GSHAccount.saveCardInk(w.id, iid, d); } });
     };
@@ -542,7 +542,7 @@
           <div class="qz-head"><div class="qz-title"><small>${qz.work?.review ? `${esc(qz.work.review)}'s work · ${esc(qz.work.title)}` : qz.work ? "Set work · " + esc(qz.work.title) : qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
             ${qz.work?.review ? `<a class="qb-btn" href="/teacher">Back to Teacher page</a>` : qz.work ? `<button type="button" class="qb-btn" data-qz-print>Worksheet PDF</button><a class="qb-btn" href="/my-work">Save and leave</a>` : `<button type="button" class="qb-btn" data-qz-end>End quiz</button>`}</div>
           <div class="qz-bar" data-qz-bar style="--n:${n}">${qzBar()}</div>
-          ${qz.work?.review ? `<p class="qz-work">Their mark: <b>${{ got: "Got it", part: "Partly", miss: "Missed it", skip: "Skipped" }[qz.res[it.id]] || "not marked"}</b>${wp ? ` · set just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")}` : ""}. Their answer is written on the question and in the space below it.</p>` : qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Tap <b>✎ Write</b> and answer in the space below the question (or on its answer lines). Your teacher sees what you write. Then show the answer and mark how it went.</p>` : ""}
+          ${qz.work?.review ? `<p class="qz-work">Their mark: <b>${{ got: "Got it", part: "Partly", miss: "Missed it", skip: "Skipped" }[qz.res[it.id]] || "not marked"}</b>${wp ? ` · set just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")}` : ""}. Their answer is written on the question and in the space below it.</p>` : qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Tap <b>✎ Write</b> and answer in the space below the question (or on its answer lines). Your teacher sees what you write. Then show the answer and mark how it went.</p>` : `<p class="qz-work">Answer in the space below the question (tap it to write), then show the answer and mark how it went.</p>`}
           ${qbCard(it, data)}
           <div class="qz-nav"><button type="button" class="qb-btn qz-next" data-qz-next></button></div>
         </section>`;
