@@ -540,7 +540,7 @@
         const wp = qz.work && qz.work.parts[it.id];
         return `<section class="qb-main qz ${qz.mix ? "mix" : ""} ${qz.work ? "work" : ""}" aria-label="Quiz">
           <div class="qz-head"><div class="qz-title"><small>${qz.work?.review ? `${esc(qz.work.review)}'s work · ${esc(qz.work.title)}` : qz.work ? "Set work · " + esc(qz.work.title) : qz.mix ? "Mixed quiz" : "Quiz · " + esc(tp.name)}</small><b>Question ${qz.k + 1} of ${n}</b></div>
-            ${qz.work?.review ? `<a class="qb-btn" href="/teacher">Back to Teacher page</a>` : qz.work ? `<button type="button" class="qb-btn" data-qz-print>Worksheet PDF</button><a class="qb-btn" href="/my-work">Save and leave</a>` : `<button type="button" class="qb-btn" data-qz-end>End quiz</button>`}</div>
+            ${qz.work?.review ? `<a class="qb-btn" href="/teacher">Back to Teacher page</a>` : qz.work ? `<a class="qb-btn" href="/my-work">Save and leave</a>` : `<button type="button" class="qb-btn" data-qz-end>End quiz</button>`}</div>
           <div class="qz-bar" data-qz-bar style="--n:${n}">${qzBar()}</div>
           ${qz.work?.review ? `<p class="qz-work">Their mark: <b>${{ got: "Got it", part: "Partly", miss: "Missed it", skip: "Skipped" }[qz.res[it.id]] || "not marked"}</b>${wp ? ` · set just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")}` : ""}. Their answer is written on the question and in the space below it.</p>` : qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Tap <b>✎ Write</b> and answer in the space below the question (or on its answer lines). Your teacher sees what you write. Then show the answer and mark how it went.</p>` : `<p class="qz-work">Answer in the space below the question (tap it to write), then show the answer and mark how it went.</p>`}
           ${qbCard(it, data)}
@@ -678,7 +678,6 @@
           qz.k++;
           render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return;
         }
-        if (e.target.closest("[data-qz-print]")) { qbSetWs(qz.ids, qz.work.parts); qbWsDialog(); return; }
         if (e.target.closest("[data-qz-redo]")) { qz.end = false; qz.k = 0; qz.work.sent = !!qz.work.review; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
         if (e.target.closest("[data-qz-back]")) { qz = null; render(); return; }
         if (e.target.closest("[data-qz-again]")) { quizGo(qz.mix ? mixPool(qz.mix).slice(0, qz.ids.length) : quizPool(qzList).slice(0, qz.ids.length), qz.mix); return; }

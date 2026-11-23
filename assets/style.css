@@ -1084,3 +1084,4 @@ body.pen-seen .qb-card.writing canvas.qb-ink{touch-action:pan-y}
 .home-acard span{font-size:13.5px;color:var(--muted)} .home-acard span.late{color:var(--miss);font-weight:500}
 .home-acard .arrow{position:absolute;right:16px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--accent)}
 .qz [data-qb-open="paper"]{display:none}
+.qz.work [data-qb-ws],.qz.work .qb-parts{display:none}
