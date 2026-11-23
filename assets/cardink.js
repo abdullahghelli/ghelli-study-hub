@@ -92,6 +92,8 @@
     const pos = e => { const b = cv.getBoundingClientRect(); return [+(((e.clientX - b.left) / b.width)).toFixed(5), +(((e.clientY - b.top) / b.width)).toFixed(5)]; };
     let cur = null, erasing = false, raf = 0, fingerScroll = null;
     const redraw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; paint(card); }); };
+    /* iPad: a Pencil press would otherwise start a text selection or the long-press menu on the page */
+    cv.addEventListener("touchstart", e => { if (card.classList.contains("writing") && !ctx.readOnly) e.preventDefault(); }, { passive: false });
     cv.addEventListener("pointerdown", e => {
       if (!card.classList.contains("writing") || ctx.readOnly) return;
       if (e.pointerType === "pen") { penSeen = true; document.body.classList.add("pen-seen"); }
@@ -173,6 +175,11 @@
     paint(card); onChange(card);
   }
 
+  /* no text selection from a fast stroke while a card is being written on (as in the paper viewer) */
+  document.addEventListener("selectstart", e => {
+    const t = e.target.nodeType === 1 ? e.target : e.target.parentElement;
+    if (t?.closest?.(".qb-card.writing")) e.preventDefault();
+  });
   document.addEventListener("click", e => {
     /* tapping the writing space starts writing there */
     const sp = e.target.closest(".qb-card:not(.writing) .qb-xspace");

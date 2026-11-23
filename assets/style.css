@@ -1084,3 +1084,5 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .home-acard .arrow{position:absolute;right:16px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--accent)}
 .qz [data-qb-open="paper"]{display:none}
 .qz.work [data-qb-ws],.qz.work .qb-parts{display:none}
+.qb-card.writing,.qb-card.writing *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.qb-xspace,.qb-inkwrap canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
