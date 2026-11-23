@@ -95,7 +95,21 @@
     if (n >= 1 && n <= course(l, t, s).topics.length) return { kind: "topic", l, t, s, n };
     return { kind: "notfound" };
   }
+  /* Updates: pages carry the version they were built with (gsh-version). When the site has been updated since this
+     page loaded, the next page opened loads afresh instead of running old code (writing still waiting to save is
+     saved first). Checked at most every two minutes, on moving between pages and on coming back to the tab. */
+  const VERSION = document.querySelector('meta[name="gsh-version"]')?.content || "";
+  let stale = false, lastCheck = Date.now();
+  const checkVersion = force => {
+    if (!VERSION || stale || (!force && Date.now() - lastCheck < 120000)) return;
+    lastCheck = Date.now();
+    fetch("/version.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.v && j.v !== VERSION) stale = true; }).catch(() => {});
+  };
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkVersion(true); });
+  async function goFresh(href) { try { await window.CardInk?.flush?.(); } catch (e) {} location.assign(href); }
   function go(href) {
+    checkVersion();
+    if (stale) { goFresh(href); return; }
     if (href !== location.pathname + location.search) history.pushState(null, "", href);
     render();
     window.scrollTo(0, 0);
@@ -479,7 +493,7 @@
       if (!window.CardInk) return;
       if (!w) return window.CardInk.setContext(qz && !qz.setup ? { key: "quiz", space: true } : { key: "local" });
       if (w.review) return window.CardInk.setContext({ key: `review:${w.id}:${reviewSid}`, readOnly: true, preset: w.inks });
-      window.CardInk.setContext({ key: "work:" + w.id, preset: w.inks, sync: (iid, d) => { w.inks[iid] = d; window.GSHAccount.saveCardInk(w.id, iid, d); } });
+      window.CardInk.setContext({ key: "work:" + w.id, preset: w.inks, sync: (iid, d) => { w.inks[iid] = d; return window.GSHAccount.saveCardInk(w.id, iid, d); } });
     };
     const quizGo = (ids, mix) => { qz = ids.length ? { ids, k: 0, res: {}, mix } : null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); };
     /* ----- Mixed quiz: questions from several topics, taken in turn from each so no one topic fills it ----- */
@@ -1675,7 +1689,7 @@
     const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
     root.dataset.theme = dark ? "light" : "dark"; store.set("theme", root.dataset.theme);
   };
-  window.addEventListener("popstate", () => { window.Viewer?.close(); render(); });
+  window.addEventListener("popstate", () => { if (stale) { goFresh(location.pathname + location.search); return; } window.Viewer?.close(); render(); });
   window.addEventListener("gsh-bookmarks", () => renderSide(parse(location.pathname)));
   /* accounts (account.js): what it needs from here, and redraws when who's signed in changes */
   window.GSHAccount?.init({

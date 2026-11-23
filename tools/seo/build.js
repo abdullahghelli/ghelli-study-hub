@@ -14,7 +14,17 @@ const S = w.SITE;
 const slug = s => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const K = (...p) => p.join("/");
-const TEMPLATE = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+/* Versioned files: every page asks for /assets/x.js?v=<hash of the file>, so a browser never mixes an old file with
+   a new one, and each page names the site's version (gsh-version), which the site compares with /version.json to
+   load afresh after an update. So run this after ANY change to assets/*.js or style.css, not just data. */
+const crypto = require("crypto");
+const ASSETS = ["data.js", "viewer.js", "cardink.js", "account.js", "app.js", "style.css"];
+const hashOf = f => crypto.createHash("sha256").update(fs.readFileSync(path.join(ROOT, "assets", f))).digest("hex").slice(0, 10);
+const VER = Object.fromEntries(ASSETS.map(f => [f, hashOf(f)]));
+const SITE_VERSION = crypto.createHash("sha256").update(JSON.stringify(VER)).digest("hex").slice(0, 10);
+let TEMPLATE = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+for (const f of ASSETS) TEMPLATE = TEMPLATE.replace(new RegExp(`/assets/${f.replace(".", "\\.")}(\\?v=[a-z0-9]+)?"`, "g"), `/assets/${f}?v=${VER[f]}"`);
+TEMPLATE = TEMPLATE.replace(/<meta name="gsh-version" content="[^"]*">\n?/, "").replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<meta name="gsh-version" content="${SITE_VERSION}">`);
 const START = "<!--seo:start-->", END = "<!--seo:end-->";
 const today = new Date().toISOString().slice(0, 10);
 
@@ -116,5 +126,6 @@ fs.writeFileSync(path.join(ROOT, "sitemap.xml"), `<?xml version="1.0" encoding="
 ${pages.map(p => `  <url><loc>${BASE}${p.route === "/" ? "/" : p.route}</loc><lastmod>${today}</lastmod><priority>${p.priority}</priority></url>`).join("\n")}
 </urlset>
 `);
+fs.writeFileSync(path.join(ROOT, "version.json"), JSON.stringify({ v: SITE_VERSION }) + "\n");
 fs.writeFileSync(path.join(ROOT, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /sign-in\nDisallow: /my-work\nDisallow: /teacher\n\nSitemap: ${BASE}/sitemap.xml\n`);
 console.log(written, "pages,", subjects.length, "subjects; sitemap.xml and robots.txt written");

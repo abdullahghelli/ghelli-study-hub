@@ -38,16 +38,23 @@
     }
     return state[id];
   }
-  const timers = {};
+  const timers = {}, pending = {};
   function save(id) {
     const st = state[id]; if (!st || ctx.readOnly) return;
     clearTimeout(timers[id]);
-    timers[id] = setTimeout(() => {
+    const sync = ctx.sync;
+    pending[id] = () => {
+      delete pending[id]; clearTimeout(timers[id]);
       const d = st.data, keep = has(d) || d.n ? d : null;
       if (keep) put(KEY(id), keep); else { try { localStorage.removeItem(KEY(id)); } catch (e) {} }
-      ctx.sync?.(id, keep);
-    }, 900);
+      return sync?.(id, keep);
+    };
+    timers[id] = setTimeout(() => pending[id]?.(), 900);
   }
+  /* save anything still waiting (before the page goes away), giving the account a moment to receive it */
+  const flush = () => Promise.race([Promise.all(Object.keys(pending).map(id => Promise.resolve(pending[id]?.()).catch(() => {}))), new Promise(r => setTimeout(r, 1500))]);
+  window.addEventListener("pagehide", () => { flush(); });
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flush(); });
 
   /* ---------- drawing ---------- */
   function sizeCanvas(cv, w, h) {
@@ -222,6 +229,7 @@
     has: id => has(dataFor(id).data),
     button: id => ctx.readOnly ? "" : `<button type="button" class="qb-btn qb-write" data-qb-write="${esc(id)}" aria-pressed="false">✎ Write</button>`,
     repaintAll() { document.querySelectorAll("[data-qb-card]").forEach(paint); },
+    flush,
   };
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => window.CardInk.repaintAll());
   new MutationObserver(() => window.CardInk.repaintAll()).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
