@@ -1112,3 +1112,7 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .vw-size.ring i,.pv-sizes .vw-size.ring i{background:transparent;border:1.5px solid var(--muted)}
 .vw-size.ring.on i,.pv-tools .vw-size.ring i{border-color:var(--fg)}
 .pv-delsel{color:var(--miss,#c4432b);height:32px}
+
+/* earlier parts shown with a part that depends on them */
+.qb-ctx{opacity:.45}
+.qb-ctx-label{margin:6px 0 2px;font-size:12px;color:var(--muted);font-style:italic}

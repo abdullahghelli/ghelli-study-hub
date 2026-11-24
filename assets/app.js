@@ -1470,13 +1470,17 @@
     try {
       const cssW = el.clientWidth || 700, dpr = Math.min(window.devicePixelRatio || 1, 2), scale = cssW / (x1 - x0);
       const done = await window.Viewer.withDoc(it.src, async doc => {
-        for (const [pn, y0, y1] of it.segs) {
+        const cx0 = it.ctx ? it.ctx.start : -1, cx1 = it.ctx ? it.ctx.start + it.ctx.n : -1;
+        for (const [k, [pn, y0, y1]] of it.segs.entries()) {
           if (el._qb !== token) return false;
+          /* earlier parts this part needs: labelled and faded, so the part itself stands out */
+          if (k === cx0) { const lb = document.createElement("p"); lb.className = "qb-ctx-label"; lb.textContent = `From part${it.ctx.parts.length > 1 ? "s" : ""} ${it.ctx.parts.map(p => `(${p})`).join(", ")}, for reference`; frag.appendChild(lb); }
           const page = await doc.getPage(pn);
           const cv = document.createElement("canvas");
           const vp = page.getViewport({ scale: scale * dpr, offsetX: -(x0 - cx) * scale * dpr, offsetY: -(y0 - cy) * scale * dpr });
           cv.width = Math.round((x1 - x0) * scale * dpr); cv.height = Math.round((y1 - y0) * scale * dpr);
           cv.style.width = "100%"; cv.style.height = "auto";   /* follows the column as it widens or narrows */
+          if (k >= cx0 && k < cx1) cv.className = "qb-ctx";
           frag.appendChild(cv);
           el._task = page.render({ canvasContext: cv.getContext("2d"), viewport: vp });
           try { await el._task.promise; } finally { el._task = null; }

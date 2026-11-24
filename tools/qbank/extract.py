@@ -168,6 +168,11 @@ def parse_paper(pdf_path):
             if m and first["x0"] < 0.135 * W and (m.group(2) or first["bold"] or loose) and first["top"] < 0.9 * H:
                 events.append(("q", int(m.group(1)), pn, first["top"], first["x0"]))
             mp = PART.match(first["text"])
+            # extended-response parts are starred: "*(c)" or "*" then "(c)"
+            if not mp and re.fullmatch(r"\*\(([a-h])\)", first["text"]):
+                mp = re.match(r"\*\(([a-h])\)", first["text"])
+            elif not mp and first["text"] == "*" and len(ws) > 1 and ws[1]["x0"] < first["x0"] + 25:
+                mp = PART.match(ws[1]["text"])
             if mp and first["x0"] < 0.16 * W:
                 events.append(("part", mp.group(1), pn, first["top"]))
             if STOP and STOP.search(text):
