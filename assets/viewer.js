@@ -50,6 +50,23 @@
   /* thickness choices (times the normal width), remembered separately for the pen and the highlighter */
   const SIZES = [[0.6, "Thin"], [1, "Medium"], [1.6, "Thick"], [2.4, "Extra thick"]];
   const SIZE_KEY = "gsh-pen-size", SIZE_DOT = [3, 5, 8, 12];
+  /* eraser sizes: the circle's diameter as a fraction of the page width (the same choices as on question cards) */
+  const ESIZES = [[0.012, "Small eraser"], [0.024, "Medium eraser"], [0.048, "Large eraser"]], ESIZE_KEY = "gsh-eraser-size", EDOT = [8, 13, 20];
+  /* the eraser, drawn as a circle of its size where the pen or mouse is */
+  let ecur = null;
+  const showEraser = (e, d) => {
+    if (!ecur) { ecur = document.createElement("div"); ecur.className = "qb-ecursor"; document.body.appendChild(ecur); }
+    Object.assign(ecur.style, { width: d + "px", height: d + "px", left: e.clientX - d / 2 + "px", top: e.clientY - d / 2 + "px" }); ecur.hidden = false;
+  };
+  const hideEraser = () => { if (ecur) ecur.hidden = true; };
+  const inPoly = ([x, y], poly) => {
+    let c = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const [xi, yi] = poly[i], [xj, yj] = poly[j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  };
   const TEXT_SIZE = 0.02;
 
   /* ---------- Bookmarks (shared with the sidebar) ---------- */
@@ -242,6 +259,8 @@
       this.startPage = startPage || 1; this.startY = startY || 0;
       this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "green"; this.dark = false;
       this.size = Object.assign({ pen: 1, highlighter: 1 }, store.get(SIZE_KEY) || {});
+      this.esize = ESIZES.some(([v]) => v === store.get(ESIZE_KEY)) ? store.get(ESIZE_KEY) : 0.024;
+      this.sel = null;   /* lasso selection: { i: page, idx: [item indexes] } */
       this.pages = []; this.bytes = null; this.current = 1;
       this.key = "gsh-ann:" + src;
       this.ann = (annotate && store.get(this.key)) || {};
@@ -562,6 +581,8 @@
 
     setTool(t) {
       this.commitText();
+      if (t !== "lasso" && this.sel) this.clearSel();
+      if (t !== "eraser") hideEraser();
       this.tool = t;
       if (t !== "hand") this.drawTool = t;
       this.el.dataset.tool = t;
@@ -637,7 +658,7 @@
       } else { to.push(JSON.stringify(this.ann)); this.ann = JSON.parse(e); this.redrawAll(); }
       this.save();
     }
-    doUndo() { if (!this.undo.length) return; this.commitText(); this.swap(this.undo, this.redo); }
+    doUndo() { if (!this.undo.length) return; this.commitText(); this.sel = null; this.swap(this.undo, this.redo); }
     doRedo() { if (!this.redo.length) return; this.swap(this.redo, this.undo); }
     clearAll() { if (!this.hasNotes()) return; this.snapshot(); this.ann = {}; this.redrawAll(); this.save(); }
     hasNotes() { return Object.values(this.ann).some(a => a.length); }
@@ -766,10 +787,42 @@
     }
     drawInk(p, i, extra) {
       if (!p.px) return;   /* released page: drawn again when it scrolls back into view */
-      if (!this.ann[i]?.length && !extra) { p.ink.width = 0; p.ink.height = 0; return; }
+      const lassoHere = this.lassoLive && this.lassoLive.i === i, selHere = this.sel && this.sel.i === i;
+      if (!this.ann[i]?.length && !extra && !lassoHere) { p.ink.width = 0; p.ink.height = 0; return; }
       const ctx = this.inkCtx(p); ctx.clearRect(0, 0, p.w, p.h);
       this.drawItems(ctx, this.ann[i], p.w, p.h);
       if (extra) this.drawItems(ctx, [extra], p.w, p.h);
+      if (lassoHere || selHere) {
+        const accent = "#1f8f7f";
+        ctx.save(); ctx.globalAlpha = 1; ctx.strokeStyle = accent; ctx.lineWidth = 1.5; ctx.setLineDash([6, 5]);
+        if (lassoHere) { ctx.beginPath(); this.lassoLive.path.forEach(([x, y], k) => k ? ctx.lineTo(x * p.w, y * p.h) : ctx.moveTo(x * p.w, y * p.h)); ctx.stroke(); }
+        if (selHere) { const b = this.selBox(p); if (b) { ctx.fillStyle = accent; ctx.globalAlpha = 0.07; ctx.fillRect(b[0], b[1], b[2] - b[0], b[3] - b[1]); ctx.globalAlpha = 1; ctx.strokeRect(b[0], b[1], b[2] - b[0], b[3] - b[1]); } }
+        ctx.restore();
+      }
+    }
+    /* the selection's box on its page, in pixels */
+    selBox(p) {
+      let b = [Infinity, Infinity, -Infinity, -Infinity];
+      for (const k of this.sel.idx) {
+        const it = (this.ann[this.sel.i] || [])[k]; if (!it) continue;
+        if (it.t === "text") { const lines = it.v.split("\n"), w = Math.max(...lines.map(l => l.length)) * it.s * 0.56 * p.w, h = lines.length * it.s * 1.25 * p.w; b = [Math.min(b[0], it.x * p.w - 4), Math.min(b[1], it.y * p.h - 4), Math.max(b[2], it.x * p.w + w + 4), Math.max(b[3], it.y * p.h + h + 4)]; continue; }
+        const m = it.w * p.w / 2 + 5;
+        for (const [x, y] of it.p) b = [Math.min(b[0], x * p.w - m), Math.min(b[1], y * p.h - m), Math.max(b[2], x * p.w + m), Math.max(b[3], y * p.h + m)];
+      }
+      return isFinite(b[0]) ? b : null;
+    }
+    clearSel() { const s = this.sel; this.sel = null; if (s && this.pages[s.i]) this.drawInk(this.pages[s.i], s.i); this.onChange?.(); }
+    deleteSel() {
+      if (!this.sel) return;
+      const { i, idx } = this.sel; this.snapshotPage(i);
+      this.ann[i] = (this.ann[i] || []).filter((_, k) => !idx.includes(k)); this.sel = null;
+      if (this.pages[i]) this.drawInk(this.pages[i], i); this.save();
+    }
+    recolorSel(c) {
+      if (!this.sel) return false;
+      const { i, idx } = this.sel; this.snapshotPage(i);
+      idx.forEach(k => { const it = (this.ann[i] || [])[k]; if (it) it.c = c; });
+      if (this.pages[i]) this.drawInk(this.pages[i], i); this.save(); return true;
     }
 
     hit(it, x, y, p) {
@@ -784,7 +837,7 @@
 
     bindInk(p, i) {
       const pos = e => { const b = p.ink.getBoundingClientRect(); return [(e.clientX - b.left) / b.width, (e.clientY - b.top) / b.height]; };
-      let cur = null, erasing = false;
+      let cur = null, erasing = false, lasso = null, moving = null;
       /* Apple Pencil: once a pen is used, fingers scroll instead of drawing (palm rejection) */
       let fingerScroll = null;
       this.cancelInk.push(() => {
@@ -809,7 +862,17 @@
           return;
         }
         e.preventDefault(); try { p.ink.setPointerCapture(e.pointerId); } catch (err) {}
-        if (this.tool === "eraser") { this.snapshotPage(i); erasing = true; this.inking = true; this.eraseAt(p, i, x, y); return; }
+        if (this.tool === "lasso") {
+          /* inside the selection: move it; anywhere else: draw a new loop */
+          const b = this.sel && this.sel.i === i && this.selBox(p), px = x * p.w, py = y * p.h;
+          if (b && px >= b[0] && px <= b[2] && py >= b[1] && py <= b[3]) {
+            this.snapshotPage(i); this.inking = true;
+            moving = { from: [x, y], orig: this.sel.idx.map(k => JSON.parse(JSON.stringify(this.ann[i][k]))) }; return;
+          }
+          if (this.sel) this.clearSel();
+          lasso = [[x, y]]; this.lassoLive = { i, path: lasso }; this.inking = true; this.drawInk(p, i); return;
+        }
+        if (this.tool === "eraser") { this.snapshotPage(i); erasing = [x, y]; this.inking = true; showEraser(e, this.esize * p.w); this.eraseAt(p, i, x, y); return; }
         cur = { t: this.tool, c: this.color, w: +(WIDTH[this.tool] * (this.size[this.tool] || 1)).toFixed(5), p: [e.pointerType === "pen" && this.tool === "pen" ? [x, y, +(e.pressure || 0.5).toFixed(2)] : [x, y]] };
         if (e.pointerType === "touch") Object.defineProperty(cur, "touch", { value: true });
         /* not saved with the note: whether it's still being written, and the Pencil's predicted next points */
@@ -824,7 +887,24 @@
           this.el.scrollLeft = fingerScroll.left - (e.clientX - fingerScroll.x);
           return;
         }
-        if (erasing) { const [x, y] = pos(e); this.eraseAt(p, i, x, y); return; }
+        if (this.tool === "eraser" && !(this.penSeen && e.pointerType === "touch")) showEraser(e, this.esize * p.w);
+        if (erasing) {
+          /* every point along the way, so a quick sweep doesn't skip any writing */
+          const [x, y] = pos(e), [x0, y0] = erasing, step = this.esize / 3;
+          const n = Math.max(1, Math.ceil(Math.hypot(x - x0, (y - y0) * p.h / p.w) / step));
+          for (let k = 1; k <= n; k++) this.eraseAt(p, i, x0 + (x - x0) * k / n, y0 + (y - y0) * k / n);
+          erasing = [x, y]; return;
+        }
+        if (lasso) { const [x, y] = pos(e), l = lasso[lasso.length - 1]; if (Math.hypot((x - l[0]) * p.w, (y - l[1]) * p.h) > 3) { lasso.push([x, y]); this.drawInk(p, i); } return; }
+        if (moving) {
+          const [x, y] = pos(e), dx = x - moving.from[0], dy = y - moving.from[1];
+          this.sel.idx.forEach((k, n) => {
+            const o = moving.orig[n], it = this.ann[i][k];
+            if (o.t === "text") { it.x = +(o.x + dx).toFixed(5); it.y = +(o.y + dy).toFixed(5); }
+            else it.p = o.p.map(q => [+(q[0] + dx).toFixed(5), +(q[1] + dy).toFixed(5), ...q.slice(2)]);
+          });
+          this.drawInk(p, i); return;
+        }
         if (!cur) return;
         const evs = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
         const withP = cur.p[0].length > 2, minD = 0.35 / p.w;   /* ignore sub-pixel jitter */
@@ -847,24 +927,75 @@
       const end = e => {
         if (this.pinching && e && e.pointerType === "touch") { if (cur && cur.touch) { cur = null; this.clearLive(p); this.inking = false; } fingerScroll = null; return; }
         if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
+        if (e && e.pointerType !== "mouse") hideEraser();
         if (erasing) { erasing = false; this.inking = false; this.save(); return; }
+        if (lasso) {
+          /* what the loop goes round: strokes with at least half their points inside it, notes whose start is inside */
+          const idx = lasso.length > 3 ? (this.ann[i] || []).map((it, k) => [it, k]).filter(([it]) => it.t === "text" ? inPoly([it.x, it.y], lasso) : it.p.filter(q => inPoly(q, lasso)).length >= it.p.length / 2).map(([, k]) => k) : [];
+          lasso = null; this.lassoLive = null; this.inking = false;
+          this.sel = idx.length ? { i, idx } : null; this.drawInk(p, i); this.onChange?.(); return;
+        }
+        if (moving) { moving = null; this.inking = false; this.save(); this.onChange?.(); return; }
         if (!cur) return;
         if (cur.p[0].length > 2 && e && e.clientX != null && e.type === "pointerup") {   /* finish exactly where the Pencil lifted */
           const [x, y] = pos(e), last = cur.p[cur.p.length - 1];
           if (Math.hypot(x - last[0], y - last[1]) > 0.3 / p.w) cur.p.push([+x.toFixed(5), +y.toFixed(5), last[2]]);
         }
         cur._live = false; cur._pred = null;
-        this.snapshotPage(i); (this.ann[i] ||= []).push(cur);
-        this.addInk(p, cur); this.clearLive(p); cur = null; this.inking = false;
+        this.snapshotPage(i);
+        /* a quick scribble over writing rubs it out, like on paper */
+        const gone = cur.t === "pen" ? this.scribbled(p, i, cur) : [];
+        if (gone.length) { this.ann[i] = (this.ann[i] || []).filter((_, k) => !gone.includes(k)); this.drawInk(p, i); this.flash = "Scribbled out · Undo brings it back"; setTimeout(() => { this.flash = ""; this.onChange?.(); }, 2500); }
+        else { (this.ann[i] ||= []).push(cur); this.addInk(p, cur); }
+        this.clearLive(p); cur = null; this.inking = false;
         this.save();
       };
       p.ink.addEventListener("pointerup", end);
       p.ink.addEventListener("pointercancel", end);
+      p.ink.addEventListener("pointerleave", e => { if (e.pointerType === "mouse" && !erasing) hideEraser(); });
     }
+    /* rub out just what's under the circle: a stroke it crosses is split, leaving the parts either side; a typed note under it goes */
     eraseAt(p, i, x, y) {
       const items = this.ann[i]; if (!items) return;
-      const keep = items.filter(it => !this.hit(it, x, y, p));
-      if (keep.length !== items.length) { this.ann[i] = keep; this.drawInk(p, i); }
+      const W = p.w, H = p.h, cx = x * W, cy = y * H, r = this.esize * W / 2;
+      let changed = false; const out = [];
+      for (const it of items) {
+        if (it.t === "text") { if (this.hit(it, x, y, p)) changed = true; else out.push(it); continue; }
+        const lim = r + it.w * W / 2, lim2 = lim * lim, pts = it.p.map(q => [q[0] * W, q[1] * H]);
+        const inside = q => (q[0] - cx) ** 2 + (q[1] - cy) ** 2 < lim2;
+        const crosses = (a, b) => {
+          const dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy; if (!L) return false;
+          const t = Math.max(0, Math.min(1, ((cx - a[0]) * dx + (cy - a[1]) * dy) / L));
+          return (a[0] + t * dx - cx) ** 2 + (a[1] + t * dy - cy) ** 2 < lim2;
+        };
+        if (!pts.some((q, k) => inside(q) || (k && crosses(pts[k - 1], q)))) { out.push(it); continue; }
+        changed = true;
+        let run = [];
+        const cut = () => { if (run.length >= 2) out.push({ t: it.t, c: it.c, w: it.w, p: run }); run = []; };
+        it.p.forEach((q, k) => { if (inside(pts[k])) cut(); else { if (run.length && crosses(pts[k - 1], pts[k])) cut(); run.push(q); } });
+        cut();
+      }
+      if (changed) { this.ann[i] = out; this.drawInk(p, i); }
+    }
+    /* a scribble: lots of back-and-forth in a small area. Returns the indexes of the strokes it covers (none if it isn't one). */
+    scribbled(pg, i, s) {
+      const items = this.ann[i] || [], k0 = pg.h / pg.w, P = s.p.map(q => [q[0], q[1] * k0]);   /* in page widths, so x and y measure alike */
+      if (P.length < 14 || !items.length) return [];
+      let len = 0, rx = 0, ry = 0, sx = 0, sy = 0, b = [Infinity, Infinity, -Infinity, -Infinity];
+      for (let k = 0; k < P.length; k++) {
+        const [x, y] = P[k]; b = [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)];
+        if (!k) continue;
+        const dx = x - P[k - 1][0], dy = y - P[k - 1][1]; len += Math.hypot(dx, dy);
+        if (Math.abs(dx) > 0.0015) { const v = Math.sign(dx); if (sx && v !== sx) rx++; sx = v; }
+        if (Math.abs(dy) > 0.0015) { const v = Math.sign(dy); if (sy && v !== sy) ry++; sy = v; }
+      }
+      if (Math.max(rx, ry) < 6 || len < Math.hypot(b[2] - b[0], b[3] - b[1]) * 2.5) return [];
+      const pad = 0.012, inBox = ([x, y]) => x >= b[0] - pad && x <= b[2] + pad && y >= b[1] - pad && y <= b[3] + pad;
+      return items.map((it, k) => {
+        if (it.t === "text") return -1;
+        const q = it.p.map(([x, y]) => [x, y * k0]), d = Math.max(it.w / 2 + 0.008, 0.012);
+        return q.filter(inBox).length >= q.length * 0.5 && q.some(pt => inBox(pt) && P.some(z => (z[0] - pt[0]) ** 2 + (z[1] - pt[1]) ** 2 < d * d)) ? k : -1;
+      }).filter(k => k >= 0);
     }
 
     editText(p, i, idx, x, y) {
@@ -926,6 +1057,7 @@
     highlighter: '<path d="m9 15-4 1 1-4 7.5-7.5 3 3Z"/><path d="M3 18h14" stroke-width="2.4" opacity=".45"/>',
     text: '<path d="M5 5h10M10 5v11M7.5 16h5"/>',
     eraser: '<path d="m7.5 16 -4-4a1.5 1.5 0 0 1 0-2.1l6.4-6.4a1.5 1.5 0 0 1 2.1 0l4 4a1.5 1.5 0 0 1 0 2.1L10.5 16Z"/><path d="M7.5 16H16M6 8.5l5.5 5.5"/>',
+    lasso: '<path d="M10 3.8c4 0 6.8 1.9 6.8 4.3S14 12.4 10 12.4 3.2 10.5 3.2 8.1 6 3.8 10 3.8Z" stroke-dasharray="2.2 2"/><path d="M6.2 11.6c-.9 1.2-.7 2.9.6 3.6 1.1.6 1.7 1.7 1.4 2.7"/>',
     undo: '<path d="M7 7H12a4 4 0 0 1 0 8H8"/><path d="M9.5 4.5 7 7l2.5 2.5"/>',
     redo: '<path d="M13 7H8a4 4 0 0 0 0 8h4"/><path d="M10.5 4.5 13 7l-2.5 2.5"/>',
     minus: '<path d="M5 10h10"/>', plus: '<path d="M5 10h10M10 5v10"/>',
@@ -940,7 +1072,7 @@
     moon: '<path d="M15.5 12A6 6 0 0 1 8 4.5a6 6 0 1 0 7.5 7.5Z"/>',
   };
   const svg = (n, fill) => `<svg viewBox="0 0 20 20" fill="${fill ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
-  const TOOL_NAMES = { pen: "Pen (P)", highlighter: "Highlighter (H)", text: "Text (T)", eraser: "Eraser (E)" };
+  const TOOL_NAMES = { pen: "Pen (P) · scribble over writing to rub it out", highlighter: "Highlighter (H)", text: "Text (T)", eraser: "Eraser (E)", lasso: "Lasso (L) · circle writing to move, recolour or delete it" };
 
   let active = null;
   /* save unsaved notes if the tab is hidden or closed */
@@ -1002,10 +1134,12 @@
         <button class="vw-ico" data-do="undo" title="Undo (Ctrl+Z)" aria-label="Undo">${svg("undo")}</button>
         <button class="vw-ico" data-do="redo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">${svg("redo")}</button>
         <button class="vw-ico" data-do="clear" title="Clear all notes" aria-label="Clear all notes">${svg("trash")}</button>
+        <button class="pv-pill pv-delsel" data-do="delsel" hidden>${svg("trash")}<span>Delete selection</span></button>
         <span class="pv-saved" data-save></span>
       </div>
       <div class="pv-sizes" hidden role="menu" aria-label="Line thickness">
         ${SIZES.map(([m, name], k) => `<button class="vw-size" data-size="${m}" role="menuitemradio" title="${name}" aria-label="${name}" style="--d:${SIZE_DOT[k]}px"><i></i></button>`).join("")}
+        ${ESIZES.map(([v, name], k) => `<button class="vw-size ring" data-esize="${v}" role="menuitemradio" title="${name}" aria-label="${name}" style="--d:${EDOT[k]}px" hidden><i></i></button>`).join("")}
       </div>
       <div class="pv-wheel" hidden role="dialog" aria-label="Pick a colour">
         <canvas width="200" height="200" aria-label="Colour wheel"></canvas>
@@ -1049,7 +1183,13 @@
       const sizeFor = p.drawTool === "highlighter" ? "highlighter" : "pen";
       const cur = p.size[sizeFor] || 1, k = Math.max(0, SIZES.findIndex(([m]) => m === cur));
       root.querySelectorAll("[data-size]").forEach(b => { b.classList.toggle("on", +b.dataset.size === cur); b.setAttribute("aria-checked", +b.dataset.size === cur); });
-      const sb = $('[data-do="sizes"]'); sb.style.setProperty("--d", SIZE_DOT[k] + "px"); sb.title = `Line thickness: ${SIZES[k][1]}`;
+      const sb = $('[data-do="sizes"]'), er = p.tool === "eraser";
+      if (er) { const ek = Math.max(0, ESIZES.findIndex(([v]) => v === p.esize)); sb.style.setProperty("--d", EDOT[ek] + "px"); sb.title = ESIZES[ek][1]; }
+      else { sb.style.setProperty("--d", SIZE_DOT[k] + "px"); sb.title = `Line thickness: ${SIZES[k][1]}`; }
+      sb.classList.toggle("ring", er);
+      root.querySelectorAll("[data-size]").forEach(b => b.hidden = er);
+      root.querySelectorAll("[data-esize]").forEach(b => { b.hidden = !er; const on = +b.dataset.esize === p.esize; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); });
+      $('[data-do="delsel"]').hidden = !p.sel;
       root.querySelectorAll("[data-color]").forEach(b => { b.classList.toggle("on", b.dataset.color === p.color); b.firstElementChild.style.background = colorOf(b.dataset.color, st.dark); });
       const custom = !PALETTE[p.color], wb = $('[data-do="wheel"]');
       wb.classList.toggle("on", custom); wb.classList.toggle("has", custom); wb.firstElementChild.style.setProperty("--c", custom ? p.color : "transparent");
@@ -1057,7 +1197,8 @@
       $('[data-do="redo"]').disabled = !p.redo.length;
       $('[data-do="download"]').disabled = !p.bytes;
       $("[data-zoom]").textContent = Math.round(p.zoom * 100) + "%";
-      $("[data-save]").textContent = (p.penSeen ? "Pencil writes, finger scrolls · " : "") + (!p.hasNotes() ? "Notes save in this browser" : p.saved === false ? "Couldn't save notes" : "Saved");
+      $("[data-save]").textContent = p.flash ? p.flash : p.sel ? "Drag the box to move it · tap a colour to recolour it" : p.tool === "lasso" ? "Draw a loop round writing to select it"
+        : (p.penSeen ? "Pencil writes, finger scrolls · " : "") + (!p.hasNotes() ? "Notes save in this browser" : p.saved === false ? "Couldn't save notes" : "Saved");
       const q = $("#pv-find-input").value.trim();
       $("[data-count]").textContent = !q ? "" : p.matches.length ? `${p.matchIdx + 1} of ${p.matches.length}` : "No matches";
     };
@@ -1153,7 +1294,12 @@
       const b = e.target.closest("button"); if (!b || b.disabled) return;
       const p = st.main;
       if (b.dataset.tool) p.setTool(b.dataset.tool);
-      if (b.dataset.color) { p.color = b.dataset.color; wheel.hide(); if (p.tool === "eraser") p.setTool("pen"); else sync(); }
+      if (b.dataset.color) {
+        wheel.hide();
+        if (p.recolorSel(b.dataset.color)) { sync(); return; }   /* with a selection, the colour goes to what's selected */
+        p.color = b.dataset.color; if (p.tool === "eraser" || p.tool === "lasso") p.setTool("pen"); else sync();
+      }
+      if (b.dataset.esize) { p.esize = +b.dataset.esize; store.set(ESIZE_KEY, p.esize); $(".pv-sizes").hidden = true; sync(); return; }
       if (b.dataset.size) {
         /* applies to the pen, or to the highlighter when that's the tool in use */
         const t = p.drawTool === "highlighter" ? "highlighter" : "pen";
@@ -1186,6 +1332,7 @@
         case "zoomin": p.setZoom(p.zoom + 0.2); break;
         case "zoomout": p.setZoom(p.zoom - 0.2); break;
         case "undo": p.doUndo(); break;
+        case "delsel": p.deleteSel(); break;
         case "redo": p.doRedo(); break;
         case "clear": $(".vw-confirm").hidden = false; break;
         case "clear-yes": p.clearAll(); $(".vw-confirm").hidden = true; break;
@@ -1231,8 +1378,9 @@
       if (k === "d") applyDark(!root.querySelector(".pv").classList.contains("dark-pages"));
       if (k === "b" && p.pages.length) { Bookmarks.toggle(st.info, p.current); sync(); }
       if (st.annotating) {
-        const map = { p: "pen", h: "highlighter", t: "text", e: "eraser" };
+        const map = { p: "pen", h: "highlighter", t: "text", e: "eraser", l: "lasso" };
         if (map[k]) p.setTool(map[k]);
+        if ((k === "delete" || k === "backspace") && p.sel) { e.preventDefault(); p.deleteSel(); }
       }
     };
     document.addEventListener("keydown", st.onKey, true);

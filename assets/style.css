@@ -1092,7 +1092,7 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .qb-btn.qb-more{color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
 .qb-card.has-space .qb-card-foot .qb-write{display:none}
 .qb-card.writing .qb-xtop .qb-write{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.qb-ecursor{position:fixed;z-index:60;pointer-events:none;border-radius:50%;border:1.5px solid rgba(60,64,62,.75);background:rgba(255,255,255,.35);box-shadow:0 0 0 1px rgba(255,255,255,.7)}
+.qb-ecursor{position:fixed;z-index:300;pointer-events:none;border-radius:50%;border:1.5px solid rgba(60,64,62,.75);background:rgba(255,255,255,.35);box-shadow:0 0 0 1px rgba(255,255,255,.7)}
 .qb-ecursor[hidden]{display:none}
 .qb-esizes{display:inline-flex;align-items:center;gap:2px;margin:0 2px 0 -2px;padding:0 4px;border-radius:9px;background:var(--hover)}
 .qb-esize{width:30px;height:30px;border-radius:7px;display:grid;place-items:center}
@@ -1107,3 +1107,8 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .aw-stu .aw-row{padding:11px 0}
 .qb-btn.aw-more{width:34px;padding:0;font-size:16px;letter-spacing:1px;color:var(--muted)}
 .qb-btn.aw-more[aria-expanded="true"]{background:var(--hover);color:var(--fg)}
+/* paper viewer: eraser sizes and the lasso's delete */
+.vw-size[hidden],.pv-delsel[hidden]{display:none}
+.vw-size.ring i,.pv-sizes .vw-size.ring i{background:transparent;border:1.5px solid var(--muted)}
+.vw-size.ring.on i,.pv-tools .vw-size.ring i{border-color:var(--fg)}
+.pv-delsel{color:var(--miss,#c4432b);height:32px}
