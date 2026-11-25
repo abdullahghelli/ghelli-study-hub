@@ -176,6 +176,9 @@
     cv.addEventListener("pointermove", e => {
       if (fingerScroll && e.pointerId === fingerScroll.id) {
         if (penBusy()) { fingerScroll = null; return; }    /* the pen came down: that "finger" was the hand */
+        const slop = window.GSHPalm ? window.GSHPalm.SLOP : 10;
+        if (!fingerScroll.go && Math.hypot(e.clientX - fingerScroll.x, e.clientY - fingerScroll.y) < slop) return;
+        fingerScroll.go = true;
         window.scrollTo(fingerScroll.left, fingerScroll.top - (e.clientY - fingerScroll.y)); return;
       }
       if (e.pointerType === "touch" && penSeen) return;    /* other touches (a palm) never draw once a pen is in use */
