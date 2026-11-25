@@ -155,15 +155,63 @@ def main():
                 if pa: pi.update(msPage=pa[0], msY=pa[1])
                 items.append(pi)
 
+    # split by unit: units are sat as separate papers, so the bank shows one unit at a time. Each unit lists its own
+    # spec topics (the practical units, 3 and 6, list all the AS or A level topics), plus any earlier topic that a
+    # question part in that unit's papers tests.
+    UNITS = [("u1", "Unit 1 · Structure, Bonding and Introduction to Organic Chemistry", range(1, 6)),
+             ("u2", "Unit 2 · Energetics, Group Chemistry, Halogenoalkanes and Alcohols", range(6, 11)),
+             ("u3", "Unit 3 · Practical Skills in Chemistry I", range(1, 11)),
+             ("u4", "Unit 4 · Rates, Equilibria and Further Organic Chemistry", range(11, 16)),
+             ("u5", "Unit 5 · Transition Metals and Organic Nitrogen Chemistry", range(16, 21)),
+             ("u6", "Unit 6 · Practical Skills in Chemistry II", range(11, 21))]
+    num = {t[0]: t[1] for t in TOPICS}
+    name = {t[1]: t[2] for t in TOPICS}
+    uid = lambda it: "u" + it["ptype"][-1]
+    native = {u: set(r) for u, _, r in UNITS}
+    tnum = lambda c: int(c.split(".")[0])
+    def place(it):
+        """the latest topic of the unit's own that the question covers (a point from a later unit, tested in passing,
+        doesn't move it); failing that, the latest topic it covers"""
+        ns = {tnum(c) for c in it["spec"]}
+        own = ns & native[uid(it)]
+        return max(own) if own else max(ns)
+    wholes = {}
+    for it in items:
+        if not it["part"]:
+            it["topic"] = f"{uid(it)}-{place(it)}"
+            wholes[it["id"]] = it
+    keep = []
+    for it in items:
+        if it["part"]:
+            w = wholes[it["id"][:-1]]
+            n = num[it["topic"]]
+            if n >= int(w["topic"].split("-")[1]):
+                continue    # no longer earlier than where the whole question now sits
+            it["topic"] = f"{uid(it)}-{n}"
+        keep.append(it)
+    items[:] = keep
+    for it in items:
+        if it.get("partTopics"):
+            pts = {k: f"{uid(it)}-{num[v]}" for k, v in it["partTopics"].items()
+                   if num[v] < int(it["topic"].split("-")[1])}
+            if pts: it["partTopics"] = pts
+            else: del it["partTopics"]
+    used = {it["topic"] for it in items}
+    topics = []
+    for u, _, native in UNITS:
+        ns = sorted(set(native) | {int(t.split("-")[1]) for t in used if t.startswith(u + "-")})
+        topics += [dict(id=f"{u}-{n}", num=n, name=name[n], group=u) for n in ns]
+    ALLP = {**NAMES["as"], **NAMES["a2"]}
     out_data = dict(spec="YCH11", label="Edexcel International A Level Chemistry YCH11",
-                    papers=[[f"wch1{n}", f"Unit {n}"] for n in range(1, 7)],
-                    groups=[list(x) for x in GROUPS],
-                    topics=[dict(id=t[0], num=t[1], name=t[2], group=t[3]) for t in TOPICS],
-                    points={g: ALL for g in NAMES}, pdfs=pdfs, items=items)
+                    modular=True,
+                    groups=[[u, label] for u, label, _ in UNITS],
+                    topics=topics,
+                    points={u: ALLP for u, _, _ in UNITS}, pdfs=pdfs, items=items)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(out_data, open(out, "w"), separators=(",", ":"))
     from collections import Counter
     c = Counter(i["topic"] for i in items)
+    TOPICS[:] = [(t["id"], t["num"], t["name"], t["group"]) for t in topics]
     print(len(items), "items;", sum(1 for i in items if not i["part"]), "whole questions;",
           sum(1 for i in items if i["part"]), "parts;", sum(1 for i in items if i.get("ans")), "multiple choice with answers; not found:", missing)
     for t in TOPICS:
