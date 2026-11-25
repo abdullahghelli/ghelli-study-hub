@@ -109,9 +109,19 @@
   const ESIZES = [[0.012, "Small eraser"], [0.024, "Medium eraser"], [0.048, "Large eraser"]], ESIZE_KEY = "gsh-eraser-size", EDOT = [8, 13, 20];
   /* the eraser, drawn as a circle of its size where the pen or mouse is */
   let ecur = null;
+  /* placed inside the writing area, relative to the canvas, so it sits under the pen whatever the zoom
+     (Safari measures the pen against the zoomed view but places fixed elements against the unzoomed page) */
+  const placeEraser = (el, target, e, d) => {
+    const host = target.offsetParent || document.body;
+    if (el.parentNode !== host) host.appendChild(el);
+    const r = target.getBoundingClientRect(), k = target.offsetWidth ? r.width / target.offsetWidth : 1, s = d / k;
+    Object.assign(el.style, { position: "absolute", width: s + "px", height: s + "px",
+      left: target.offsetLeft + (e.clientX - r.left) / k - s / 2 + "px", top: target.offsetTop + (e.clientY - r.top) / k - s / 2 + "px" });
+    el.hidden = false;
+  };
   const showEraser = (e, d) => {
-    if (!ecur) { ecur = document.createElement("div"); ecur.className = "qb-ecursor"; document.body.appendChild(ecur); }
-    Object.assign(ecur.style, { width: d + "px", height: d + "px", left: e.clientX - d / 2 + "px", top: e.clientY - d / 2 + "px" }); ecur.hidden = false;
+    if (!ecur) { ecur = document.createElement("div"); ecur.className = "qb-ecursor"; }
+    placeEraser(ecur, e.currentTarget && e.currentTarget.getBoundingClientRect ? e.currentTarget : e.target, e, d);
   };
   const hideEraser = () => { if (ecur) ecur.hidden = true; };
   const inPoly = ([x, y], poly) => {
