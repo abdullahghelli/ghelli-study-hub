@@ -1,7 +1,7 @@
 (() => {
   /* Palm rejection, shared by the paper viewer and writing on question cards. While the stylus is on the screen,
      hovering near it, or just lifted, other touches are taken to be the hand resting on the screen: they don't
-     scroll, pinch or draw. A broad contact counts as a palm at any time.
+     scroll, pinch or draw.
      A hand that lands just before the pen (lifted and put straight back down) looks like a finger at first, so
      whatever it scrolled or zoomed is undone the moment the pen touches down while it's still on the screen,
      as Android does for stylus apps. A finger that scrolled and lifted before the pen came down is left alone. */
@@ -12,7 +12,9 @@
     [...document.querySelectorAll(".vw-pane[data-tool]")].some(el => el.offsetParent && el.dataset.tool !== "hand");
   window.GSHPalm = {
     busy,
-    palmy: e => e.pointerType === "touch" && (busy() || (e.width || 0) > 40 || (e.height || 0) > 40),
+    /* a hand, going by timing only: iPads report a fingertip as wide as 40-60 px, so contact size can't tell a
+       finger from a palm (a size test stopped fingers scrolling). A hand that lands just before the pen is undone below. */
+    palmy: e => e.pointerType === "touch" && busy(),
     /* this device has a Pencil: remembered for 60 days, so fingers scroll from the first touch after a reload */
     seen: (() => { try { return Date.now() - (+localStorage.getItem("gsh-pen") || 0) < 60 * 864e5; } catch (e) { return false; } })(),
     SLOP: 10,    /* px a finger moves before it scrolls, so a resting hand's drift doesn't nudge the page */
