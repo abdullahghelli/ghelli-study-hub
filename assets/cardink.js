@@ -32,6 +32,23 @@
   const state = {};   /* per question id: { data, undo: [] } */
   const prefs = (() => { const p = get("gsh-cink-prefs") || {}; return { tool: ["pen", "highlighter", "eraser", "lasso"].includes(p.tool) ? p.tool : "pen", color: COLORS.includes(p.color) ? p.color : "green", esize: ESIZES.some(([, v]) => v === p.esize) ? p.esize : 0.035 }; })();
   let penSeen = false;
+  /* Palm rejection. While the stylus is on the screen, and for a moment after it lifts, touches from the hand
+     resting on the screen are ignored: they don't scroll the page (here or by the browser) and don't draw. */
+  let penDown = 0, penLast = 0;
+  const PALM_MS = 700;
+  const penBusy = () => penDown > 0 || Date.now() - penLast < PALM_MS;
+  const palmy = e => e.pointerType === "touch" && (penBusy() || (e.width || 0) > 40 || (e.height || 0) > 40);
+  document.addEventListener("pointerdown", e => { if (e.pointerType === "pen") { penDown++; penLast = Date.now(); } }, true);
+  const penUp = e => { if (e.pointerType === "pen") { penDown = Math.max(0, penDown - 1); penLast = Date.now(); } };
+  document.addEventListener("pointerup", penUp, true);
+  document.addEventListener("pointercancel", penUp, true);
+  document.addEventListener("pointermove", e => { if (e.pointerType === "pen") penLast = Date.now(); }, true);
+  /* iPad: stop the page scrolling under a resting palm while writing (Pencil touches are "stylus", the palm "direct") */
+  document.addEventListener("touchmove", e => {
+    if (!penSeen || !document.querySelector(".qb-card.writing")) return;
+    const direct = [...e.touches].some(t => t.touchType !== "stylus");
+    if (direct && (penBusy() || [...e.touches].some(t => t.touchType === "stylus"))) e.preventDefault();
+  }, { passive: false });
 
   function dataFor(id) {
     if (!state[id]) {
@@ -147,6 +164,8 @@
       /* with a stylus, fingers scroll the page. The writing area keeps every touch to itself (touch-action: none, or
          iPad would scroll on the Pencil's up-and-down strokes too), so the finger's scroll is done here */
       if (penSeen && e.pointerType === "touch") {
+        /* a palm (while the pen is busy, or a broad contact), or a second finger: no scrolling */
+        if (palmy(e) || fingerScroll) { fingerScroll = null; return; }
         fingerScroll = { y: e.clientY, x: e.clientX, top: scrollY, left: scrollX, id: e.pointerId };
         try { cv.setPointerCapture(e.pointerId); } catch (err) {}
         return;
@@ -169,7 +188,11 @@
       st.live = { area, it: cur }; redraw();
     });
     cv.addEventListener("pointermove", e => {
-      if (fingerScroll && e.pointerId === fingerScroll.id) { window.scrollTo(fingerScroll.left, fingerScroll.top - (e.clientY - fingerScroll.y)); return; }
+      if (fingerScroll && e.pointerId === fingerScroll.id) {
+        if (penBusy()) { fingerScroll = null; return; }    /* the pen came down: that "finger" was the hand */
+        window.scrollTo(fingerScroll.left, fingerScroll.top - (e.clientY - fingerScroll.y)); return;
+      }
+      if (e.pointerType === "touch" && penSeen) return;    /* other touches (a palm) never draw once a pen is in use */
       const st = dataFor(id);
       if (prefs.tool === "eraser" && card.classList.contains("writing") && !(penSeen && e.pointerType === "touch")) showEraser(cv, e);
       if (erasing) {
