@@ -29,6 +29,7 @@
     undo: '<path d="M7.5 6 4 9.5 7.5 13"/><path d="M4.5 9.5h7a4 4 0 0 1 0 8H9"/>',
     redo: '<path d="M12.5 6 16 9.5 12.5 13"/><path d="M15.5 9.5h-7a4 4 0 0 0 0 8H11"/>',
     lasso: '<path d="M10 3.8c4 0 6.8 1.9 6.8 4.3S14 12.4 10 12.4 3.2 10.5 3.2 8.1 6 3.8 10 3.8Z" stroke-dasharray="2.2 2"/><path d="M6.2 11.6c-.9 1.2-.7 2.9.6 3.6 1.1.6 1.7 1.7 1.4 2.7"/>',
+    finger: '<path d="M8 10.5V4.6a1.3 1.3 0 0 1 2.6 0V9"/><path d="M10.6 8.6a1.3 1.3 0 0 1 2.6 0V10"/><path d="M13.2 9.4a1.3 1.3 0 0 1 2.6 0v3.3a5 5 0 0 1-5 5h-.5a5 5 0 0 1-3.9-1.9L4.1 13a1.3 1.3 0 0 1 2-1.6L8 13.4"/>',
     trash: '<path d="M5 6h10M8 6V4.5h4V6M6.5 6l.7 9.5h5.6l.7-9.5"/>',
   };
   const svg = k => `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
@@ -37,7 +38,8 @@
   const state = {};   /* per question id: { data, undo: [] } */
   const prefs = (() => { const p = get("gsh-cink-prefs") || {}; return { tool: ["pen", "highlighter", "eraser", "lasso"].includes(p.tool) ? p.tool : "pen", color: COLORS.includes(p.color) ? p.color : "green", esize: ESIZES.some(([, v]) => v === p.esize) ? p.esize : 0.035 }; })();
   /* once this device has used a Pencil, fingers scroll rather than write (remembered, shared with the viewer) */
-  let penSeen = !!window.GSHPalm?.seen;
+  /* fingers write only when "Write with finger" is on (viewer.js keeps the setting); otherwise they scroll */
+  const fingerOff = () => !window.GSHPalm?.fingerWrite;
   /* palm rejection is shared with the paper viewer (viewer.js) */
   const penBusy = () => window.GSHPalm ? window.GSHPalm.busy() : false;
   const palmy = e => window.GSHPalm ? window.GSHPalm.palmy(e) : false;
@@ -218,12 +220,11 @@
     cv.addEventListener("touchstart", e => { if (card.classList.contains("writing") && !ctx.readOnly && [...e.changedTouches].some(t => t.touchType === "stylus")) e.preventDefault(); }, { passive: false });
     cv.addEventListener("pointerdown", e => {
       if (!card.classList.contains("writing") || ctx.readOnly) return;
-      if (e.pointerType === "pen" && !penSeen) { penSeen = true; onChange(card); }
       if (e.pointerType === "touch" && fingers.size > 1) { fingerScroll = null; if (owner != null && owner !== e.pointerId) abandon(); return; }
       if (pinch || owner != null) return;
       /* with a stylus, fingers scroll the page. The browser only pinch-zooms on the writing area (touch-action:
          pinch-zoom, or iPad would scroll on the Pencil's up-and-down strokes too), so one finger's scroll is done here */
-      if (penSeen && e.pointerType === "touch") {
+      if (fingerOff() && e.pointerType === "touch") {
         /* a palm (while the pen is busy, or a broad contact), or a second finger: no scrolling */
         if (palmy(e) || fingerScroll) { fingerScroll = null; return; }
         fingerScroll = { y: e.clientY, x: e.clientX, top: scrollY, left: scrollX, id: e.pointerId };
@@ -258,11 +259,11 @@
         fingerScroll.go = true;
         window.scrollTo(fingerScroll.left, fingerScroll.top - (e.clientY - fingerScroll.y)); return;
       }
-      if (e.pointerType === "touch" && penSeen) return;    /* other touches (a palm) never draw once a pen is in use */
+      if (e.pointerType === "touch" && fingerOff()) return;    /* other touches (a palm) never draw */
       if (owner != null && e.pointerId !== owner) return;
       if (pinch && e.pointerType === "touch" && owner != null) { abandon(); return; }   /* a second finger came down elsewhere */
       const st = dataFor(id);
-      if (prefs.tool === "eraser" && card.classList.contains("writing") && !(penSeen && e.pointerType === "touch")) showEraser(cv, e);
+      if (prefs.tool === "eraser" && card.classList.contains("writing") && !(fingerOff() && e.pointerType === "touch")) showEraser(cv, e);
       if (erasing) {
         /* every point along the way, so a quick sweep doesn't skip any writing */
         const [x, y] = pos(e), [x0, y0] = erasing, step = prefs.esize / 3, n = Math.max(1, Math.ceil(Math.hypot(x - x0, y - y0) / step));
@@ -398,6 +399,7 @@
     const id = card.dataset.qbCard, st = dataFor(id), dark = siteDark();
     return `<div class="qb-inkbar" role="toolbar" aria-label="Writing tools">
       ${["pen", "highlighter", "eraser", "lasso"].map(t => `<button type="button" class="qb-ibtn ${prefs.tool === t ? "on" : ""}" data-ink-tool="${t}" title="${{ pen: "Pen · scribble over writing to rub it out", highlighter: "Highlighter", eraser: "Eraser", lasso: "Lasso · circle writing to move, recolour or delete it" }[t]}" aria-label="${t}" aria-pressed="${prefs.tool === t}">${svg(t)}</button>`).join("")}
+      ${window.GSHPalm?.touchScreen ? `<button type="button" class="qb-ibtn ${fingerOff() ? "" : "on"}" data-ink-finger title="Write with finger (otherwise only a stylus writes)" aria-label="Write with finger" aria-pressed="${!fingerOff()}">${svg("finger")}</button>` : ""}
       ${prefs.tool === "eraser" ? `<span class="qb-esizes" role="group" aria-label="Eraser size">${ESIZES.map(([name, v], k) => `<button type="button" class="qb-esize ${prefs.esize === v ? "on" : ""}" data-ink-esize="${v}" title="${name}" aria-label="${name}" aria-pressed="${prefs.esize === v}"><i style="--d:${[8, 13, 20][k]}px"></i></button>`).join("")}</span>` : ""}
       ${st.sel ? `<button type="button" class="qb-itext qb-idel" data-ink-delsel>${svg("trash")}Delete</button>` : ""}
       <span class="qb-isep"></span>
@@ -407,7 +409,7 @@
       <button type="button" class="qb-ibtn" data-ink-redo title="Redo (⇧⌘Z)" aria-label="Redo" ${st.redo.length ? "" : "disabled"}>${svg("redo")}</button>
       ${st.data.n ? "" : `<button type="button" class="qb-itext" data-ink-more>+ Writing space</button>`}
       <button type="button" class="qb-itext" data-ink-clear ${has(st.data) ? "" : "disabled"}>Clear</button>
-      <span class="qb-ihint">${st.sel ? "Drag the box to move it · tap a colour to recolour it" : prefs.tool === "lasso" ? "Draw a loop round writing to select it" : (ctx.sync ? "Saves to your account" : "Saves in this browser") + (penSeen ? " · stylus writes, finger scrolls" : "")}</span>
+      <span class="qb-ihint">${st.sel ? "Drag the box to move it · tap a colour to recolour it" : prefs.tool === "lasso" ? "Draw a loop round writing to select it" : (ctx.sync ? "Saves to your account" : "Saves in this browser") + (!window.GSHPalm?.touchScreen ? "" : fingerOff() ? " · stylus writes, finger scrolls" : " · finger writes")}</span>
       <button type="button" class="qb-btn primary qb-idone" data-ink-done>Done</button>
     </div>`;
   }
@@ -446,6 +448,7 @@
     const snap = () => snapshot(st);
     const t = e.target.closest("[data-ink-tool]");
     if (t) { prefs.tool = t.dataset.inkTool; put("gsh-cink-prefs", prefs); if (prefs.tool !== "lasso" && st.sel) { st.sel = null; paint(card); } onChange(card); return; }
+    if (e.target.closest("[data-ink-finger]")) { window.GSHPalm?.setFingerWrite(fingerOff()); document.querySelectorAll(".qb-card.writing").forEach(onChange); return; }
     const es = e.target.closest("[data-ink-esize]"); if (es) { prefs.esize = +es.dataset.inkEsize; put("gsh-cink-prefs", prefs); onChange(card); return; }
     const c = e.target.closest("[data-ink-color]");
     if (c) {

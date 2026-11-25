@@ -16,6 +16,11 @@
     /* this device has a Pencil: remembered for 60 days, so fingers scroll from the first touch after a reload */
     seen: (() => { try { return Date.now() - (+localStorage.getItem("gsh-pen") || 0) < 60 * 864e5; } catch (e) { return false; } })(),
     SLOP: 10,    /* px a finger moves before it scrolls, so a resting hand's drift doesn't nudge the page */
+    /* "Write with finger" (off unless chosen): otherwise only a stylus (or a mouse) writes and fingers scroll and
+       zoom. Remembered on this device, and shared by the paper viewer and question cards. */
+    get fingerWrite() { try { return localStorage.getItem("gsh-finger-write") === "1"; } catch (e) { return false; } },
+    setFingerWrite(on) { try { localStorage.setItem("gsh-finger-write", on ? "1" : "0"); } catch (e) {} },
+    touchScreen: navigator.maxTouchPoints > 0,
   };
   /* where everything was scrolled to when each touch landed */
   const touches = new Map(), lifted = [];
@@ -325,7 +330,6 @@
       /* question view: only these page numbers are shown (notes still belong to the real page numbers) */
       this.only = only && only.length ? only : null;
       this.startPage = startPage || 1; this.startY = startY || 0;
-      this.penSeen = window.GSHPalm.seen;
       this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "green"; this.dark = false;
       this.size = Object.assign({ pen: 1, highlighter: 1 }, store.get(SIZE_KEY) || {});
       this.esize = ESIZES.some(([v]) => v === store.get(ESIZE_KEY)) ? store.get(ESIZE_KEY) : 0.024;
@@ -923,8 +927,7 @@
       });
       p.ink.addEventListener("pointerdown", e => {
         if (this.pinching && e.pointerType === "touch") return;
-        if (e.pointerType === "pen" && !this.penSeen) { this.penSeen = true; this.onChange?.(); }
-        if (this.penSeen && e.pointerType === "touch" && this.tool !== "hand") {
+        if (!window.GSHPalm.fingerWrite && e.pointerType === "touch" && this.tool !== "hand") {
           /* a palm, or a second finger: no scrolling */
           if (window.GSHPalm.palmy(e) || fingerScroll) { fingerScroll = null; return; }
           fingerScroll = { x: e.clientX, y: e.clientY, top: this.el.scrollTop, left: this.el.scrollLeft, id: e.pointerId };
@@ -972,7 +975,7 @@
           this.el.scrollLeft = fingerScroll.left - (e.clientX - fingerScroll.x);
           return;
         }
-        if (this.tool === "eraser" && !(this.penSeen && e.pointerType === "touch")) showEraser(e, this.esize * p.w);
+        if (this.tool === "eraser" && !(!window.GSHPalm.fingerWrite && e.pointerType === "touch")) showEraser(e, this.esize * p.w);
         if (owner != null && e.pointerId !== owner) return;
         if (erasing) {
           /* every point along the way, so a quick sweep doesn't skip any writing */
@@ -1144,6 +1147,7 @@
 
   /* ---------- Pop-up ---------- */
   const I = {
+    finger: '<path d="M8 10.5V4.6a1.3 1.3 0 0 1 2.6 0V9"/><path d="M10.6 8.6a1.3 1.3 0 0 1 2.6 0V10"/><path d="M13.2 9.4a1.3 1.3 0 0 1 2.6 0v3.3a5 5 0 0 1-5 5h-.5a5 5 0 0 1-3.9-1.9L4.1 13a1.3 1.3 0 0 1 2-1.6L8 13.4"/>',
     file: '<path d="M5.5 2.5h6l3 3v12h-9Z"/><path d="M11.5 2.5v3h3"/>',
     pages: '<path d="M7.5 4.5h6l2.5 2.5v10.5h-8.5Z"/><path d="M5 15.5V2.5h6"/>',
     pen: '<path d="M4 16l1-4 8.5-8.5a2.1 2.1 0 0 1 3 3L8 15Z"/><path d="M12 5l3 3"/>',
@@ -1222,6 +1226,7 @@
         ${Object.keys(PALETTE).map(c => `<button class="vw-color" data-color="${c}" title="${PALETTE[c].name}" aria-label="${PALETTE[c].name}"><i></i></button>`).join("")}
         <button class="vw-color wheel" data-do="wheel" title="More colours" aria-label="More colours" aria-haspopup="dialog"><i></i></button>
         <span class="vw-sep"></span>
+        <button class="vw-ico vw-finger" data-do="finger" title="Write with finger (otherwise only a stylus writes)" aria-label="Write with finger" aria-pressed="false" ${window.GSHPalm.touchScreen ? "" : "hidden"}>${svg("finger")}</button>
         <button class="vw-size" data-do="sizes" title="Line thickness" aria-label="Line thickness" aria-haspopup="true"><i></i></button>
         <span class="vw-sep"></span>
         <button class="vw-ico" data-do="undo" title="Undo (Ctrl+Z)" aria-label="Undo">${svg("undo")}</button>
@@ -1286,12 +1291,13 @@
       root.querySelectorAll("[data-color]").forEach(b => { b.classList.toggle("on", b.dataset.color === p.color); b.firstElementChild.style.background = colorOf(b.dataset.color, st.dark); });
       const custom = !PALETTE[p.color], wb = $('[data-do="wheel"]');
       wb.classList.toggle("on", custom); wb.classList.toggle("has", custom); wb.firstElementChild.style.setProperty("--c", custom ? p.color : "transparent");
+      const fb = $('[data-do="finger"]'); fb.classList.toggle("on", window.GSHPalm.fingerWrite); fb.setAttribute("aria-pressed", window.GSHPalm.fingerWrite);
       $('[data-do="undo"]').disabled = !p.undo.length;
       $('[data-do="redo"]').disabled = !p.redo.length;
       $('[data-do="download"]').disabled = !p.bytes;
       $("[data-zoom]").textContent = Math.round(p.zoom * 100) + "%";
       $("[data-save]").textContent = p.flash ? p.flash : p.sel ? "Drag the box to move it · tap a colour to recolour it" : p.tool === "lasso" ? "Draw a loop round writing to select it"
-        : (p.penSeen ? "Pencil writes, finger scrolls · " : "") + (!p.hasNotes() ? "Notes save in this browser" : p.saved === false ? "Couldn't save notes" : "Saved");
+        : (!window.GSHPalm.touchScreen ? "" : window.GSHPalm.fingerWrite ? "Finger writes · " : "Stylus writes, finger scrolls · ") + (!p.hasNotes() ? "Notes save in this browser" : p.saved === false ? "Couldn't save notes" : "Saved");
       const q = $("#pv-find-input").value.trim();
       $("[data-count]").textContent = !q ? "" : p.matches.length ? `${p.matchIdx + 1} of ${p.matches.length}` : "No matches";
     };
@@ -1414,6 +1420,7 @@
       if (b.dataset.pick) { wheel.choose(b.dataset.pick); return; }
       switch (b.dataset.do) {
         case "close": close(); break;
+        case "finger": window.GSHPalm.setFingerWrite(!window.GSHPalm.fingerWrite); sync(); break;
         case "dark": applyDark(!root.querySelector(".pv").classList.contains("dark-pages")); break;
         case "prev": p.goToPage(p.current - 1); break;
         case "next": p.goToPage(p.current + 1); break;
