@@ -200,15 +200,29 @@
     const id = card.dataset.qbCard;
     const pos = e => { const b = cv.getBoundingClientRect(); return [+(((e.clientX - b.left) / b.width)).toFixed(5), +(((e.clientY - b.top) / b.width)).toFixed(5)]; };
     let cur = null, erasing = null, raf = 0, lraf = 0, fingerScroll = null, lasso = null, moving = null, erSnap = false;
+    /* the pointer doing the writing (others are ignored), and the fingers on the writing area: two fingers are a
+       pinch, never writing (their moves used to join up into one stroke and fill the area between them) */
+    let owner = null;
+    const abandon = () => {
+      const st = dataFor(id);
+      if (cur) { cur = null; cancelAnimationFrame(lraf); lraf = 0; drawLive(cv, null); }
+      if (erasing && erSnap) { st.data = JSON.parse(st.undo.pop()); erSnap = false; }
+      if (moving) { st.data = JSON.parse(st.undo.pop()); moving = null; }
+      if (lasso) { lasso = null; st.live = null; }
+      erasing = null; owner = null; hideEraser(); paint(card); onChange(card);
+    };
     const redraw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; paint(card); }); };
     const redrawLive = () => { if (!lraf) lraf = requestAnimationFrame(() => { lraf = 0; drawLive(cv, cur); }); };
     /* iPad: a Pencil press would otherwise start a text selection or the long-press menu on the page */
-    cv.addEventListener("touchstart", e => { if (card.classList.contains("writing") && !ctx.readOnly) e.preventDefault(); }, { passive: false });
+    /* (only the Pencil's touches: stopping a finger's would also stop two fingers pinch-zooming the page) */
+    cv.addEventListener("touchstart", e => { if (card.classList.contains("writing") && !ctx.readOnly && [...e.changedTouches].some(t => t.touchType === "stylus")) e.preventDefault(); }, { passive: false });
     cv.addEventListener("pointerdown", e => {
       if (!card.classList.contains("writing") || ctx.readOnly) return;
       if (e.pointerType === "pen" && !penSeen) { penSeen = true; onChange(card); }
-      /* with a stylus, fingers scroll the page. The writing area keeps every touch to itself (touch-action: none, or
-         iPad would scroll on the Pencil's up-and-down strokes too), so the finger's scroll is done here */
+      if (e.pointerType === "touch" && fingers.size > 1) { fingerScroll = null; if (owner != null && owner !== e.pointerId) abandon(); return; }
+      if (pinch || owner != null) return;
+      /* with a stylus, fingers scroll the page. The browser only pinch-zooms on the writing area (touch-action:
+         pinch-zoom, or iPad would scroll on the Pencil's up-and-down strokes too), so one finger's scroll is done here */
       if (penSeen && e.pointerType === "touch") {
         /* a palm (while the pen is busy, or a broad contact), or a second finger: no scrolling */
         if (palmy(e) || fingerScroll) { fingerScroll = null; return; }
@@ -218,6 +232,7 @@
       }
       if (e.pointerType === "mouse" && e.button !== 0) return;
       e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+      owner = e.pointerId;
       const st = dataFor(id), [x, y] = pos(e);
       const snap = () => snapshot(st);
       if (prefs.tool === "lasso") {
@@ -244,6 +259,8 @@
         window.scrollTo(fingerScroll.left, fingerScroll.top - (e.clientY - fingerScroll.y)); return;
       }
       if (e.pointerType === "touch" && penSeen) return;    /* other touches (a palm) never draw once a pen is in use */
+      if (owner != null && e.pointerId !== owner) return;
+      if (pinch && e.pointerType === "touch" && owner != null) { abandon(); return; }   /* a second finger came down elsewhere */
       const st = dataFor(id);
       if (prefs.tool === "eraser" && card.classList.contains("writing") && !(penSeen && e.pointerType === "touch")) showEraser(cv, e);
       if (erasing) {
@@ -275,6 +292,10 @@
     });
     const end = e => {
       if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
+      if (e && owner != null && e.pointerId !== owner) return;
+      /* the browser took over a finger (a pinch, a scroll): drop what it was writing rather than keep a stray line */
+      if (e && e.type === "pointercancel" && e.pointerType === "touch") { abandon(); return; }
+      owner = null;
       const st = dataFor(id);
       if (e && e.pointerType !== "mouse") hideEraser();
       if (erasing) { erasing = null; if (erSnap) { save(id); onChange(card); } return; }
@@ -304,6 +325,12 @@
     /* a mouse, or a Pencil hovering (newer iPads), moving off the writing */
     cv.addEventListener("pointerleave", e => { if (e.pointerType !== "touch" && !erasing) hideEraser(); });
   }
+  /* fingers on the screen, anywhere on the page: once two are down it's a pinch until they've all lifted */
+  const fingers = new Set(); let pinch = false;
+  document.addEventListener("pointerdown", e => { if (e.pointerType === "touch") { fingers.add(e.pointerId); if (fingers.size > 1) pinch = true; } }, true);
+  const lift = e => { if (e.pointerType === "touch") { fingers.delete(e.pointerId); if (!fingers.size) pinch = false; } };
+  window.addEventListener("pointerup", lift, true); window.addEventListener("pointercancel", lift, true);
+
   /* undo and redo: whole copies of the question's writing */
   function snapshot(st) { st.undo.push(JSON.stringify(st.data)); if (st.undo.length > 60) st.undo.shift(); st.redo = []; }
   function step(card, back) {

@@ -1056,7 +1056,7 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 /* ---------- Writing on question cards ---------- */
 .qb-inkwrap{position:relative}
 .qb-inkwrap>canvas.qb-ink{position:absolute;left:0;top:0;pointer-events:none}
-.qb-card.writing .qb-inkwrap>canvas.qb-ink,.qb-card.writing .qb-xspace canvas{pointer-events:auto;touch-action:none;cursor:crosshair}
+.qb-card.writing .qb-inkwrap>canvas.qb-ink,.qb-card.writing .qb-xspace canvas{pointer-events:auto;touch-action:pinch-zoom;cursor:crosshair}
 .qb-card.writing .qb-inkwrap{box-shadow:inset 0 0 0 2px var(--accent)}
 .qb-xspace{position:relative;cursor:text;background:#fff repeating-linear-gradient(to bottom,transparent 0 31px,#dfe3e1 31px 32px);border-top:1px dashed #cfd5d2}
 .qb-xspace canvas{position:absolute;left:0;top:0;pointer-events:none}

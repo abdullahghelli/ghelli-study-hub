@@ -913,11 +913,11 @@
 
     bindInk(p, i) {
       const pos = e => { const b = p.ink.getBoundingClientRect(); return [(e.clientX - b.left) / b.width, (e.clientY - b.top) / b.height]; };
-      let cur = null, erasing = false, lasso = null, moving = null;
+      let cur = null, erasing = false, lasso = null, moving = null, owner = null;
       /* Apple Pencil: once a pen is used, fingers scroll instead of drawing (palm rejection) */
       let fingerScroll = null;
       this.cancelInk.push(() => {
-        fingerScroll = null; erasing = false;
+        fingerScroll = null; erasing = false; owner = null;
         if (cur && cur.touch) { cur = null; this.clearLive(p); }
         this.inking = false;
       });
@@ -939,7 +939,10 @@
           this.editText(p, i, hitIdx >= 0 ? hitIdx : null, x, y);
           return;
         }
+        /* one pointer writes at a time; another one's moves never join its stroke */
+        if (owner != null && owner !== e.pointerId) return;
         e.preventDefault(); try { p.ink.setPointerCapture(e.pointerId); } catch (err) {}
+        owner = e.pointerId;
         if (this.tool === "lasso") {
           /* inside the selection: move it; anywhere else: draw a new loop */
           const b = this.sel && this.sel.i === i && this.selBox(p), px = x * p.w, py = y * p.h;
@@ -970,6 +973,7 @@
           return;
         }
         if (this.tool === "eraser" && !(this.penSeen && e.pointerType === "touch")) showEraser(e, this.esize * p.w);
+        if (owner != null && e.pointerId !== owner) return;
         if (erasing) {
           /* every point along the way, so a quick sweep doesn't skip any writing */
           const [x, y] = pos(e), [x0, y0] = erasing, step = this.esize / 3;
@@ -1011,6 +1015,9 @@
       const end = e => {
         if (this.pinching && e && e.pointerType === "touch") { if (cur && cur.touch) { cur = null; this.clearLive(p); this.inking = false; } fingerScroll = null; return; }
         if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
+        if (e && owner != null && e.pointerId !== owner) return;
+        owner = null;
+        if (e && e.type === "pointercancel" && cur && cur.touch) { cur = null; this.clearLive(p); this.inking = false; return; }
         if (e && e.pointerType !== "mouse") hideEraser();
         if (erasing) { erasing = false; this.inking = false; if (this.erSnap) this.save(); return; }
         if (lasso) {
