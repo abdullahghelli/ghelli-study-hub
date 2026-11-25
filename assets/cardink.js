@@ -32,23 +32,9 @@
   const state = {};   /* per question id: { data, undo: [] } */
   const prefs = (() => { const p = get("gsh-cink-prefs") || {}; return { tool: ["pen", "highlighter", "eraser", "lasso"].includes(p.tool) ? p.tool : "pen", color: COLORS.includes(p.color) ? p.color : "green", esize: ESIZES.some(([, v]) => v === p.esize) ? p.esize : 0.035 }; })();
   let penSeen = false;
-  /* Palm rejection. While the stylus is on the screen, and for a moment after it lifts, touches from the hand
-     resting on the screen are ignored: they don't scroll the page (here or by the browser) and don't draw. */
-  let penDown = 0, penLast = 0;
-  const PALM_MS = 700;
-  const penBusy = () => penDown > 0 || Date.now() - penLast < PALM_MS;
-  const palmy = e => e.pointerType === "touch" && (penBusy() || (e.width || 0) > 40 || (e.height || 0) > 40);
-  document.addEventListener("pointerdown", e => { if (e.pointerType === "pen") { penDown++; penLast = Date.now(); } }, true);
-  const penUp = e => { if (e.pointerType === "pen") { penDown = Math.max(0, penDown - 1); penLast = Date.now(); } };
-  document.addEventListener("pointerup", penUp, true);
-  document.addEventListener("pointercancel", penUp, true);
-  document.addEventListener("pointermove", e => { if (e.pointerType === "pen") penLast = Date.now(); }, true);
-  /* iPad: stop the page scrolling under a resting palm while writing (Pencil touches are "stylus", the palm "direct") */
-  document.addEventListener("touchmove", e => {
-    if (!penSeen || !document.querySelector(".qb-card.writing")) return;
-    const direct = [...e.touches].some(t => t.touchType !== "stylus");
-    if (direct && (penBusy() || [...e.touches].some(t => t.touchType === "stylus"))) e.preventDefault();
-  }, { passive: false });
+  /* palm rejection is shared with the paper viewer (viewer.js) */
+  const penBusy = () => window.GSHPalm ? window.GSHPalm.busy() : false;
+  const palmy = e => window.GSHPalm ? window.GSHPalm.palmy(e) : false;
 
   function dataFor(id) {
     if (!state[id]) {

@@ -1,3 +1,31 @@
+(() => {
+  /* Palm rejection, shared by the paper viewer and writing on question cards. While the stylus is on the screen,
+     and for a moment after it lifts, other touches are taken to be the hand resting on the screen: they don't
+     scroll, pinch or draw. A broad contact counts as a palm at any time. */
+  const PALM_MS = 700;
+  let penDown = 0, penLast = 0;
+  const busy = () => penDown > 0 || Date.now() - penLast < PALM_MS;
+  window.GSHPalm = {
+    busy,
+    palmy: e => e.pointerType === "touch" && (busy() || (e.width || 0) > 40 || (e.height || 0) > 40),
+    seen: false,
+  };
+  document.addEventListener("pointerdown", e => { if (e.pointerType === "pen") { penDown++; penLast = Date.now(); window.GSHPalm.seen = true; } }, true);
+  const up = e => { if (e.pointerType === "pen") { penDown = Math.max(0, penDown - 1); penLast = Date.now(); } };
+  document.addEventListener("pointerup", up, true);
+  document.addEventListener("pointercancel", up, true);
+  document.addEventListener("pointermove", e => { if (e.pointerType === "pen") penLast = Date.now(); }, true);
+  /* iPad: stop the browser scrolling the page or the paper under a resting palm while writing
+     (Pencil touches are "stylus", the hand "direct") */
+  const writing = () => document.querySelector(".qb-card.writing") ||
+    [...document.querySelectorAll(".vw-pane[data-tool]")].some(el => el.offsetParent && el.dataset.tool !== "hand");
+  document.addEventListener("touchmove", e => {
+    if (!window.GSHPalm.seen || !writing()) return;
+    const direct = [...e.touches].some(t => t.touchType !== "stylus");
+    if (direct && (busy() || [...e.touches].some(t => t.touchType === "stylus"))) e.preventDefault();
+  }, { passive: false, capture: true });
+})();
+
 /* Pop-up PDF viewer: page controls, bookmarks, search, annotate (pen, highlighter,
    text, eraser, undo/redo), zoom, mark scheme side by side, autosave, annotated download. */
 (() => {
@@ -512,6 +540,7 @@
       const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) || 1;
       el.addEventListener("touchstart", e => {
         if (e.touches.length !== 2 || !this.wrap) return;
+        if (window.GSHPalm.busy()) return;    /* a hand on the screen while writing, not a pinch */
         e.preventDefault();
         this.pinching = true; this.cancelInk.forEach(f => f());
         const m = mid(e.touches), w = this.wrap.getBoundingClientRect();
@@ -849,6 +878,8 @@
         if (this.pinching && e.pointerType === "touch") return;
         if (e.pointerType === "pen" && !this.penSeen) { this.penSeen = true; this.onChange?.(); }
         if (this.penSeen && e.pointerType === "touch" && this.tool !== "hand") {
+          /* a palm, or a second finger: no scrolling */
+          if (window.GSHPalm.palmy(e) || fingerScroll) { fingerScroll = null; return; }
           fingerScroll = { x: e.clientX, y: e.clientY, top: this.el.scrollTop, left: this.el.scrollLeft, id: e.pointerId };
           try { p.ink.setPointerCapture(e.pointerId); } catch (err) {}
           return;
@@ -883,6 +914,7 @@
       p.ink.addEventListener("pointermove", e => {
         if (this.pinching && e.pointerType === "touch") return;
         if (fingerScroll && e.pointerId === fingerScroll.id) {
+          if (window.GSHPalm.busy()) { fingerScroll = null; return; }    /* the pen came down: that was the hand */
           this.el.scrollTop = fingerScroll.top - (e.clientY - fingerScroll.y);
           this.el.scrollLeft = fingerScroll.left - (e.clientX - fingerScroll.x);
           return;
