@@ -518,6 +518,9 @@ html.side-hidden .side{display:none}
 @media (max-width:600px){.qb-ws-bar{left:12px;right:12px;transform:none;max-width:none;bottom:12px;padding-left:14px}.qb-ws-bar .wsm{display:none}}
 body.ws-on .qb{padding-bottom:72px}
 body.pv-open .qb-ws-bar{display:none}
+/* quizzes and set work: the worksheet being built stays out of the way (it comes back on leaving) */
+body:has(.qb-main.qz) .qb-ws-bar{display:none}
+body.ws-on:has(.qb-main.qz) .qb{padding-bottom:0}
 .qb-err{padding:16px;color:var(--muted);font-size:13.5px}
 .qb-cta{display:flex;flex-direction:column;gap:2px;margin-top:28px;padding:14px 16px;border-radius:12px;background:var(--accent-soft);color:var(--accent)}
 .qb-cta b{font-weight:600}
