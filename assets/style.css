@@ -1069,7 +1069,7 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .qb-isep{width:1px;height:22px;background:var(--line);margin:0 4px}
 .qb-itext{height:32px;padding:0 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--fg)}
 .qb-itext:hover{background:var(--hover)} .qb-itext:disabled{opacity:.4}
-.qb-ihint{font-size:12px;color:var(--faint);margin-left:6px}
+.qb-ihint{font-size:12px;color:var(--faint);margin-left:6px;flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qb-idone{margin-left:auto}
 .qb-btn.qb-write[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 @media (pointer:coarse){.qb-ibtn{width:42px;height:42px}.qb-icol{width:38px;height:38px}.qb-itext{height:42px}}

@@ -303,7 +303,9 @@
     </div>`;
   }
   function onChange(card) {
-    const bar = card.querySelector(".qb-inkbar"); if (bar) bar.outerHTML = toolbar(card);
+    /* the toolbar can change height (eraser sizes, the lasso's Delete): keep the writing where it is on screen */
+    const bar = card.querySelector(".qb-inkbar"), wrap = card.querySelector(".qb-inkwrap"), t0 = bar && wrap ? wrap.getBoundingClientRect().top : 0;
+    if (bar) { bar.outerHTML = toolbar(card); const d = wrap.getBoundingClientRect().top - t0; if (Math.abs(d) >= 1) window.scrollBy(0, d); }
     const d = dataFor(card.dataset.qbCard).data, on = card.classList.contains("writing");
     card.querySelectorAll("[data-qb-write]").forEach(b => { b.textContent = on ? "✓ Done writing" : has(d) ? "✎ Edit writing" : "✎ Write"; b.setAttribute("aria-pressed", on); });
     const bot = card.querySelector(".qb-xbot");
