@@ -6,14 +6,15 @@
      whatever it scrolled or zoomed is undone the moment the pen touches down while it's still on the screen,
      as Android does for stylus apps. A finger that scrolled and lifted before the pen came down is left alone. */
   const PALM_MS = 700, LIFT_MS = 250;
-  let penDown = 0, penLast = 0;
+  let penDown = 0, penLast = 0, penNoted = false;
   const busy = () => penDown > 0 || Date.now() - penLast < PALM_MS;
   const writing = () => document.querySelector(".qb-card.writing") ||
     [...document.querySelectorAll(".vw-pane[data-tool]")].some(el => el.offsetParent && el.dataset.tool !== "hand");
   window.GSHPalm = {
     busy,
     palmy: e => e.pointerType === "touch" && (busy() || (e.width || 0) > 40 || (e.height || 0) > 40),
-    seen: false,
+    /* this device has a Pencil: remembered for 60 days, so fingers scroll from the first touch after a reload */
+    seen: (() => { try { return Date.now() - (+localStorage.getItem("gsh-pen") || 0) < 60 * 864e5; } catch (e) { return false; } })(),
     SLOP: 10,    /* px a finger moves before it scrolls, so a resting hand's drift doesn't nudge the page */
   };
   /* where everything was scrolled to when each touch landed */
@@ -32,7 +33,9 @@
   };
   document.addEventListener("pointerdown", e => {
     if (e.pointerType === "pen") {
-      penDown++; penLast = Date.now(); window.GSHPalm.seen = true;
+      penDown++; penLast = Date.now();
+      if (!window.GSHPalm.seen || !penNoted) { penNoted = true; try { localStorage.setItem("gsh-pen", Date.now()); } catch (err) {} }
+      window.GSHPalm.seen = true;
       if (writing()) undoHand();
     } else if (e.pointerType === "touch" && writing()) touches.set(e.pointerId, { t: Date.now(), s: snap() });
   }, true);
@@ -322,6 +325,7 @@
       /* question view: only these page numbers are shown (notes still belong to the real page numbers) */
       this.only = only && only.length ? only : null;
       this.startPage = startPage || 1; this.startY = startY || 0;
+      this.penSeen = window.GSHPalm.seen;
       this.zoom = 1; this.tool = "hand"; this.drawTool = "pen"; this.color = "green"; this.dark = false;
       this.size = Object.assign({ pen: 1, highlighter: 1 }, store.get(SIZE_KEY) || {});
       this.esize = ESIZES.some(([v]) => v === store.get(ESIZE_KEY)) ? store.get(ESIZE_KEY) : 0.024;
@@ -946,7 +950,8 @@
           if (this.sel) this.clearSel();
           lasso = [[x, y]]; this.lassoLive = { i, path: lasso }; this.inking = true; this.drawInk(p, i); return;
         }
-        if (this.tool === "eraser") { this.snapshotPage(i); erasing = [x, y]; this.inking = true; showEraser(e, this.esize * p.w); this.eraseAt(p, i, x, y); return; }
+        /* the eraser only adds an undo step (and clears redo) once it actually rubs something out */
+        if (this.tool === "eraser") { this.erSnap = false; erasing = [x, y]; this.inking = true; showEraser(e, this.esize * p.w); if (this.eraseAt(p, i, x, y)) this.drawInk(p, i); return; }
         cur = { t: this.tool, c: this.color, w: +(WIDTH[this.tool] * (this.size[this.tool] || 1)).toFixed(5), p: [e.pointerType === "pen" && this.tool === "pen" ? [x, y, +(e.pressure || 0.5).toFixed(2)] : [x, y]] };
         if (e.pointerType === "touch") Object.defineProperty(cur, "touch", { value: true });
         /* not saved with the note: whether it's still being written, and the Pencil's predicted next points */
@@ -969,7 +974,9 @@
           /* every point along the way, so a quick sweep doesn't skip any writing */
           const [x, y] = pos(e), [x0, y0] = erasing, step = this.esize / 3;
           const n = Math.max(1, Math.ceil(Math.hypot(x - x0, (y - y0) * p.h / p.w) / step));
-          for (let k = 1; k <= n; k++) this.eraseAt(p, i, x0 + (x - x0) * k / n, y0 + (y - y0) * k / n);
+          /* rub out every step of the sweep, then redraw the page once */
+          let hit = false; for (let k = 1; k <= n; k++) hit = this.eraseAt(p, i, x0 + (x - x0) * k / n, y0 + (y - y0) * k / n) || hit;
+          if (hit) this.drawInk(p, i);
           erasing = [x, y]; return;
         }
         if (lasso) { const [x, y] = pos(e), l = lasso[lasso.length - 1]; if (Math.hypot((x - l[0]) * p.w, (y - l[1]) * p.h) > 3) { lasso.push([x, y]); this.drawInk(p, i); } return; }
@@ -1005,7 +1012,7 @@
         if (this.pinching && e && e.pointerType === "touch") { if (cur && cur.touch) { cur = null; this.clearLive(p); this.inking = false; } fingerScroll = null; return; }
         if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
         if (e && e.pointerType !== "mouse") hideEraser();
-        if (erasing) { erasing = false; this.inking = false; this.save(); return; }
+        if (erasing) { erasing = false; this.inking = false; if (this.erSnap) this.save(); return; }
         if (lasso) {
           /* what the loop goes round: strokes with at least half their points inside it, notes whose start is inside */
           const idx = lasso.length > 3 ? (this.ann[i] || []).map((it, k) => [it, k]).filter(([it]) => it.t === "text" ? inPoly([it.x, it.y], lasso) : it.p.filter(q => inPoly(q, lasso)).length >= it.p.length / 2).map(([, k]) => k) : [];
@@ -1029,11 +1036,12 @@
       };
       p.ink.addEventListener("pointerup", end);
       p.ink.addEventListener("pointercancel", end);
-      p.ink.addEventListener("pointerleave", e => { if (e.pointerType === "mouse" && !erasing) hideEraser(); });
+      /* a mouse, or a Pencil hovering (newer iPads), moving off the page */
+      p.ink.addEventListener("pointerleave", e => { if (e.pointerType !== "touch" && !erasing) hideEraser(); });
     }
     /* rub out just what's under the circle: a stroke it crosses is split, leaving the parts either side; a typed note under it goes */
     eraseAt(p, i, x, y) {
-      const items = this.ann[i]; if (!items) return;
+      const items = this.ann[i]; if (!items) return false;
       const W = p.w, H = p.h, cx = x * W, cy = y * H, r = this.esize * W / 2;
       let changed = false; const out = [];
       for (const it of items) {
@@ -1052,7 +1060,8 @@
         it.p.forEach((q, k) => { if (inside(pts[k])) cut(); else { if (run.length && crosses(pts[k - 1], pts[k])) cut(); run.push(q); } });
         cut();
       }
-      if (changed) { this.ann[i] = out; this.drawInk(p, i); }
+      if (changed) { if (!this.erSnap) { this.erSnap = true; this.snapshotPage(i); } this.ann[i] = out; }
+      return changed;
     }
     /* a scribble: lots of back-and-forth in a small area. Returns the indexes of the strokes it covers (none if it isn't one). */
     scribbled(pg, i, s) {

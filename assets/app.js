@@ -495,7 +495,7 @@
       if (w.review) return window.CardInk.setContext({ key: `review:${w.id}:${reviewSid}`, readOnly: true, preset: w.inks });
       window.CardInk.setContext({ key: "work:" + w.id, preset: w.inks, sync: (iid, d) => { w.inks[iid] = d; return window.GSHAccount.saveCardInk(w.id, iid, d); } });
     };
-    const quizGo = (ids, mix) => { qz = ids.length ? { ids, k: 0, res: {}, mix } : null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); };
+    const quizGo = (ids, mix) => { if (ids.length) window.CardInk?.resetQuiz(ids); qz = ids.length ? { ids, k: 0, res: {}, mix } : null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); };
     /* ----- Mixed quiz: questions from several topics, taken in turn from each so no one topic fills it ----- */
     const mixKey = "qz-mix:" + src;
     const mixItems = (tid, paper) => data.items.filter(i => i.topic === tid && (!data.papers || paper === "all" || i.ptype === paper));

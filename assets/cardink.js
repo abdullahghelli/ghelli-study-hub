@@ -6,7 +6,11 @@
    writing stays in place at any screen size. Kept in this browser; set work also saves it to the account
    (app.js passes a sync), and a teacher reviewing a student's work sees it read-only. */
 (() => {
-  const KEY = id => "gsh-cink:" + id;
+  /* practice in the question bank keeps the original key; quizzes and each piece of set work have their own,
+     so homework never picks up (or overwrites) practice writing on the same question */
+  const KEY = id => ctx.key === "local" ? "gsh-cink:" + id : `gsh-cink:${ctx.key}:${id}`;
+  /* set work that hasn't reached the account yet (offline, a failed save): sent again later */
+  const UNSENT = id => `gsh-cink-unsent:${ctx.key}:${id}`;
   const get = k => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } };
   const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
   const W = { pen: 0.0032, highlighter: 0.02 };
@@ -23,6 +27,7 @@
     highlighter: '<path d="M6 13 13.5 5.5l3 3L9 16H6v-3Z"/><path d="M4 17.5h7"/>',
     eraser: '<path d="M8 16.5h8M4.5 12.5l6.8-6.8a1.6 1.6 0 0 1 2.3 0l2.7 2.7a1.6 1.6 0 0 1 0 2.3l-5.5 5.5H7.5l-3-3a.5.5 0 0 1 0-.7Z"/>',
     undo: '<path d="M7.5 6 4 9.5 7.5 13"/><path d="M4.5 9.5h7a4 4 0 0 1 0 8H9"/>',
+    redo: '<path d="M12.5 6 16 9.5 12.5 13"/><path d="M15.5 9.5h-7a4 4 0 0 0 0 8H11"/>',
     lasso: '<path d="M10 3.8c4 0 6.8 1.9 6.8 4.3S14 12.4 10 12.4 3.2 10.5 3.2 8.1 6 3.8 10 3.8Z" stroke-dasharray="2.2 2"/><path d="M6.2 11.6c-.9 1.2-.7 2.9.6 3.6 1.1.6 1.7 1.7 1.4 2.7"/>',
     trash: '<path d="M5 6h10M8 6V4.5h4V6M6.5 6l.7 9.5h5.6l.7-9.5"/>',
   };
@@ -31,7 +36,8 @@
   let ctx = { key: "local", sync: null, readOnly: false, preset: null };   /* set by app.js for the questions on screen */
   const state = {};   /* per question id: { data, undo: [] } */
   const prefs = (() => { const p = get("gsh-cink-prefs") || {}; return { tool: ["pen", "highlighter", "eraser", "lasso"].includes(p.tool) ? p.tool : "pen", color: COLORS.includes(p.color) ? p.color : "green", esize: ESIZES.some(([, v]) => v === p.esize) ? p.esize : 0.035 }; })();
-  let penSeen = false;
+  /* once this device has used a Pencil, fingers scroll rather than write (remembered, shared with the viewer) */
+  let penSeen = !!window.GSHPalm?.seen;
   /* palm rejection is shared with the paper viewer (viewer.js) */
   const penBusy = () => window.GSHPalm ? window.GSHPalm.busy() : false;
   const palmy = e => window.GSHPalm ? window.GSHPalm.palmy(e) : false;
@@ -39,25 +45,48 @@
   function dataFor(id) {
     if (!state[id]) {
       const pre = ctx.preset ? ctx.preset[id] : undefined;
-      const d = pre !== undefined ? pre : (ctx.readOnly ? null : get(KEY(id)));
+      const unsent = !ctx.readOnly && ctx.sync && get(UNSENT(id));
+      const d = unsent ? get(KEY(id)) : pre !== undefined ? pre : (ctx.readOnly ? null : get(KEY(id)));
+      if (unsent) retrySoon();
       /* set work and quizzes: a writing space under every question from the start, for the answer */
-      state[id] = { data: Object.assign({ s: [], x: [], n: ctx.sync || ctx.space ? 1 : 0 }, d || {}), undo: [] };
+      state[id] = { data: Object.assign({ s: [], x: [], n: ctx.sync || ctx.space ? 1 : 0 }, d || {}), undo: [], redo: [] };
     }
     return state[id];
   }
   const timers = {}, pending = {};
+  const cardOf = id => document.querySelector(`[data-qb-card="${CSS.escape(id)}"]`);
   function save(id) {
     const st = state[id]; if (!st || ctx.readOnly) return;
     clearTimeout(timers[id]);
-    const sync = ctx.sync;
-    pending[id] = () => {
+    const sync = ctx.sync, key = KEY(id), unsent = UNSENT(id);
+    pending[id] = async () => {
       delete pending[id]; clearTimeout(timers[id]);
       const d = st.data, keep = has(d) || d.n ? d : null;
-      if (keep) put(KEY(id), keep); else { try { localStorage.removeItem(KEY(id)); } catch (e) {} }
-      return sync?.(id, keep);
+      let stored = true;
+      if (keep) stored = put(key, keep); else { try { localStorage.removeItem(key); } catch (e) {} }
+      if (!stored) { const c = cardOf(id); if (c) hint(c, sync ? "This browser's storage is full · your writing is still being sent to your account" : "Couldn't save · this browser's storage is full"); }
+      if (!sync) return;
+      put(unsent, 1);
+      const ok = await Promise.resolve(sync(id, keep)).then(r => r !== false, () => false);
+      if (ok) { try { localStorage.removeItem(unsent); } catch (e) {} } else retrySoon();
     };
     timers[id] = setTimeout(() => pending[id]?.(), 900);
   }
+  /* send set work that didn't get through: every 20 s while any is waiting, and as soon as the connection is back */
+  let retryT = 0;
+  function retrySoon(ms = 20000) { clearTimeout(retryT); retryT = setTimeout(retryUnsent, ms); }
+  function retryUnsent() {
+    if (!ctx.sync || ctx.readOnly) return;
+    const pre = `gsh-cink-unsent:${ctx.key}:`;
+    let keys = []; try { keys = Object.keys(localStorage).filter(k => k.startsWith(pre)); } catch (e) {}
+    for (const k of keys) {
+      const id = k.slice(pre.length);
+      if (pending[id]) continue;
+      if (!state[id]) dataFor(id);
+      save(id); pending[id]?.();
+    }
+  }
+  window.addEventListener("online", () => retrySoon(500));
   /* save anything still waiting (before the page goes away), giving the account a moment to receive it */
   const flush = () => Promise.race([Promise.all(Object.keys(pending).map(id => Promise.resolve(pending[id]?.()).catch(() => {}))), new Promise(r => setTimeout(r, 1500))]);
   window.addEventListener("pagehide", () => { flush(); });
@@ -82,8 +111,9 @@
     if (!st.data.s.length && !on) { if (cv) { cv.width = 0; cv.height = 0; } }
     else {
       if (!cv) { cv = document.createElement("canvas"); cv.className = "qb-ink"; wrap.appendChild(cv); bind(card, cv, "s"); }
+      if (on && !cv._live) { cv._live = document.createElement("canvas"); cv._live.className = "qb-live"; cv.after(cv._live); }
       const c = sizeCanvas(cv, w, wrap.clientHeight);
-      window.Viewer.Ink.draw(c, st.data.s.concat(st.live && st.live.area === "s" && st.live.it ? [st.live.it] : []), w, w, dark);
+      window.Viewer.Ink.draw(c, st.data.s, w, w, dark);
       extras(c, st, "s", w);
     }
     /* the extra space under it */
@@ -91,13 +121,14 @@
     if (st.data.n > 0) {
       if (!xs) {
         xs = document.createElement("div"); xs.className = "qb-xspace";
-        xs.innerHTML = `<canvas class="qb-ink"></canvas>`;
+        xs.innerHTML = `<canvas class="qb-ink"></canvas><canvas class="qb-live"></canvas>`;
+        xs.firstElementChild._live = xs.lastElementChild;
         wrap.after(xs); bind(card, xs.firstElementChild, "x");
       }
       const h = Math.round(st.data.n * BLOCK * w);
       xs.style.height = h + "px";
       const c = sizeCanvas(xs.firstElementChild, w, h);
-      window.Viewer.Ink.draw(c, st.data.x.concat(st.live && st.live.area === "x" && st.live.it ? [st.live.it] : []), w, w, dark);
+      window.Viewer.Ink.draw(c, st.data.x, w, w, dark);
       extras(c, st, "x", w);
     } else xs?.remove();
     /* Write sits just above the space and More space just below it, where the writing runs out */
@@ -110,6 +141,24 @@
       xs.insertAdjacentHTML("afterend", `<div class="qb-xbot"></div>`);
       onChange(card);
     } else if (!show) { top?.remove(); bot?.remove(); }
+  }
+
+  /* the stroke being written is drawn on its own layer over the card, so the rest of the writing isn't redrawn on
+     every move of the pen (that made long answers sluggish on iPad); only where the stroke was is wiped */
+  function drawLive(cv, it) {
+    const lv = cv._live; if (!lv) return;
+    const w = cv.clientWidth, h = cv.clientHeight, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = Math.round(w * dpr), H = Math.round(h * dpr);
+    if (lv.width !== W || lv.height !== H) { lv.width = W; lv.height = H; lv.style.width = w + "px"; lv.style.height = h + "px"; lv._box = null; }
+    const c = lv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const bb = lv._box; if (bb) c.clearRect(bb[0], bb[1], bb[2] - bb[0], bb[3] - bb[1]); else c.clearRect(0, 0, w, h);
+    lv._box = null;
+    if (!it) return;
+    window.Viewer.Ink.draw(c, [it], w, w, siteDark());
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const q of it._pred ? it.p.concat(it._pred) : it.p) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; }
+    const m = it.w * w * 1.5 + 4;
+    lv._box = [x0 * w - m, y0 * w - m, x1 * w + m, y1 * w + m];
   }
 
   /* the lasso being drawn, and the box round what it selected */
@@ -150,13 +199,14 @@
   function bind(card, cv, area) {
     const id = card.dataset.qbCard;
     const pos = e => { const b = cv.getBoundingClientRect(); return [+(((e.clientX - b.left) / b.width)).toFixed(5), +(((e.clientY - b.top) / b.width)).toFixed(5)]; };
-    let cur = null, erasing = null, raf = 0, fingerScroll = null, lasso = null, moving = null;
+    let cur = null, erasing = null, raf = 0, lraf = 0, fingerScroll = null, lasso = null, moving = null, erSnap = false;
     const redraw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; paint(card); }); };
+    const redrawLive = () => { if (!lraf) lraf = requestAnimationFrame(() => { lraf = 0; drawLive(cv, cur); }); };
     /* iPad: a Pencil press would otherwise start a text selection or the long-press menu on the page */
     cv.addEventListener("touchstart", e => { if (card.classList.contains("writing") && !ctx.readOnly) e.preventDefault(); }, { passive: false });
     cv.addEventListener("pointerdown", e => {
       if (!card.classList.contains("writing") || ctx.readOnly) return;
-      if (e.pointerType === "pen") { penSeen = true; document.body.classList.add("pen-seen"); }
+      if (e.pointerType === "pen" && !penSeen) { penSeen = true; onChange(card); }
       /* with a stylus, fingers scroll the page. The writing area keeps every touch to itself (touch-action: none, or
          iPad would scroll on the Pencil's up-and-down strokes too), so the finger's scroll is done here */
       if (penSeen && e.pointerType === "touch") {
@@ -169,7 +219,7 @@
       if (e.pointerType === "mouse" && e.button !== 0) return;
       e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (err) {}
       const st = dataFor(id), [x, y] = pos(e);
-      const snap = () => { st.undo.push(JSON.stringify(st.data)); if (st.undo.length > 60) st.undo.shift(); };
+      const snap = () => snapshot(st);
       if (prefs.tool === "lasso") {
         /* inside the selection: move it; anywhere else: draw a new lasso */
         const b = st.sel && st.sel.area === area && selBox(st, area);
@@ -177,11 +227,13 @@
         st.sel = null; lasso = [[x, y]]; st.live = { area, lasso }; redraw(); onChange(card); return;
       }
       if (st.sel) { st.sel = null; onChange(card); }
-      snap();
-      if (prefs.tool === "eraser") { erasing = [x, y]; showEraser(cv, e); eraseAt(st, area, x, y) && redraw(); return; }
+      /* the eraser only adds an undo step once it actually rubs something out */
+      if (prefs.tool === "eraser") { erasing = [x, y]; erSnap = false; showEraser(cv, e); eraseAt(st, area, x, y, () => { if (!erSnap) { erSnap = true; snap(); } }) && redraw(); return; }
       cur = { t: prefs.tool, c: prefs.color, w: W[prefs.tool], p: [e.pointerType === "pen" && prefs.tool === "pen" ? [x, y, +(e.pressure || 0.5).toFixed(2)] : [x, y]] };
+      /* not saved: whether it's still being written, and where the Pencil is about to be */
       Object.defineProperty(cur, "_live", { value: true, writable: true });
-      st.live = { area, it: cur }; redraw();
+      Object.defineProperty(cur, "_pred", { value: null, writable: true });
+      redrawLive();
     });
     cv.addEventListener("pointermove", e => {
       if (fingerScroll && e.pointerId === fingerScroll.id) {
@@ -197,7 +249,8 @@
       if (erasing) {
         /* every point along the way, so a quick sweep doesn't skip any writing */
         const [x, y] = pos(e), [x0, y0] = erasing, step = prefs.esize / 3, n = Math.max(1, Math.ceil(Math.hypot(x - x0, y - y0) / step));
-        let hit = false; for (let k = 1; k <= n; k++) hit = eraseAt(st, area, x0 + (x - x0) * k / n, y0 + (y - y0) * k / n) || hit;
+        const before = () => { if (!erSnap) { erSnap = true; snapshot(st); } };
+        let hit = false; for (let k = 1; k <= n; k++) hit = eraseAt(st, area, x0 + (x - x0) * k / n, y0 + (y - y0) * k / n, before) || hit;
         erasing = [x, y]; if (hit) redraw(); return;
       }
       if (lasso) { const [x, y] = pos(e), l = lasso[lasso.length - 1]; if (Math.hypot(x - l[0], y - l[1]) > 0.003) { lasso.push([x, y]); redraw(); } return; }
@@ -216,13 +269,15 @@
         const pt = [x, y]; if (withP) pt.push(+((ev.pressure || 0.5) * 0.35 + last[2] * 0.65).toFixed(3));
         cur.p.push(pt);
       }
-      redraw();
+      /* draw a little ahead, where the browser predicts the Pencil is going, so the ink keeps up with the tip */
+      if (withP && e.getPredictedEvents) { const last = cur.p[cur.p.length - 1]; cur._pred = e.getPredictedEvents().slice(0, 3).map(ev => [...pos(ev), last[2]]); }
+      redrawLive();
     });
     const end = e => {
       if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
       const st = dataFor(id);
       if (e && e.pointerType !== "mouse") hideEraser();
-      if (erasing) { erasing = null; save(id); onChange(card); return; }
+      if (erasing) { erasing = null; if (erSnap) { save(id); onChange(card); } return; }
       if (lasso) {
         /* what the loop goes round: strokes with at least half their points inside it */
         const idx = lasso.length > 3 ? st.data[area].map((it, i) => [it, i]).filter(([it]) => it.p && it.p.filter(q => inPoly(q, lasso)).length >= it.p.length / 2).map(([, i]) => i) : [];
@@ -231,7 +286,14 @@
       }
       if (moving) { moving = null; save(id); onChange(card); return; }
       if (!cur) return;
-      cur._live = false; st.live = null;
+      /* finish exactly where the Pencil lifted (the steadying holds the line back a little) */
+      if (cur.p[0].length > 2 && e && e.type === "pointerup" && e.clientX != null) {
+        const [x, y] = pos(e), last = cur.p[cur.p.length - 1];
+        if (Math.hypot(x - last[0], y - last[1]) > 0.3 / cv.clientWidth) cur.p.push([x, y, last[2]]);
+      }
+      cur._live = false; cur._pred = null; st.live = null;
+      cancelAnimationFrame(lraf); lraf = 0; drawLive(cv, null);
+      snapshot(st);
       /* a quick scribble over writing rubs it out, like on paper */
       const gone = cur.t === "pen" ? scribbled(st.data[area], cur) : [];
       if (gone.length) st.data[area] = st.data[area].filter((_, i) => !gone.includes(i)); else st.data[area].push(cur);
@@ -239,10 +301,19 @@
       if (gone.length) hint(card, "Scribbled out · Undo brings it back");
     };
     cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
-    cv.addEventListener("pointerleave", e => { if (e.pointerType === "mouse" && !erasing) hideEraser(); });
+    /* a mouse, or a Pencil hovering (newer iPads), moving off the writing */
+    cv.addEventListener("pointerleave", e => { if (e.pointerType !== "touch" && !erasing) hideEraser(); });
+  }
+  /* undo and redo: whole copies of the question's writing */
+  function snapshot(st) { st.undo.push(JSON.stringify(st.data)); if (st.undo.length > 60) st.undo.shift(); st.redo = []; }
+  function step(card, back) {
+    const id = card.dataset.qbCard, st = dataFor(id), from = back ? st.undo : st.redo, to = back ? st.redo : st.undo;
+    if (!from.length) return;
+    to.push(JSON.stringify(st.data)); st.data = JSON.parse(from.pop()); st.sel = null;
+    paint(card); save(id); onChange(card);
   }
   /* rub out just what's under the circle: a stroke it crosses is split, leaving the parts either side */
-  function eraseAt(st, area, x, y) {
+  function eraseAt(st, area, x, y, before) {
     const r = prefs.esize / 2; let changed = false; const out = [];
     for (const it of st.data[area]) {
       const lim = r + (it.w || 0) / 2, lim2 = lim * lim, p = it.p || [];
@@ -259,7 +330,7 @@
       p.forEach((q, k) => { if (inside(q)) cut(); else { if (run.length && crosses(p[k - 1], q)) cut(); run.push(q); } });
       cut();
     }
-    if (changed) st.data[area] = out;
+    if (changed) { before?.(); st.data[area] = out; }
     return changed;
   }
   const inPoly = ([x, y], poly) => {
@@ -305,7 +376,8 @@
       <span class="qb-isep"></span>
       ${COLORS.map(c => `<button type="button" class="qb-icol ${prefs.color === c ? "on" : ""}" data-ink-color="${c}" title="${esc(c === "ink" ? (dark ? "White" : "Black") : window.Viewer.Ink.PALETTE[c].name)}" aria-label="${esc(c === "ink" ? (dark ? "White" : "Black") : window.Viewer.Ink.PALETTE[c].name)}" aria-pressed="${prefs.color === c}"><i style="background:${window.Viewer.Ink.colorOf(c, dark)}"></i></button>`).join("")}
       <span class="qb-isep"></span>
-      <button type="button" class="qb-ibtn" data-ink-undo title="Undo" aria-label="Undo" ${st.undo.length ? "" : "disabled"}>${svg("undo")}</button>
+      <button type="button" class="qb-ibtn" data-ink-undo title="Undo (⌘Z)" aria-label="Undo" ${st.undo.length ? "" : "disabled"}>${svg("undo")}</button>
+      <button type="button" class="qb-ibtn" data-ink-redo title="Redo (⇧⌘Z)" aria-label="Redo" ${st.redo.length ? "" : "disabled"}>${svg("redo")}</button>
       ${st.data.n ? "" : `<button type="button" class="qb-itext" data-ink-more>+ Writing space</button>`}
       <button type="button" class="qb-itext" data-ink-clear ${has(st.data) ? "" : "disabled"}>Clear</button>
       <span class="qb-ihint">${st.sel ? "Drag the box to move it · tap a colour to recolour it" : prefs.tool === "lasso" ? "Draw a loop round writing to select it" : (ctx.sync ? "Saves to your account" : "Saves in this browser") + (penSeen ? " · stylus writes, finger scrolls" : "")}</span>
@@ -344,7 +416,7 @@
     const sc = !ctx.readOnly && e.target.closest("[data-ink-more], [data-ink-less]") ? e.target.closest("[data-qb-card]") : null;
     const card = sc || e.target.closest(".qb-card.writing"); if (!card) return;
     const id = card.dataset.qbCard, st = dataFor(id);
-    const snap = () => { st.undo.push(JSON.stringify(st.data)); if (st.undo.length > 60) st.undo.shift(); };
+    const snap = () => snapshot(st);
     const t = e.target.closest("[data-ink-tool]");
     if (t) { prefs.tool = t.dataset.inkTool; put("gsh-cink-prefs", prefs); if (prefs.tool !== "lasso" && st.sel) { st.sel = null; paint(card); } onChange(card); return; }
     const es = e.target.closest("[data-ink-esize]"); if (es) { prefs.esize = +es.dataset.inkEsize; put("gsh-cink-prefs", prefs); onChange(card); return; }
@@ -355,7 +427,8 @@
       prefs.color = c.dataset.inkColor; if (prefs.tool === "eraser" || prefs.tool === "lasso") prefs.tool = "pen"; put("gsh-cink-prefs", prefs); onChange(card); return;
     }
     if (e.target.closest("[data-ink-delsel]") && st.sel) { snap(); const { area, idx } = st.sel; st.data[area] = st.data[area].filter((_, i) => !idx.includes(i)); st.sel = null; paint(card); save(id); onChange(card); return; }
-    if (e.target.closest("[data-ink-undo]")) { if (st.undo.length) { st.data = JSON.parse(st.undo.pop()); st.sel = null; paint(card); save(id); onChange(card); } return; }
+    if (e.target.closest("[data-ink-undo]")) { step(card, true); return; }
+    if (e.target.closest("[data-ink-redo]")) { step(card, false); return; }
     if (e.target.closest("[data-ink-more]")) {
       snap(); st.data.n = Math.min(12, st.data.n + 1);
       if (!card.classList.contains("writing")) setWriting(card, true); else { paint(card); onChange(card); }
@@ -368,6 +441,15 @@
     }
     if (e.target.closest("[data-ink-clear]")) { snap(); st.sel = null; st.data = { s: [], x: [], n: 0 }; paint(card); save(id); onChange(card); return; }
     if (e.target.closest("[data-ink-done]")) { setWriting(card, false); return; }
+  });
+
+  /* ⌘Z / Ctrl+Z undoes on the card being written on, ⇧⌘Z / Ctrl+Y redoes (not while typing, or in the paper viewer) */
+  document.addEventListener("keydown", e => {
+    if (!(e.metaKey || e.ctrlKey) || e.altKey || window.Viewer?.isOpen?.()) return;
+    const k = e.key.toLowerCase(); if (k !== "z" && k !== "y") return;
+    if (e.target.closest?.("input, textarea, select, [contenteditable]")) return;
+    const card = document.querySelector(".qb-card.writing"); if (!card || ctx.readOnly) return;
+    e.preventDefault(); step(card, k === "z" && !e.shiftKey);
   });
 
   /* app.js: after drawing cards. sync(id, data) saves set work to the account; preset gives writing to show
@@ -388,6 +470,10 @@
       });
     },
     has: id => has(dataFor(id).data),
+    /* a new quiz starts with clean cards */
+    resetQuiz(ids) {
+      for (const id of ids) { try { localStorage.removeItem(`gsh-cink:quiz:${id}`); } catch (e) {} if (ctx.key === "quiz") delete state[id]; }
+    },
     button: id => ctx.readOnly ? "" : `<button type="button" class="qb-btn qb-write" data-qb-write="${esc(id)}" aria-pressed="false">✎ Write</button>`,
     repaintAll() { document.querySelectorAll("[data-qb-card]").forEach(paint); },
     flush,

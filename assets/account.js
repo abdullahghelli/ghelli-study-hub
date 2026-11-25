@@ -240,9 +240,16 @@
     for (const [src, d] of Object.entries(j.inks || {})) if (src.startsWith("q:")) { try { out[src.slice(2)] = await unpack(d); } catch (e) {} }
     return out;
   };
+  /* true once saved; on a failure the writing is kept in this browser and sent again (cardink.js), so the
+     message shows once rather than on every retry */
+  const inkFailed = new Set();
   A.saveCardInk = async (workId, id, data) => {
-    try { await api(`assignments/${workId}/ink`, "PUT", { src: "q:" + id, data: data ? await pack(data) : "" }); }
-    catch (e) { G.toast("Couldn't save your writing: " + e.message); }
+    const k = workId + ":" + id;
+    try { await api(`assignments/${workId}/ink`, "PUT", { src: "q:" + id, data: data ? await pack(data) : "" }); inkFailed.delete(k); return true; }
+    catch (e) {
+      if (!inkFailed.has(k)) G.toast("Couldn't save your writing to your account yet (" + e.message + "). It's kept on this device and will be sent again automatically.");
+      inkFailed.add(k); return false;
+    }
   };
   A.loadReview = async (id, sid) => {
     const j = await api("assignments/" + +id), s = j.students.find(x => x.id === +sid);

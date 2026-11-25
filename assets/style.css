@@ -1057,6 +1057,7 @@ a.qb-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .qb-card.writing .qb-inkwrap{box-shadow:inset 0 0 0 2px var(--accent)}
 .qb-xspace{position:relative;cursor:text;background:#fff repeating-linear-gradient(to bottom,transparent 0 31px,#dfe3e1 31px 32px);border-top:1px dashed #cfd5d2}
 .qb-xspace canvas{position:absolute;left:0;top:0;pointer-events:none}
+canvas.qb-live{position:absolute;left:0;top:0;pointer-events:none!important;touch-action:auto}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .qb-xspace{background:#1b1d1c repeating-linear-gradient(to bottom,transparent 0 31px,#2c302e 31px 32px);border-top-color:#2c302e}}
 :root[data-theme="dark"] .qb-xspace{background:#1b1d1c repeating-linear-gradient(to bottom,transparent 0 31px,#2c302e 31px 32px);border-top-color:#2c302e}
 .qb-inkbar{position:sticky;top:52px;z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:8px 12px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
