@@ -1,0 +1,3263 @@
+{
+ "8ma0-p1-qp-jun2018-q1": {
+  "spec": [
+   "P8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q2": {
+  "spec": [
+   "P1.1",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q3a": {
+  "spec": [
+   "P10.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q3b": {
+  "spec": [
+   "P10.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2018-q4": {
+  "spec": [
+   "P3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q5a": {
+  "spec": [
+   "P6.4",
+   "P6.3"
+  ],
+  "needs": [],
+  "note": "Identify log law and definition errors"
+ },
+ "8ma0-p1-qp-jun2018-q5b": {
+  "spec": [
+   "P6.4",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q6b": {
+  "spec": [
+   "P2.3",
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q6c": {
+  "spec": [
+   "P2.3",
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q7a": {
+  "spec": [
+   "P5.1",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q7b": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2018-q8a": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q8b": {
+  "spec": [
+   "P7.1",
+   "P7.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2018-q8c": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "limitation of model; P2.11 vs P7.3"
+ },
+ "8ma0-p1-qp-jun2018-q9a": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q9b": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Hence refers to factor theorem in (a)"
+ },
+ "8ma0-p1-qp-jun2018-q9c": {
+  "spec": [
+   "P2.7",
+   "P2.9"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Inequality from sketch and g(2x) transformation"
+ },
+ "8ma0-p1-qp-jun2018-q10": {
+  "spec": [
+   "P7.1",
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q11b": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q11c": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": [],
+  "note": "Binomial coefficient comparison; condition in stem"
+ },
+ "8ma0-p1-qp-jun2018-q12": {
+  "spec": [
+   "P5.5",
+   "P5.7"
+  ],
+  "needs": [],
+  "note": "Identity rearrangement then quadratic trig equation"
+ },
+ "8ma0-p1-qp-jun2018-q13a": {
+  "spec": [
+   "P6.6",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q13b": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q13c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q14a": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q14b": {
+  "spec": [
+   "P2.3",
+   "P3.2",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2018-q15": {
+  "spec": [
+   "P8.3",
+   "P7.3",
+   "P8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q1a": {
+  "spec": [
+   "P3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q1b": {
+  "spec": [
+   "P3.1",
+   "P2.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q2": {
+  "spec": [
+   "P2.3",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q3": {
+  "spec": [
+   "P8.2",
+   "P8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q4a": {
+  "spec": [
+   "P3.1",
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Setting up linear model from context"
+ },
+ "8ma0-p1-qp-jun2019-q4b": {
+  "spec": [
+   "P2.11",
+   "P3.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2019-q5a": {
+  "spec": [
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q5b": {
+  "spec": [
+   "P7.3",
+   "P2.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2019-q6a": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q6b": {
+  "spec": [
+   "P5.1",
+   "P2.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2019-q7a": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q7b": {
+  "spec": [
+   "P2.7",
+   "P2.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q7c": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Discriminant zero for tangency"
+ },
+ "8ma0-p1-qp-jun2019-q8": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q9a": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q9b": {
+  "spec": [
+   "P2.11",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q9c": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q9d": {
+  "spec": [
+   "P2.11",
+   "P2.3"
+  ],
+  "needs": [],
+  "note": "Limitation of quadratic model beyond maximum"
+ },
+ "8ma0-p1-qp-jun2019-q10a": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q10b": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q11a": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q11b": {
+  "spec": [
+   "P2.6",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2019-q11c": {
+  "spec": [
+   "P2.9",
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q11d": {
+  "spec": [
+   "P2.9"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q12": {
+  "spec": [
+   "P5.8",
+   "P5.7",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q13": {
+  "spec": [
+   "P8.3",
+   "P7.3",
+   "P8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q14a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q14b": {
+  "spec": [
+   "P6.7",
+   "P7.2",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q14c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Long-term behaviour of exponential model"
+ },
+ "8ma0-p1-qp-jun2019-q14d": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q15": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2019-q16": {
+  "spec": [
+   "P10.3",
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q1": {
+  "spec": [
+   "P8.2",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q2a": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q2b": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q2c": {
+  "spec": [
+   "P2.3",
+   "P2.6"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2022-q2d": {
+  "spec": [
+   "P2.9"
+  ],
+  "needs": [],
+  "note": "Translation of root; text self-contained"
+ },
+ "8ma0-p1-qp-jun2022-q3a": {
+  "spec": [
+   "P10.3",
+   "P10.4"
+  ],
+  "needs": [],
+  "note": "Vector subtraction QR = PR - PQ"
+ },
+ "8ma0-p1-qp-jun2022-q3b": {
+  "spec": [
+   "P10.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2022-q3c": {
+  "spec": [
+   "P10.5",
+   "P10.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q4a": {
+  "spec": [
+   "P5.1",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q4b": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2022-q5a": {
+  "spec": [
+   "P6.6",
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Log-linear relationship to find model constants"
+ },
+ "8ma0-p1-qp-jun2022-q5b": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q5c": {
+  "spec": [
+   "P6.7",
+   "P6.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q5d": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q6": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q7b": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q7c": {
+  "spec": [
+   "P7.3",
+   "P2.7",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q8a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q8b": {
+  "spec": [
+   "P6.7",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q8c": {
+  "spec": [
+   "P7.2",
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q9": {
+  "spec": [
+   "P6.4",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q10a": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": [],
+  "note": "Tangent equation via differentiation"
+ },
+ "8ma0-p1-qp-jun2022-q10b": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2022-q11a": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q11b": {
+  "spec": [
+   "P3.1",
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q12a": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "cost model set-up; could be P7.3 context"
+ },
+ "8ma0-p1-qp-jun2022-q12b": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2022-q12c": {
+  "spec": [
+   "P7.1",
+   "P7.3"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2022-q12d": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ],
+  "note": "Minimum value using C from (a), r from (b)"
+ },
+ "8ma0-p1-qp-jun2022-q13a": {
+  "spec": [
+   "P5.8",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2022-q13b": {
+  "spec": [
+   "P5.7",
+   "P5.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "needs a via identity"
+ },
+ "8ma0-p1-qp-jun2022-q14": {
+  "spec": [
+   "P1.1",
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q1a": {
+  "spec": [
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q1b": {
+  "spec": [
+   "P7.3",
+   "P2.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2023-q2": {
+  "spec": [
+   "P2.3",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q3a": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q3b": {
+  "spec": [
+   "P5.9"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Criticises answer to (a) in context"
+ },
+ "8ma0-p1-qp-jun2023-q4": {
+  "spec": [
+   "P2.7",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q5": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q6a": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q6b": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q7a": {
+  "spec": [
+   "P3.1",
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Setting up linear model from context"
+ },
+ "8ma0-p1-qp-jun2023-q7b": {
+  "spec": [
+   "P3.1",
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Using linear model in context"
+ },
+ "8ma0-p1-qp-jun2023-q7c": {
+  "spec": [
+   "P3.1",
+   "P2.11"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2023-q8": {
+  "spec": [
+   "P2.5",
+   "P3.1",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q9": {
+  "spec": [
+   "P6.4",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q10a": {
+  "spec": [
+   "P3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q10b": {
+  "spec": [
+   "P3.1"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Uses l2 equation given in (a)"
+ },
+ "8ma0-p1-qp-jun2023-q11a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q11b": {
+  "spec": [
+   "P6.7",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q11c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q12a": {
+  "spec": [
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q12b": {
+  "spec": [
+   "P5.7",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2023-q12c": {
+  "spec": [
+   "P5.7",
+   "P5.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2023-q13a": {
+  "spec": [
+   "P10.4",
+   "P10.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q13c": {
+  "spec": [
+   "P10.3",
+   "P10.5"
+  ],
+  "needs": [],
+  "note": "needs a? uses AB"
+ },
+ "8ma0-p1-qp-jun2023-q14": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q15a": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q15b": {
+  "spec": [
+   "P2.6",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2023-q16": {
+  "spec": [
+   "P8.2",
+   "P7.3"
+  ],
+  "needs": [],
+  "note": "Integrate f' with stationary point conditions"
+ },
+ "8ma0-p1-qp-jun2023-q17a": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2023-q17b": {
+  "spec": [
+   "P1.1",
+   "P2.6"
+  ],
+  "needs": [],
+  "note": "Algebraic proof by expansion"
+ },
+ "8ma0-p1-qp-jun2024-q1": {
+  "spec": [
+   "P8.2",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q2a": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q2b": {
+  "spec": [
+   "P2.6",
+   "P2.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q2c": {
+  "spec": [
+   "P2.6",
+   "P2.9"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q3a": {
+  "spec": [
+   "P10.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q3b": {
+  "spec": [
+   "P10.5",
+   "P3.1"
+  ],
+  "needs": [],
+  "note": "Perpendicularity via gradients or Pythagoras"
+ },
+ "8ma0-p1-qp-jun2024-q3c": {
+  "spec": [
+   "P10.5",
+   "P10.2",
+   "P10.3"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "R defined in (b); magnitudes and parallel vectors"
+ },
+ "8ma0-p1-qp-jun2024-q4a": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q4b": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q5a": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": [],
+  "note": "Reciprocal graph sketch with asymptotes"
+ },
+ "8ma0-p1-qp-jun2024-q5b": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q5c": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "C2 defined in (b); factorise cubic with known root"
+ },
+ "8ma0-p1-qp-jun2024-q6a": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q6b": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q6c": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q7a": {
+  "spec": [
+   "P6.6",
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Log-linear graph to find model constants"
+ },
+ "8ma0-p1-qp-jun2024-q7b": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Interpret ab; a,b defined in (a)"
+ },
+ "8ma0-p1-qp-jun2024-q8a": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q8b": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": [],
+  "note": "Verify intersection by substitution"
+ },
+ "8ma0-p1-qp-jun2024-q8c": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q9a": {
+  "spec": [
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q9b": {
+  "spec": [
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q9c": {
+  "spec": [
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q10a": {
+  "spec": [
+   "P3.2",
+   "P3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q10b": {
+  "spec": [
+   "P3.2",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q11a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q11b": {
+  "spec": [
+   "P6.7",
+   "P7.2",
+   "P6.3"
+  ],
+  "needs": [],
+  "note": "Rates of exponential models, solve with ln"
+ },
+ "8ma0-p1-qp-jun2024-q12a": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q12b": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q12c": {
+  "spec": [
+   "P7.1",
+   "P7.3"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ],
+  "note": "Second derivative test on P from (a), x from (b)"
+ },
+ "8ma0-p1-qp-jun2024-q12d": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Evaluates model at minimum-perimeter design"
+ },
+ "8ma0-p1-qp-jun2024-q13a": {
+  "spec": [
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2024-q13b": {
+  "spec": [
+   "P5.7",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q13c": {
+  "spec": [
+   "P5.7"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2024-q14": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q1": {
+  "spec": [
+   "P2.9"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q2a": {
+  "spec": [
+   "P3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q2b": {
+  "spec": [
+   "P2.5"
+  ],
+  "needs": [],
+  "note": "Region defined by inequalities"
+ },
+ "8ma0-p1-qp-jun2025-q3a": {
+  "spec": [
+   "P10.4",
+   "P10.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q3b": {
+  "spec": [
+   "P5.1",
+   "P10.2"
+  ],
+  "needs": [],
+  "note": "Cosine rule with vector magnitudes"
+ },
+ "8ma0-p1-qp-jun2025-q4a": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q4b": {
+  "spec": [
+   "P3.2",
+   "P2.5"
+  ],
+  "needs": [],
+  "note": "Range of k for chord of circle, set notation"
+ },
+ "8ma0-p1-qp-jun2025-q5a": {
+  "spec": [
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q5b": {
+  "spec": [
+   "P8.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2025-q6a": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q6b": {
+  "spec": [
+   "P7.2",
+   "P2.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2025-q7a": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Uses quadratic model to judge price"
+ },
+ "8ma0-p1-qp-jun2025-q7b": {
+  "spec": [
+   "P2.5",
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Quadratic inequality in context of model"
+ },
+ "8ma0-p1-qp-jun2025-q7c": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q7d": {
+  "spec": [
+   "P2.3",
+   "P2.11"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "8ma0-p1-qp-jun2025-q8": {
+  "spec": [
+   "P5.7",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q9": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q10": {
+  "spec": [
+   "P6.4",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q11a": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q11b": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2025-q11c": {
+  "spec": [
+   "P7.1",
+   "P7.3"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2025-q11d": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-jun2025-q11e": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [
+   "d"
+  ],
+  "note": "P2.11 assumption"
+ },
+ "8ma0-p1-qp-jun2025-q12a": {
+  "spec": [
+   "P7.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q12b": {
+  "spec": [
+   "P7.1",
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q13a": {
+  "spec": [
+   "P6.7",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q13b": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Uses complete model equation from (a)"
+ },
+ "8ma0-p1-qp-jun2025-q13c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2025-q13d": {
+  "spec": [
+   "P7.2",
+   "P6.7",
+   "P6.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-jun2025-q14a": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q14b": {
+  "spec": [
+   "P4.1",
+   "P2.4"
+  ],
+  "needs": [],
+  "note": "Binomial coefficients then nonlinear simultaneous equations"
+ },
+ "8ma0-p1-qp-jun2025-q15a": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-jun2025-q15b": {
+  "spec": [
+   "P1.1",
+   "P2.6"
+  ],
+  "needs": [],
+  "note": "Disproof by factorisation"
+ },
+ "8ma0-p1-qp-nov2020-q1": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q2a": {
+  "spec": [
+   "P10.2",
+   "P10.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q2b": {
+  "spec": [
+   "P10.4",
+   "P10.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q3": {
+  "spec": [
+   "P2.2",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q4a": {
+  "spec": [
+   "P3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q4b": {
+  "spec": [
+   "P3.1",
+   "P2.11"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2020-q5a": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q5b": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [],
+  "note": "Cosine/sine rule lengths"
+ },
+ "8ma0-p1-qp-nov2020-q6": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q7a": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q7b": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2020-q8a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q8b": {
+  "spec": [
+   "P6.3",
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q8c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q8d": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Find exponential model constants from data"
+ },
+ "8ma0-p1-qp-nov2020-q9a": {
+  "spec": [
+   "P5.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q9b": {
+  "spec": [
+   "P2.9",
+   "P5.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2020-q9c": {
+  "spec": [
+   "P5.7",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q10a": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q10b": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2020-q10c": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": [],
+  "note": "Area below axis by definite integral"
+ },
+ "8ma0-p1-qp-nov2020-q11": {
+  "spec": [
+   "P3.2",
+   "P3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q12a": {
+  "spec": [
+   "P6.6",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q12b": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2020-q12c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Using exponential model for prediction"
+ },
+ "8ma0-p1-qp-nov2020-q13": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": [],
+  "note": "proof of algebraic inequality; no clear content point"
+ },
+ "8ma0-p1-qp-nov2020-q14a": {
+  "spec": [
+   "P7.3",
+   "P7.2",
+   "P2.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2020-q14b": {
+  "spec": [
+   "P7.1",
+   "P7.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2021-q1": {
+  "spec": [
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q2": {
+  "spec": [
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q3": {
+  "spec": [
+   "P8.2",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q4a": {
+  "spec": [
+   "P10.3",
+   "P10.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q4b": {
+  "spec": [
+   "P10.4",
+   "P10.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q5a": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": [],
+  "note": "Gradient of tangent by differentiation"
+ },
+ "8ma0-p1-qp-nov2021-q5b": {
+  "spec": [
+   "P7.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q5c": {
+  "spec": [
+   "P7.1"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-nov2021-q6a": {
+  "spec": [
+   "P2.6",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q6b": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2021-q7a": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q7b": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [],
+  "note": "Cosine rule for diagonal"
+ },
+ "8ma0-p1-qp-nov2021-q8a": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q8b": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2021-q9": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": [],
+  "note": "Definite integral equation for limit"
+ },
+ "8ma0-p1-qp-nov2021-q10a": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q10b": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q11a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q11b": {
+  "spec": [
+   "P6.7",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q11c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q12": {
+  "spec": [
+   "P5.7",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q13a": {
+  "spec": [
+   "P6.6",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q13b": {
+  "spec": [
+   "P2.11",
+   "P6.6"
+  ],
+  "needs": [],
+  "note": "Evaluating power-law model suitability"
+ },
+ "8ma0-p1-qp-nov2021-q13c": {
+  "spec": [
+   "P6.6",
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q14a": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q14b": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2021-q14c": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p1-qp-nov2021-q15a": {
+  "spec": [
+   "P3.1",
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q15b": {
+  "spec": [
+   "P3.2",
+   "P3.1"
+  ],
+  "needs": [],
+  "note": "Tangent point and radius for circle equation"
+ },
+ "8ma0-p1-qp-nov2021-q15c": {
+  "spec": [
+   "P3.2",
+   "P2.3"
+  ],
+  "needs": [],
+  "note": "Parallel tangent to circle"
+ },
+ "8ma0-p1-qp-nov2021-q16a": {
+  "spec": [
+   "P7.2",
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p1-qp-nov2021-q16b": {
+  "spec": [
+   "P7.3",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2021-q16c": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p1-qp-nov2021-q16d": {
+  "spec": [
+   "P2.9",
+   "P2.6"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "8ma0-p2-qp-jun2018-q1a": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q1b": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q1c": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q2a": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q2b": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q3a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q3b": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q4a": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q4b": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q4c": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [],
+  "note": "LDS: knowledge of Camborne monthly wind"
+ },
+ "8ma0-p2-qp-jun2018-q4d": {
+  "spec": [
+   "S2.1",
+   "S2.4",
+   "S2.3"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "8ma0-p2-qp-jun2018-q5a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q5b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q5c": {
+  "spec": [
+   "S4.1",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q6": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q7a": {
+  "spec": [
+   "M7.2",
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q7b": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q7c": {
+  "spec": [
+   "M7.3",
+   "M7.2"
+  ],
+  "needs": [],
+  "note": "Refinement of constant acceleration model"
+ },
+ "8ma0-p2-qp-jun2018-q8a": {
+  "spec": [
+   "M7.4",
+   "P2.6"
+  ],
+  "needs": [],
+  "note": "Differentiate displacement, solve cubic"
+ },
+ "8ma0-p2-qp-jun2018-q8b": {
+  "spec": [
+   "M7.4",
+   "M7.1"
+  ],
+  "needs": [],
+  "note": "Total distance with direction changes"
+ },
+ "8ma0-p2-qp-jun2018-q8c": {
+  "spec": [
+   "M7.1",
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q9a": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q9b": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p2-qp-jun2018-q9c": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": [],
+  "note": "Pulley connected particles equation of motion"
+ },
+ "8ma0-p2-qp-jun2018-q9d": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Pulley model limitation affecting (c)"
+ },
+ "8ma0-p21-qp-jun2019-q1a": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2019-q1b": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2019-q1c": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p21-qp-jun2019-q2": {
+  "spec": [
+   "S3.1",
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2019-q3a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2019-q3b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2019-q4a": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2019-q4b": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2019-q4c": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p21-qp-jun2019-q4d": {
+  "spec": [
+   "S2.3",
+   "S2.4"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p21-qp-jun2019-q5a": {
+  "spec": [
+   "S5.1",
+   "S5.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2019-q5b": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p21-qp-jun2019-q5c": {
+  "spec": [
+   "S5.1",
+   "S5.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2019-q5d": {
+  "spec": [
+   "S5.1",
+   "S5.2"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Actual significance of binomial test"
+ },
+ "8ma0-p21-qp-jun2022-q1a": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2022-q1b": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2022-q1c": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2022-q1d": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2022-q2a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2022-q2b": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2022-q3a": {
+  "spec": [
+   "S2.1",
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2022-q3b": {
+  "spec": [
+   "P8.3",
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2022-q3c": {
+  "spec": [
+   "S2.3",
+   "S2.1"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Median from symmetric model defined in (b)"
+ },
+ "8ma0-p21-qp-jun2022-q4a": {
+  "spec": [
+   "S2.1",
+   "S2.3"
+  ],
+  "needs": [],
+  "note": "LDS: typical Daily Mean Pressure values"
+ },
+ "8ma0-p21-qp-jun2022-q4b": {
+  "spec": [
+   "S2.1",
+   "S2.3"
+  ],
+  "needs": [],
+  "note": "LDS knowledge"
+ },
+ "8ma0-p21-qp-jun2022-q5a": {
+  "spec": [
+   "S4.1",
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2022-q5b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [],
+  "note": "Discrete distribution to find m and n"
+ },
+ "8ma0-p21-qp-jun2023-q1a": {
+  "spec": [
+   "S2.3",
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2023-q1b": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2023-q1c": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p21-qp-jun2023-q2a": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2023-q2b": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2023-q2c": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p21-qp-jun2023-q2d": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": [],
+  "note": "LDS: wind speed Beaufort is qualitative"
+ },
+ "8ma0-p21-qp-jun2023-q3a": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2023-q3b": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2023-q4a": {
+  "spec": [
+   "S5.1",
+   "S5.2"
+  ],
+  "needs": [],
+  "note": "Alternative hypothesis for binomial proportion"
+ },
+ "8ma0-p21-qp-jun2023-q4b": {
+  "spec": [
+   "S5.1",
+   "S5.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2023-q4c": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p21-qp-jun2023-q4d": {
+  "spec": [
+   "S5.2"
+  ],
+  "needs": [],
+  "note": "Conclusion of binomial test in context"
+ },
+ "8ma0-p21-qp-jun2023-q5a": {
+  "spec": [
+   "S4.1",
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Probability distribution without replacement"
+ },
+ "8ma0-p21-qp-jun2023-q5b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2024-q1": {
+  "spec": [
+   "S2.1",
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2024-q2a": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": [],
+  "note": "LDS: prevailing wind direction Camborne"
+ },
+ "8ma0-p21-qp-jun2024-q2b": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2024-q3a": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2024-q3b": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p21-qp-jun2024-q3c": {
+  "spec": [
+   "P8.3",
+   "S2.1"
+  ],
+  "needs": [],
+  "note": "Area under frequency density curve equals total"
+ },
+ "8ma0-p21-qp-jun2024-q4a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2024-q4b": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2024-q4c": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p21-qp-jun2024-q5a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2024-q5b": {
+  "spec": [
+   "S3.1",
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2024-q5c": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p21-qp-jun2024-q5d": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "b",
+   "c"
+  ]
+ },
+ "8ma0-p21-qp-jun2025-q1a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2025-q1b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2025-q1c": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [],
+  "note": "Discrete binomial: P(X<=5.7)=P(X<=5)"
+ },
+ "8ma0-p21-qp-jun2025-q2a": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2025-q2b": {
+  "spec": [
+   "S2.4",
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2025-q2c": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "LDS knowledge"
+ },
+ "8ma0-p21-qp-jun2025-q3a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2025-q3b": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2025-q4a": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2025-q4b": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2025-q5a": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-jun2025-q5b": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Venn diagram probabilities"
+ },
+ "8ma0-p21-qp-jun2025-q5c": {
+  "spec": [
+   "S3.1",
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Independence with Venn diagram"
+ },
+ "8ma0-p21-qp-nov2020-q1": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2020-q2a": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": [],
+  "note": "LDS knowledge; spec point unclear"
+ },
+ "8ma0-p21-qp-nov2020-q2b": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": [],
+  "note": "Outlier rule applied"
+ },
+ "8ma0-p21-qp-nov2020-q2c": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p21-qp-nov2020-q2d": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2020-q3": {
+  "spec": [
+   "S4.1",
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2020-q4a": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2020-q4b": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2020-q4c": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2020-q4d": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "8ma0-p21-qp-nov2020-q5a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2020-q5b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [],
+  "note": "Binomial of binomial outcome"
+ },
+ "8ma0-p21-qp-nov2020-q5c": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2021-q1a": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2021-q1b": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2021-q2a": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2021-q2b": {
+  "spec": [
+   "S2.3",
+   "S2.1"
+  ],
+  "needs": [],
+  "note": "Median by interpolation from histogram"
+ },
+ "8ma0-p21-qp-nov2021-q2c": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2021-q3a": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2021-q3b": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": [],
+  "note": "LDS: qualitative wind variable and outcome"
+ },
+ "8ma0-p21-qp-nov2021-q3c": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2021-q4a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2021-q4b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p21-qp-nov2021-q4c": {
+  "spec": [
+   "S4.3",
+   "S4.1"
+  ],
+  "needs": [],
+  "note": "S4.1 vs S4.3 boundary"
+ },
+ "8ma0-p21-qp-nov2021-q4d": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p21-qp-nov2021-q4e": {
+  "spec": [
+   "S5.1",
+   "S5.2"
+  ],
+  "needs": [
+   "d"
+  ],
+  "note": "p-value of the test in (d)"
+ },
+ "8ma0-p21-qp-nov2021-q5": {
+  "spec": [
+   "S3.2",
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2019-q1a": {
+  "spec": [
+   "M8.3",
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2019-q1b": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2019-q1c": {
+  "spec": [
+   "M7.2",
+   "M7.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p22-qp-jun2019-q1d": {
+  "spec": [
+   "M8.3",
+   "M7.3"
+  ],
+  "needs": [
+   "b",
+   "c"
+  ],
+  "note": "Free-fall refinement; T from (b), value in (c)"
+ },
+ "8ma0-p22-qp-jun2019-q1e": {
+  "spec": [
+   "M8.3",
+   "M7.3"
+  ],
+  "needs": [],
+  "note": "Refinement of free-fall/constant acceleration model"
+ },
+ "8ma0-p22-qp-jun2019-q2a": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2019-q2b": {
+  "spec": [
+   "M7.3",
+   "M8.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p22-qp-jun2019-q2c": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p22-qp-jun2019-q3a": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2019-q3b": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2022-q1a": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2022-q1b": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2022-q1c": {
+  "spec": [
+   "M8.3",
+   "M7.3"
+  ],
+  "needs": [],
+  "note": "Refinement of free-fall model"
+ },
+ "8ma0-p22-qp-jun2022-q1d": {
+  "spec": [
+   "M8.3",
+   "M7.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Air resistance effect on (a)"
+ },
+ "8ma0-p22-qp-jun2022-q2a": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2022-q2b": {
+  "spec": [
+   "M7.2",
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2022-q2c": {
+  "spec": [
+   "M7.2",
+   "M7.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p22-qp-jun2022-q2d": {
+  "spec": [
+   "M7.2",
+   "M7.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p22-qp-jun2022-q2e": {
+  "spec": [
+   "M7.3",
+   "M7.2"
+  ],
+  "needs": [
+   "b",
+   "c"
+  ],
+  "note": "Limitation of constant acceleration model"
+ },
+ "8ma0-p22-qp-jun2022-q3a": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2022-q3b": {
+  "spec": [
+   "M7.4",
+   "M7.1"
+  ],
+  "needs": [],
+  "note": "Total distance from displacement function"
+ },
+ "8ma0-p22-qp-jun2022-q4a": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2022-q4b": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2023-q1a": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": [],
+  "note": "Area under v-t graph is distance"
+ },
+ "8ma0-p22-qp-jun2023-q1b": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2023-q1c": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2023-q1d": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": [],
+  "note": "Area under v-t graph equation for X"
+ },
+ "8ma0-p22-qp-jun2023-q2a": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2023-q2b": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2023-q2c": {
+  "spec": [
+   "M8.3",
+   "M7.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Refinement improving (a)"
+ },
+ "8ma0-p22-qp-jun2023-q3a": {
+  "spec": [
+   "M7.4",
+   "M7.1"
+  ],
+  "needs": [],
+  "note": "Instantaneous rest from velocity function"
+ },
+ "8ma0-p22-qp-jun2023-q3b": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2023-q3c": {
+  "spec": [
+   "M7.4",
+   "M7.1"
+  ],
+  "needs": [],
+  "note": "Total distance by integration"
+ },
+ "8ma0-p22-qp-jun2023-q4a": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2023-q4b": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": [],
+  "note": "Connected particles refinement with heavy rope"
+ },
+ "8ma0-p22-qp-jun2023-q4c": {
+  "spec": [
+   "M8.2",
+   "M8.1"
+  ],
+  "needs": [],
+  "note": "limitation of resistance model"
+ },
+ "8ma0-p22-qp-jun2024-q1a": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2024-q1b": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2024-q2a": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": [],
+  "note": "Differentiate velocity for acceleration"
+ },
+ "8ma0-p22-qp-jun2024-q2b": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": [],
+  "note": "Integrate velocity for displacement"
+ },
+ "8ma0-p22-qp-jun2024-q3": {
+  "spec": [
+   "M8.2",
+   "M8.5",
+   "P10.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2024-q4a": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2024-q4b": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Uses R=500 given in (a)"
+ },
+ "8ma0-p22-qp-jun2024-q4c": {
+  "spec": [
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2024-q4d": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "8ma0-p22-qp-jun2024-q4e": {
+  "spec": [
+   "M8.2",
+   "M7.3"
+  ],
+  "needs": [
+   "c",
+   "d"
+  ]
+ },
+ "8ma0-p22-qp-jun2025-q1a": {
+  "spec": [
+   "M7.2",
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2025-q1b": {
+  "spec": [
+   "M7.3",
+   "M7.2"
+  ],
+  "needs": [],
+  "note": "Limitation of constant acceleration model"
+ },
+ "8ma0-p22-qp-jun2025-q2a": {
+  "spec": [
+   "M8.5",
+   "P10.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2025-q2b": {
+  "spec": [
+   "M8.2",
+   "P10.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2025-q2c": {
+  "spec": [
+   "M8.4",
+   "M8.1"
+  ],
+  "needs": [],
+  "note": "Constant velocity so forces in equilibrium"
+ },
+ "8ma0-p22-qp-jun2025-q3a": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2025-q3b": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2025-q3c": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2025-q3d": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": [],
+  "note": "Suvat after Q hits floor"
+ },
+ "8ma0-p22-qp-jun2025-q3e": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p22-qp-jun2025-q3f": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2025-q4a": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-jun2025-q4b": {
+  "spec": [
+   "M7.4",
+   "M7.1"
+  ],
+  "needs": [],
+  "note": "Total distance with direction changes"
+ },
+ "8ma0-p22-qp-jun2025-q4c": {
+  "spec": [
+   "M7.4",
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2020-q1a": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2020-q1b": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2020-q1c": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2020-q1d": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2020-q1e": {
+  "spec": [
+   "M8.3",
+   "M7.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Air resistance effect on U from (a)"
+ },
+ "8ma0-p22-qp-nov2020-q1f": {
+  "spec": [
+   "M8.3",
+   "M7.3"
+  ],
+  "needs": [],
+  "note": "Refinement of free-fall model"
+ },
+ "8ma0-p22-qp-nov2020-q2a": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2020-q2b": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "8ma0-p22-qp-nov2020-q3a": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2020-q3b": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2021-q1a": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2021-q1b": {
+  "spec": [
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": [],
+  "note": "Vertical motion under gravity, total distance"
+ },
+ "8ma0-p22-qp-nov2021-q1c": {
+  "spec": [
+   "M8.3",
+   "M7.3"
+  ],
+  "needs": [],
+  "note": "Refinement of free-fall model"
+ },
+ "8ma0-p22-qp-nov2021-q2a": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2021-q2b": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": [],
+  "note": "Find k then solve v=0"
+ },
+ "8ma0-p22-qp-nov2021-q2c": {
+  "spec": [
+   "M7.4",
+   "M7.1"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Uses t=6 rest condition from (b)"
+ },
+ "8ma0-p22-qp-nov2021-q3a": {
+  "spec": [
+   "M8.4",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2021-q3b": {
+  "spec": [
+   "M8.4",
+   "M7.3",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "8ma0-p22-qp-nov2021-q3c": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "8ma0-p22-qp-nov2021-q3d": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": []
+ }
+}

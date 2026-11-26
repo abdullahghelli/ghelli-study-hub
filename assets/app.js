@@ -1245,7 +1245,12 @@
   const GROUP_OF = (i, data) => (data.topics.find(t => t.id === i.topic) || {}).group || "pure";
   function qbCard(i, data) {
     /* spec points the question covers, e.g. "8.5 Integration by substitution and by parts" */
-    const spec = (i.spec || []).map(c => `<span class="qb-spec"><b>${c}</b> ${esc(((data.points || {})[GROUP_OF(i, data)] || {})[c] || "")}</span>`).join("");
+    /* a point from another section keeps its letter ("P10.2" in a mechanics question): named from that section */
+    const SECT = { P: ["pure", "Pure"], S: ["stats", "Statistics"], M: ["mech", "Mechanics"] };
+    const spec = (i.spec || []).map(c => {
+      const x = /^[PSM]\d/.test(c) && SECT[c[0]], g = x ? x[0] : GROUP_OF(i, data), k = x ? c.slice(1) : c;
+      return `<span class="qb-spec"><b>${k}</b> ${esc(((data.points || {})[g] || {})[k] || "")}${x ? ` <small>(${x[1]})</small>` : ""}</span>`;
+    }).join("");
     return `<article class="qb-card ${qbProg.map[i.id] ? "st-" + qbProg.map[i.id] : ""}" data-qb-card="${i.id}">
       <header class="qb-card-head">
         <div class="qb-title"><b>${esc(i.series)} · ${esc(i.paper)} · Q${i.q}${i.part ? ` <span class="qb-part">part (${i.part})</span>` : ""}</b>

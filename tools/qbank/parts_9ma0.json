@@ -1,0 +1,6155 @@
+{
+ "9ma0-p1-qp-jun2018-q1": {
+  "spec": [
+   "P5.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q2a": {
+  "spec": [
+   "P7.2",
+   "P7.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q2b": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": [],
+  "note": "Substituting x=4 into dy/dx; no reference to (a)"
+ },
+ "9ma0-p1-qp-jun2018-q2c": {
+  "spec": [
+   "P7.3",
+   "P7.1"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Nature via second derivative; 'this stationary point' refers to (b)"
+ },
+ "9ma0-p1-qp-jun2018-q3": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q4a": {
+  "spec": [
+   "P9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q4b": {
+  "spec": [
+   "P9.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q5": {
+  "spec": [
+   "P7.4",
+   "P5.6",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q6a": {
+  "spec": [
+   "P3.1",
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q6b": {
+  "spec": [
+   "P3.2",
+   "P2.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q6c": {
+  "spec": [
+   "P3.2",
+   "P2.3"
+  ],
+  "needs": [],
+  "note": "Tangent to circle via discriminant; C defined in stem"
+ },
+ "9ma0-p1-qp-jun2018-q7a": {
+  "spec": [
+   "P8.6",
+   "P8.3",
+   "P6.4"
+  ],
+  "needs": [],
+  "note": "Integrate 2/(3x-k) (spec 8.6 guidance), limits, log laws"
+ },
+ "9ma0-p1-qp-jun2018-q7b": {
+  "spec": [
+   "P8.6",
+   "P8.3",
+   "P2.7"
+  ],
+  "needs": [],
+  "note": "Integrate 2/(2x-k)^2, limits; inverse proportion conclusion"
+ },
+ "9ma0-p1-qp-jun2018-q8a": {
+  "spec": [
+   "P5.9"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q8b": {
+  "spec": [
+   "P5.7",
+   "P5.9"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q9a": {
+  "spec": [
+   "P7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q9b": {
+  "spec": [
+   "P7.5",
+   "P2.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q9c": {
+  "spec": [
+   "P7.3",
+   "P7.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Furthest north: dy/dx=0 using (a)'s expression y=x"
+ },
+ "9ma0-p1-qp-jun2018-q10a": {
+  "spec": [
+   "P8.7"
+  ],
+  "needs": [],
+  "note": "Separating variables and particular solution"
+ },
+ "9ma0-p1-qp-jun2018-q10b": {
+  "spec": [
+   "P8.8",
+   "P5.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Max height from solution in (a); max of sine"
+ },
+ "9ma0-p1-qp-jun2018-q10c": {
+  "spec": [
+   "P8.8",
+   "P5.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q11b": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q11c": {
+  "spec": [
+   "P4.1",
+   "P2.2"
+  ],
+  "needs": [],
+  "note": "Substitute into binomial approximation; surd manipulation for root 6"
+ },
+ "9ma0-p1-qp-jun2018-q12a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Finding constants of exponential model; seventh root not logs"
+ },
+ "9ma0-p1-qp-jun2018-q12b": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q12c": {
+  "spec": [
+   "P6.7",
+   "P6.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q13": {
+  "spec": [
+   "P8.5",
+   "P8.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q14a": {
+  "spec": [
+   "P3.3",
+   "P5.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2018-q14b": {
+  "spec": [
+   "P3.3",
+   "P2.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2018-q14c": {
+  "spec": [
+   "P2.3",
+   "P3.3",
+   "P2.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Discriminant on Cartesian form from (a); endpoint; set notation"
+ },
+ "9ma0-p1-qp-jun2019-q1": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q2a": {
+  "spec": [
+   "P2.7",
+   "P5.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q2b": {
+  "spec": [
+   "P5.2",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q3a": {
+  "spec": [
+   "P7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q3b": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q4": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q5a": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q5b": {
+  "spec": [
+   "P2.7",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q5c": {
+  "spec": [
+   "P2.9",
+   "P2.8"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q6": {
+  "spec": [
+   "P5.7",
+   "P5.6",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q7a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q7b": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q7c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q8a": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q8b": {
+  "spec": [
+   "P8.3",
+   "P2.6"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q8c": {
+  "spec": [
+   "P8.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q9a": {
+  "spec": [
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q9b": {
+  "spec": [
+   "P6.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Restriction from a=b^2/(b-1) in (a) and logs needing positive a"
+ },
+ "9ma0-p1-qp-jun2019-q10": {
+  "spec": [
+   "P1.1",
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q11a": {
+  "spec": [
+   "P4.6",
+   "P4.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q11b": {
+  "spec": [
+   "P4.5",
+   "P4.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q11c": {
+  "spec": [
+   "P4.5",
+   "P4.6"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Geometric series sum in race model; nth term from (b)"
+ },
+ "9ma0-p1-qp-jun2019-q12a": {
+  "spec": [
+   "P7.4",
+   "P7.3"
+  ],
+  "needs": [],
+  "note": "Product rule and f'=0 for turning points"
+ },
+ "9ma0-p1-qp-jun2019-q12b": {
+  "spec": [
+   "P2.7",
+   "P2.9"
+  ],
+  "needs": [],
+  "note": "Sketch modulus of non-linear function from given graph"
+ },
+ "9ma0-p1-qp-jun2019-q12c": {
+  "spec": [
+   "P7.3",
+   "P2.11"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q12d": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [
+   "b",
+   "c"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q13a": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q13b": {
+  "spec": [
+   "P8.6",
+   "P2.10",
+   "P8.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q14a": {
+  "spec": [
+   "P7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2019-q14b": {
+  "spec": [
+   "P5.2",
+   "P7.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2019-q14c": {
+  "spec": [
+   "P7.4",
+   "P5.5"
+  ],
+  "needs": [],
+  "note": "dy/dx=1/(dx/dy) and Pythagorean identity to express in x"
+ },
+ "9ma0-p1-qp-jun2022-q1a": {
+  "spec": [
+   "P2.9"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q1b": {
+  "spec": [
+   "P2.9",
+   "P2.7"
+  ],
+  "needs": [],
+  "note": "|f(x)| point mapping"
+ },
+ "9ma0-p1-qp-jun2022-q1c": {
+  "spec": [
+   "P2.9"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q2": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q3a": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q3b": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": [],
+  "note": "Distance from origin via centre and radius; centre is an answer"
+ },
+ "9ma0-p1-qp-jun2022-q4": {
+  "spec": [
+   "P8.4",
+   "P8.2",
+   "P6.4"
+  ],
+  "needs": [],
+  "note": "Limit of sum as integral, integrate 2/x, log laws"
+ },
+ "9ma0-p1-qp-jun2022-q5a": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Finding model constants; simultaneous linear equations routine"
+ },
+ "9ma0-p1-qp-jun2022-q5b": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q6a": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q6b": {
+  "spec": [
+   "P2.7",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q6c": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q7": {
+  "spec": [
+   "P1.1",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q8a": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q8b": {
+  "spec": [
+   "P7.4",
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q8c": {
+  "spec": [
+   "P9.2",
+   "P9.5"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q9a": {
+  "spec": [
+   "P10.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q9b": {
+  "spec": [
+   "P10.3",
+   "P10.2",
+   "P10.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q10a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q10b": {
+  "spec": [
+   "P6.7",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q10c": {
+  "spec": [
+   "P6.7",
+   "P2.3",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q11a": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q11b": {
+  "spec": [
+   "P2.6",
+   "P2.3",
+   "P2.7"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "'Intersect again' refers to x=1/2 from (a); factor and quadratic"
+ },
+ "9ma0-p1-qp-jun2022-q12": {
+  "spec": [
+   "P8.5",
+   "P8.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q13": {
+  "spec": [
+   "P4.4",
+   "P1.1",
+   "P4.6",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q14a": {
+  "spec": [
+   "P5.6",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2022-q14b": {
+  "spec": [
+   "P5.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q15a": {
+  "spec": [
+   "P5.1",
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Sector area/arc length; setting up formula from design model"
+ },
+ "9ma0-p1-qp-jun2022-q15b": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q15c": {
+  "spec": [
+   "P7.3",
+   "P7.1"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2022-q16a": {
+  "spec": [
+   "P8.3",
+   "P5.6"
+  ],
+  "needs": [],
+  "note": "Parametric area integral with double angle identities"
+ },
+ "9ma0-p1-qp-jun2022-q16b": {
+  "spec": [
+   "P8.3",
+   "P8.2",
+   "P8.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Hence integrate; sin^2t cos t by reverse chain"
+ },
+ "9ma0-p1-qp-jun2023-q1": {
+  "spec": [
+   "P8.2",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q2a": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q2b": {
+  "spec": [
+   "P2.6",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q3a": {
+  "spec": [
+   "P10.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q3b": {
+  "spec": [
+   "P10.2"
+  ],
+  "needs": [],
+  "note": "Magnitude of position vector"
+ },
+ "9ma0-p1-qp-jun2023-q4a": {
+  "spec": [
+   "P5.2",
+   "P7.3",
+   "P2.3"
+  ],
+  "needs": [],
+  "note": "Small angle approx in f'=0, solve quadratic"
+ },
+ "9ma0-p1-qp-jun2023-q4b": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q5a": {
+  "spec": [
+   "P9.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q5b": {
+  "spec": [
+   "P9.4",
+   "P2.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q6a": {
+  "spec": [
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q6b": {
+  "spec": [
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q6c": {
+  "spec": [
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q7a": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q7b": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q7c": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q7d": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q8a": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q8b": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q8c": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q9a": {
+  "spec": [
+   "P4.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q9b": {
+  "spec": [
+   "P4.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Solve (a)'s quadratic, |r|<1, sum to infinity"
+ },
+ "9ma0-p1-qp-jun2023-q10a": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q10b": {
+  "spec": [
+   "P2.3",
+   "P2.5",
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q11a": {
+  "spec": [
+   "P6.6",
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q11b": {
+  "spec": [
+   "P6.6",
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q11c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Evaluate model reliability; model in stem"
+ },
+ "9ma0-p1-qp-jun2023-q12": {
+  "spec": [
+   "P7.1",
+   "P5.6"
+  ],
+  "needs": [],
+  "note": "First principles 'show' (not prove); compound angle"
+ },
+ "9ma0-p1-qp-jun2023-q13a": {
+  "spec": [
+   "P2.11",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q13b": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Use quadratic model symmetry; model given in stem"
+ },
+ "9ma0-p1-qp-jun2023-q13c": {
+  "spec": [
+   "P5.9",
+   "P5.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q13d": {
+  "spec": [
+   "P5.9",
+   "P2.11"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q14": {
+  "spec": [
+   "P1.1",
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q15a": {
+  "spec": [
+   "P7.4",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q15b": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q15c": {
+  "spec": [
+   "P9.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2023-q15d": {
+  "spec": [
+   "P9.2"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p1-qp-jun2023-q15e": {
+  "spec": [
+   "P9.1"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q1": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q2": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q3a": {
+  "spec": [
+   "P9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q3b": {
+  "spec": [
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q3c": {
+  "spec": [
+   "P9.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q4": {
+  "spec": [
+   "P7.1"
+  ],
+  "needs": [],
+  "note": "First principles 'show that', not prove"
+ },
+ "9ma0-p1-qp-jun2024-q5a": {
+  "spec": [
+   "P7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q5b": {
+  "spec": [
+   "P7.3",
+   "P2.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q6a": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": [],
+  "note": "Vertex of modulus graph"
+ },
+ "9ma0-p1-qp-jun2024-q6b": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q6c": {
+  "spec": [
+   "P2.7",
+   "P3.1"
+  ],
+  "needs": [],
+  "note": "Line through (0,4) meeting modulus graph; gradients"
+ },
+ "9ma0-p1-qp-jun2024-q7a": {
+  "spec": [
+   "P8.7",
+   "P8.2"
+  ],
+  "needs": [],
+  "note": "dH/dt given in t only; could be P8.2 only"
+ },
+ "9ma0-p1-qp-jun2024-q7b": {
+  "spec": [
+   "P6.7",
+   "P6.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q7c": {
+  "spec": [
+   "P6.7",
+   "P8.8"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q8a": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q8b": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q8c": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q8d": {
+  "spec": [
+   "P2.3",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q9a": {
+  "spec": [
+   "P4.5",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q9b": {
+  "spec": [
+   "P4.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q10a": {
+  "spec": [
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q10b": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Tangent at A; x=4 given only in (a)'s text"
+ },
+ "9ma0-p1-qp-jun2024-q10c": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ],
+  "note": "Area using l1 from (b) and x=4 from (a)"
+ },
+ "9ma0-p1-qp-jun2024-q11": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [],
+  "note": "Sector and segment areas in radians"
+ },
+ "9ma0-p1-qp-jun2024-q12b": {
+  "spec": [
+   "P5.9",
+   "P5.6"
+  ],
+  "needs": [],
+  "note": "Complete trig model using R form; (a) in stem"
+ },
+ "9ma0-p1-qp-jun2024-q12c": {
+  "spec": [
+   "P5.9"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q12d": {
+  "spec": [
+   "P5.9",
+   "P5.7"
+  ],
+  "needs": [],
+  "note": "Solve trig equation in model and evaluate other model"
+ },
+ "9ma0-p1-qp-jun2024-q13": {
+  "spec": [
+   "P8.5",
+   "P5.6",
+   "P8.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q14a": {
+  "spec": [
+   "P7.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q14b": {
+  "spec": [
+   "P8.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q14c": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2024-q14d": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2024-q15": {
+  "spec": [
+   "P1.1",
+   "P2.3",
+   "P2.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q1a": {
+  "spec": [
+   "P2.9"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q1b": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q1c": {
+  "spec": [
+   "P2.9",
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q2a": {
+  "spec": [
+   "P3.2",
+   "P2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q2b": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q3a": {
+  "spec": [
+   "P4.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q3b": {
+  "spec": [
+   "P4.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q4a": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q4b": {
+  "spec": [
+   "P2.3",
+   "P1.1"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "'Hence prove' via discriminant of Q(x) from (a)"
+ },
+ "9ma0-p1-qp-jun2025-q5": {
+  "spec": [
+   "P8.4",
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q6a": {
+  "spec": [
+   "P2.11",
+   "P2.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q6b": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Interpret model at t=0; model in stem"
+ },
+ "9ma0-p1-qp-jun2025-q6c": {
+  "spec": [
+   "P2.11",
+   "P2.1"
+  ],
+  "needs": [],
+  "note": "Limitation on T from h>=0; fractional index"
+ },
+ "9ma0-p1-qp-jun2025-q7a": {
+  "spec": [
+   "P7.3",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q7b": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q7c": {
+  "spec": [
+   "P2.9",
+   "P2.7"
+  ],
+  "needs": [],
+  "note": "Vertical translation and root count; equation is answer only"
+ },
+ "9ma0-p1-qp-jun2025-q8a": {
+  "spec": [
+   "P1.1",
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q8b": {
+  "spec": [
+   "P1.1",
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q9a": {
+  "spec": [
+   "P6.3",
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "context tag borderline"
+ },
+ "9ma0-p1-qp-jun2025-q9b": {
+  "spec": [
+   "P7.4",
+   "P7.3",
+   "P6.3"
+  ],
+  "needs": [],
+  "note": "Product rule, dv/dt=0, ln to solve"
+ },
+ "9ma0-p1-qp-jun2025-q9c": {
+  "spec": [
+   "P9.2",
+   "P9.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q10a": {
+  "spec": [
+   "P10.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q10b": {
+  "spec": [
+   "P10.2",
+   "P10.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q11a": {
+  "spec": [
+   "P6.7",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q11b": {
+  "spec": [
+   "P6.2",
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Derivative of exponential model in terms of V"
+ },
+ "9ma0-p1-qp-jun2025-q11c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q12a": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q12b": {
+  "spec": [
+   "P2.7",
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q12c": {
+  "spec": [
+   "P2.6",
+   "P2.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q13": {
+  "spec": [
+   "P8.5",
+   "P8.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q14a": {
+  "spec": [
+   "P5.8",
+   "P5.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q14b": {
+  "spec": [
+   "P5.7",
+   "P5.6"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q15a": {
+  "spec": [
+   "P5.1",
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Sector perimeter/area; setting up formula from design model"
+ },
+ "9ma0-p1-qp-jun2025-q15b": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q15c": {
+  "spec": [
+   "P7.1",
+   "P7.3"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-jun2025-q16a": {
+  "spec": [
+   "P8.5",
+   "P5.5",
+   "P5.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-jun2025-q16b": {
+  "spec": [
+   "P8.2",
+   "P8.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Hence integrate cosec^2 and apply limits"
+ },
+ "9ma0-p1-qp-nov2020-q1": {
+  "spec": [
+   "P4.1",
+   "P2.2"
+  ],
+  "needs": [],
+  "note": "Binomial expansion and approximation for root 5"
+ },
+ "9ma0-p1-qp-nov2020-q2": {
+  "spec": [
+   "P6.5",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q3a": {
+  "spec": [
+   "P10.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q3b": {
+  "spec": [
+   "P10.3",
+   "P10.5"
+  ],
+  "needs": [],
+  "note": "Parallel vectors show trapezium"
+ },
+ "9ma0-p1-qp-nov2020-q4a": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q4b": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q5a": {
+  "spec": [
+   "P4.4",
+   "P4.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q5b": {
+  "spec": [
+   "P4.5",
+   "P4.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q6a": {
+  "spec": [
+   "P5.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q6b": {
+  "spec": [
+   "P5.9",
+   "P5.6"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q6c": {
+  "spec": [
+   "P5.9",
+   "P5.7"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q7": {
+  "spec": [
+   "P2.5",
+   "P3.1",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q8": {
+  "spec": [
+   "P6.2",
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q9a": {
+  "spec": [
+   "P7.4",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q9b": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q9c": {
+  "spec": [
+   "P2.8",
+   "P2.9"
+  ],
+  "needs": [],
+  "note": "Range of transformed functions"
+ },
+ "9ma0-p1-qp-nov2020-q10": {
+  "spec": [
+   "P8.5",
+   "P8.6",
+   "P2.10",
+   "P8.3"
+  ],
+  "needs": [],
+  "note": "Substitution, partial fractions, ln integration, limits"
+ },
+ "9ma0-p1-qp-nov2020-q11a": {
+  "spec": [
+   "P5.1",
+   "P3.2",
+   "P2.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q11b": {
+  "spec": [
+   "P5.1",
+   "P3.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q12a": {
+  "spec": [
+   "P5.8",
+   "P5.5",
+   "P5.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q12b": {
+  "spec": [
+   "P5.7",
+   "P5.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q13a": {
+  "spec": [
+   "P4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q13b": {
+  "spec": [
+   "P4.2"
+  ],
+  "needs": [],
+  "note": "Periodic sequence reasoning"
+ },
+ "9ma0-p1-qp-nov2020-q13c": {
+  "spec": [
+   "P4.3",
+   "P4.2"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q14a": {
+  "spec": [
+   "P7.6",
+   "P7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q14b": {
+  "spec": [
+   "P8.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q14c": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p1-qp-nov2020-q15a": {
+  "spec": [
+   "P7.5",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2020-q15b": {
+  "spec": [
+   "P7.1",
+   "P7.4",
+   "P1.1"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Prove inflection: second derivative sign change; dy/dx from (a)"
+ },
+ "9ma0-p1-qp-nov2020-q16": {
+  "spec": [
+   "P1.1",
+   "P2.6"
+  ],
+  "needs": [],
+  "note": "Proof by contradiction with factorisation key step"
+ },
+ "9ma0-p1-qp-nov2021-q1": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q2a": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q2b": {
+  "spec": [
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q3a": {
+  "spec": [
+   "P4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q3b": {
+  "spec": [
+   "P2.3",
+   "P4.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q3c": {
+  "spec": [
+   "P4.2"
+  ],
+  "needs": [],
+  "note": "Recurrence evaluation; k is an answer only"
+ },
+ "9ma0-p1-qp-nov2021-q4a": {
+  "spec": [
+   "P7.4",
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q4b": {
+  "spec": [
+   "P9.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q4c": {
+  "spec": [
+   "P9.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q5a": {
+  "spec": [
+   "P4.5",
+   "P4.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q5b": {
+  "spec": [
+   "P4.5",
+   "P6.5",
+   "P4.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q5c": {
+  "spec": [
+   "P4.5",
+   "P4.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q6a": {
+  "spec": [
+   "P10.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q6b": {
+  "spec": [
+   "P5.1",
+   "P10.2"
+  ],
+  "needs": [],
+  "note": "Cosine rule with vector magnitudes"
+ },
+ "9ma0-p1-qp-nov2021-q7a": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q7b": {
+  "spec": [
+   "P3.2",
+   "P2.3"
+  ],
+  "needs": [],
+  "note": "Tangent line to circle via discriminant"
+ },
+ "9ma0-p1-qp-nov2021-q8a": {
+  "spec": [
+   "P6.7",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q8b": {
+  "spec": [
+   "P6.2",
+   "P6.7"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Hence rate of change of exponential model"
+ },
+ "9ma0-p1-qp-nov2021-q8c": {
+  "spec": [
+   "P6.7",
+   "P6.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q9a": {
+  "spec": [
+   "P2.10"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q9b": {
+  "spec": [
+   "P4.1",
+   "P2.10"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q10a": {
+  "spec": [
+   "P5.8",
+   "P5.6",
+   "P1.1"
+  ],
+  "needs": [],
+  "note": "Asked to prove trig identity using double angles"
+ },
+ "9ma0-p1-qp-nov2021-q10b": {
+  "spec": [
+   "P5.7",
+   "P5.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Hence solve tan2x=3sin2x"
+ },
+ "9ma0-p1-qp-nov2021-q11a": {
+  "spec": [
+   "P9.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q11b": {
+  "spec": [
+   "P8.5",
+   "P8.3",
+   "P6.4"
+  ],
+  "needs": [],
+  "note": "Integration by parts twice, limits, log laws"
+ },
+ "9ma0-p1-qp-nov2021-q12a": {
+  "spec": [
+   "P2.11",
+   "P2.3"
+  ],
+  "needs": [],
+  "note": "Set up quadratic model from context"
+ },
+ "9ma0-p1-qp-nov2021-q12b": {
+  "spec": [
+   "P2.11",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p1-qp-nov2021-q12c": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q13": {
+  "spec": [
+   "P3.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p1-qp-nov2021-q14": {
+  "spec": [
+   "P7.4",
+   "P7.2"
+  ],
+  "needs": [],
+  "note": "Quotient rule with root x"
+ },
+ "9ma0-p1-qp-nov2021-q15": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q1a": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q1b": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q1c": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q2a": {
+  "spec": [
+   "P10.4",
+   "P10.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q2b": {
+  "spec": [
+   "P10.4",
+   "P10.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q3": {
+  "spec": [
+   "P1.1",
+   "P2.7",
+   "P2.2"
+  ],
+  "needs": [],
+  "note": "Counter-example with surds; modulus graph"
+ },
+ "9ma0-p2-qp-jun2018-q4": {
+  "spec": [
+   "P4.3",
+   "P4.4",
+   "P4.5",
+   "P4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q5a": {
+  "spec": [
+   "P9.3"
+  ],
+  "needs": [],
+  "note": "Deriving Newton-Raphson formula"
+ },
+ "9ma0-p2-qp-jun2018-q5b": {
+  "spec": [
+   "P9.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q5c": {
+  "spec": [
+   "P9.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q6a": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q6b": {
+  "spec": [
+   "P2.3",
+   "P1.1",
+   "P2.6"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q6c": {
+  "spec": [
+   "P5.7",
+   "P5.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q7": {
+  "spec": [
+   "P5.7",
+   "P5.6",
+   "P5.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q8a": {
+  "spec": [
+   "P2.11",
+   "P2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q8b": {
+  "spec": [
+   "P2.11",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q8c": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q9": {
+  "spec": [
+   "P7.1",
+   "P1.1",
+   "P5.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q10a": {
+  "spec": [
+   "P7.6",
+   "P8.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q10b": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q10c": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q11a": {
+  "spec": [
+   "P2.10",
+   "P2.6"
+  ],
+  "needs": [],
+  "note": "Partial fractions with improper fraction / division"
+ },
+ "9ma0-p2-qp-jun2018-q11b": {
+  "spec": [
+   "P7.3",
+   "P7.4",
+   "P1.1"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Prove decreasing via derivative of (a)'s partial fractions"
+ },
+ "9ma0-p2-qp-jun2018-q12": {
+  "spec": [
+   "P5.8",
+   "P5.7",
+   "P5.6",
+   "P5.5",
+   "P1.1"
+  ],
+  "needs": [],
+  "note": "Prove identity then hence solve trig equation"
+ },
+ "9ma0-p2-qp-jun2018-q13": {
+  "spec": [
+   "P8.5",
+   "P8.3",
+   "P7.3",
+   "P7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q14a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2018-q14b": {
+  "spec": [
+   "P7.4",
+   "P7.2"
+  ],
+  "needs": [],
+  "note": "Chain rule on 900/(3+7e^-0.25t), rewrite in N"
+ },
+ "9ma0-p2-qp-jun2018-q14c": {
+  "spec": [
+   "P6.7",
+   "P2.3",
+   "P6.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2018-q14d": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q1": {
+  "spec": [
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q2a": {
+  "spec": [
+   "P9.4",
+   "P9.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q2b": {
+  "spec": [
+   "P9.4",
+   "P7.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q3a": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q3b": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q4": {
+  "spec": [
+   "P3.3",
+   "P5.5",
+   "P5.7"
+  ],
+  "needs": [],
+  "note": "Parametric meets circle; sin^2+cos^2, solve"
+ },
+ "9ma0-p2-qp-jun2019-q5": {
+  "spec": [
+   "P8.4",
+   "P8.2",
+   "P8.3"
+  ],
+  "needs": [],
+  "note": "Limit of sum as integral, evaluate"
+ },
+ "9ma0-p2-qp-jun2019-q6a": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q6b": {
+  "spec": [
+   "P2.5"
+  ],
+  "needs": [],
+  "note": "Solving quadratic and linear inequalities on piecewise function"
+ },
+ "9ma0-p2-qp-jun2019-q6c": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q6d": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q7a": {
+  "spec": [
+   "P3.1",
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q7b": {
+  "spec": [
+   "P3.1",
+   "P2.4"
+  ],
+  "needs": [],
+  "note": "Straight-line cost model from two conditions"
+ },
+ "9ma0-p2-qp-jun2019-q7c": {
+  "spec": [
+   "P3.1",
+   "P2.11"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Interpret gradient 0.84 in context"
+ },
+ "9ma0-p2-qp-jun2019-q7d": {
+  "spec": [
+   "P3.1",
+   "P2.5"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Linear inequality using model from (b)"
+ },
+ "9ma0-p2-qp-jun2019-q8": {
+  "spec": [
+   "P4.5",
+   "P4.3",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q9a": {
+  "spec": [
+   "P6.6",
+   "P6.4"
+  ],
+  "needs": [],
+  "note": "Log-log linear graph implies power law"
+ },
+ "9ma0-p2-qp-jun2019-q9b": {
+  "spec": [
+   "P6.6",
+   "P6.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q9c": {
+  "spec": [
+   "P2.11",
+   "M6.1"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Use formula from (b) with unit conversion and reaction distance"
+ },
+ "9ma0-p2-qp-jun2019-q10a": {
+  "spec": [
+   "P10.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q10b": {
+  "spec": [
+   "P10.3",
+   "P10.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Vector route using CM from (a)"
+ },
+ "9ma0-p2-qp-jun2019-q10c": {
+  "spec": [
+   "P10.5",
+   "P10.3",
+   "P1.1"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "'Hence prove' ratio comparing coefficients"
+ },
+ "9ma0-p2-qp-jun2019-q11a": {
+  "spec": [
+   "P7.5",
+   "P7.3",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q11b": {
+  "spec": [
+   "P9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q11c": {
+  "spec": [
+   "P9.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2019-q11d": {
+  "spec": [
+   "P9.2",
+   "P4.2"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Long-term behaviour of (c)'s iteration: periodic"
+ },
+ "9ma0-p2-qp-jun2019-q12": {
+  "spec": [
+   "P5.8",
+   "P5.6",
+   "P5.7",
+   "P5.4",
+   "P1.1"
+  ],
+  "needs": [],
+  "note": "Prove cot identity then solve"
+ },
+ "9ma0-p2-qp-jun2019-q13a": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Set up surface area formula from tank model"
+ },
+ "9ma0-p2-qp-jun2019-q13b": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2019-q13c": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Minimum value using (a)'s surface area expression"
+ },
+ "9ma0-p2-qp-jun2019-q14b": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": [],
+  "note": "q14a missing from chunk; in stem"
+ },
+ "9ma0-p2-qp-jun2019-q14c": {
+  "spec": [
+   "P8.7"
+  ],
+  "needs": [],
+  "note": "Particular solution of separable DE; integral given in stem (a)"
+ },
+ "9ma0-p2-qp-jun2022-q1": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q2": {
+  "spec": [
+   "P6.1",
+   "P6.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q3a": {
+  "spec": [
+   "P4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q3b": {
+  "spec": [
+   "P4.3",
+   "P4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q4": {
+  "spec": [
+   "P7.1"
+  ],
+  "needs": [],
+  "note": "first-principles show-that; P1.1 arguably"
+ },
+ "9ma0-p2-qp-jun2022-q5a": {
+  "spec": [
+   "P9.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q5b": {
+  "spec": [
+   "P6.4",
+   "P8.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q6a": {
+  "spec": [
+   "P7.3",
+   "P7.2",
+   "P5.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q6b": {
+  "spec": [
+   "P9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q6c": {
+  "spec": [
+   "P9.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q7": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q8": {
+  "spec": [
+   "P8.3",
+   "P8.2",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q9a": {
+  "spec": [
+   "P5.9",
+   "P5.3"
+  ],
+  "needs": [],
+  "note": "Find trig model constants; period, amplitude"
+ },
+ "9ma0-p2-qp-jun2022-q9b": {
+  "spec": [
+   "P2.11",
+   "P5.9"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q10a": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q10b": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q10c": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q10d": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q11": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q12a": {
+  "spec": [
+   "P7.4",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q12b": {
+  "spec": [
+   "P7.3",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q13a": {
+  "spec": [
+   "P10.3",
+   "P10.4",
+   "P10.5"
+  ],
+  "needs": [],
+  "note": "Collinearity via parallel vectors"
+ },
+ "9ma0-p2-qp-jun2022-q13b": {
+  "spec": [
+   "P10.3",
+   "P10.2",
+   "P10.5"
+  ],
+  "needs": [],
+  "note": "Parallel condition then magnitude; p is an answer"
+ },
+ "9ma0-p2-qp-jun2022-q14b": {
+  "spec": [
+   "P8.7",
+   "P8.6",
+   "P6.4"
+  ],
+  "needs": [],
+  "note": "Separable DE with partial fractions (stem a), log laws"
+ },
+ "9ma0-p2-qp-jun2022-q14c": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q15a": {
+  "spec": [
+   "P4.5",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q15b": {
+  "spec": [
+   "P5.7",
+   "P5.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Solve (a)'s quadratic in sin; exact radian value"
+ },
+ "9ma0-p2-qp-jun2022-q15c": {
+  "spec": [
+   "P4.5",
+   "P2.2",
+   "P5.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2022-q16a": {
+  "spec": [
+   "P7.5",
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q16b": {
+  "spec": [
+   "P3.3",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2022-q16c": {
+  "spec": [
+   "P2.3",
+   "P3.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q1a": {
+  "spec": [
+   "P7.1",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q1b": {
+  "spec": [
+   "P7.1"
+  ],
+  "needs": [],
+  "note": "f''=0 and concavity; f'' from stem function"
+ },
+ "9ma0-p2-qp-jun2023-q2a": {
+  "spec": [
+   "P4.2",
+   "P5.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q2b": {
+  "spec": [
+   "P4.2",
+   "P4.3"
+  ],
+  "needs": [],
+  "note": "Periodic sequence and sigma sum"
+ },
+ "9ma0-p2-qp-jun2023-q3a": {
+  "spec": [
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q3b": {
+  "spec": [
+   "P2.3",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q4a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q4b": {
+  "spec": [
+   "P6.7",
+   "P6.2"
+  ],
+  "needs": [],
+  "note": "Exponential model constant via initial rate"
+ },
+ "9ma0-p2-qp-jun2023-q5a": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q5b": {
+  "spec": [
+   "P8.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q6a": {
+  "spec": [
+   "P10.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q6b": {
+  "spec": [
+   "P10.4",
+   "P10.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q7a": {
+  "spec": [
+   "P7.5"
+  ],
+  "needs": [],
+  "note": "Implicit differentiation"
+ },
+ "9ma0-p2-qp-jun2023-q7b": {
+  "spec": [
+   "P7.3",
+   "P7.5"
+  ],
+  "needs": [],
+  "note": "Normal at point; derivative is answer only"
+ },
+ "9ma0-p2-qp-jun2023-q8": {
+  "spec": [
+   "P5.6",
+   "P4.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q9a": {
+  "spec": [
+   "P3.3",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q9b": {
+  "spec": [
+   "P7.3",
+   "P7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q10a": {
+  "spec": [
+   "P2.10"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q10b": {
+  "spec": [
+   "P8.6",
+   "P8.3",
+   "P6.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q11a": {
+  "spec": [
+   "P7.6",
+   "P7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q11b": {
+  "spec": [
+   "P8.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q11c": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q12a": {
+  "spec": [
+   "P2.11",
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q12b": {
+  "spec": [
+   "P2.11",
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q12c": {
+  "spec": [
+   "P2.7",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q12d": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q13a": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q13b": {
+  "spec": [
+   "P8.2",
+   "P8.3",
+   "P4.1"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Using (a)'s expansion; integrate and apply limits"
+ },
+ "9ma0-p2-qp-jun2023-q13c": {
+  "spec": [
+   "P8.5",
+   "P8.3",
+   "P6.4"
+  ],
+  "needs": [],
+  "note": "Integration by substitution, limits, log laws"
+ },
+ "9ma0-p2-qp-jun2023-q14a": {
+  "spec": [
+   "P5.6",
+   "P5.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2023-q14b": {
+  "spec": [
+   "P5.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2023-q15": {
+  "spec": [
+   "P1.1",
+   "P5.8",
+   "P5.5"
+  ],
+  "needs": [],
+  "note": "Complete proof by contradiction with Pythagorean identity"
+ },
+ "9ma0-p2-qp-jun2024-q1a": {
+  "spec": [
+   "P7.2",
+   "P7.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q1b": {
+  "spec": [
+   "P7.1"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Hence: solve second derivative zero"
+ },
+ "9ma0-p2-qp-jun2024-q2a": {
+  "spec": [
+   "P4.4"
+  ],
+  "needs": [],
+  "note": "nth term of arithmetic sequence"
+ },
+ "9ma0-p2-qp-jun2024-q2b": {
+  "spec": [
+   "P4.4",
+   "P4.6"
+  ],
+  "needs": [],
+  "note": "Sum of AP set up from loan repayment model"
+ },
+ "9ma0-p2-qp-jun2024-q2c": {
+  "spec": [
+   "P2.3",
+   "P4.6"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q3": {
+  "spec": [
+   "P2.9"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q4a": {
+  "spec": [
+   "P4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q4b": {
+  "spec": [
+   "P4.2",
+   "P4.3",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q5": {
+  "spec": [
+   "P5.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q6a": {
+  "spec": [
+   "P7.4",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q6b": {
+  "spec": [
+   "P6.4",
+   "P6.3"
+  ],
+  "needs": [],
+  "note": "Log/exp manipulation; f' notation needs no earlier text"
+ },
+ "9ma0-p2-qp-jun2024-q6c": {
+  "spec": [
+   "P9.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q7a": {
+  "spec": [
+   "P10.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q7b": {
+  "spec": [
+   "P10.5",
+   "P10.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q8a": {
+  "spec": [
+   "P5.8",
+   "P5.5",
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q8b": {
+  "spec": [
+   "P5.7",
+   "P5.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q9a": {
+  "spec": [
+   "P2.11",
+   "P2.3",
+   "P7.3"
+  ],
+  "needs": [],
+  "note": "Quadratic model; Way 1 uses dH/dx=0 at x=9"
+ },
+ "9ma0-p2-qp-jun2024-q9b": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q9c": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Use quadratic model in context; model from stem"
+ },
+ "9ma0-p2-qp-jun2024-q10a": {
+  "spec": [
+   "P7.5",
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q10b": {
+  "spec": [
+   "P3.4",
+   "P3.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q11": {
+  "spec": [
+   "P8.5",
+   "P8.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q12b": {
+  "spec": [
+   "P8.7",
+   "P8.6"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q12c": {
+  "spec": [
+   "P8.7",
+   "P6.3",
+   "P6.4"
+  ],
+  "needs": [],
+  "note": "Rearranging DE solution to explicit exponential form"
+ },
+ "9ma0-p2-qp-jun2024-q12d": {
+  "spec": [
+   "P8.8",
+   "P6.7"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Limit for large t using form given in (c)"
+ },
+ "9ma0-p2-qp-jun2024-q13a": {
+  "spec": [
+   "P6.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q13b": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Interpret constants of exponential model"
+ },
+ "9ma0-p2-qp-jun2024-q13c": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [],
+  "note": "Use exponential model to predict"
+ },
+ "9ma0-p2-qp-jun2024-q13d": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q14a": {
+  "spec": [
+   "P3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q14b": {
+  "spec": [
+   "P3.2",
+   "P2.5"
+  ],
+  "needs": [],
+  "note": "Circle intersection condition; set notation answer"
+ },
+ "9ma0-p2-qp-jun2024-q15a": {
+  "spec": [
+   "P7.5",
+   "P7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2024-q15b": {
+  "spec": [
+   "P7.3",
+   "P7.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2024-q15c": {
+  "spec": [
+   "P1.1",
+   "P2.6",
+   "P2.3"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Prove: substitute normal, factor cubic, discriminant"
+ },
+ "9ma0-p2-qp-jun2025-q1": {
+  "spec": [
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q2": {
+  "spec": [
+   "P8.2",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q3": {
+  "spec": [
+   "P6.5",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q4a": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q4b": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q5a": {
+  "spec": [
+   "P3.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q5b": {
+  "spec": [
+   "P3.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q5c": {
+  "spec": [
+   "P7.4",
+   "P7.3"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Hence: chain rule on Cartesian form from (b)"
+ },
+ "9ma0-p2-qp-jun2025-q6a": {
+  "spec": [
+   "P5.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q6b": {
+  "spec": [
+   "P5.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q6c": {
+  "spec": [
+   "P5.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q7": {
+  "spec": [
+   "P2.10",
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q8a": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q8b": {
+  "spec": [
+   "P7.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q8c": {
+  "spec": [
+   "P2.6",
+   "P7.3",
+   "P2.7"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q9a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q9b": {
+  "spec": [
+   "P6.7",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q9c": {
+  "spec": [
+   "P6.7",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q9d": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q10a": {
+  "spec": [
+   "P7.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q10b": {
+  "spec": [
+   "P8.7",
+   "P8.2",
+   "P6.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Separate variables, integrate, rearrange exponential"
+ },
+ "9ma0-p2-qp-jun2025-q10c": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Interpret DE solution for large t"
+ },
+ "9ma0-p2-qp-jun2025-q11a": {
+  "spec": [
+   "P3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q11b": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q11c": {
+  "spec": [
+   "P2.5",
+   "P2.3",
+   "P2.11"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q11d": {
+  "spec": [
+   "P2.3",
+   "P2.11"
+  ],
+  "needs": [
+   "b",
+   "c"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q11e": {
+  "spec": [
+   "P2.11"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q12a": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q12b": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": [],
+  "note": "Range of composite function"
+ },
+ "9ma0-p2-qp-jun2025-q12c": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": [],
+  "note": "Line through origin vs modulus graph"
+ },
+ "9ma0-p2-qp-jun2025-q13": {
+  "spec": [
+   "P5.3",
+   "P5.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q14a": {
+  "spec": [
+   "P10.3",
+   "P10.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q14b": {
+  "spec": [
+   "P10.5",
+   "P10.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-jun2025-q15a": {
+  "spec": [
+   "P7.4",
+   "P7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-jun2025-q15b": {
+  "spec": [
+   "P8.5",
+   "P5.5",
+   "P5.6"
+  ],
+  "needs": [],
+  "note": "MS text missing; tagged from question"
+ },
+ "9ma0-p2-qp-jun2025-q15c": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "MS text missing; tagged from question"
+ },
+ "9ma0-p2-qp-nov2020-q1a": {
+  "spec": [
+   "P9.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q1b": {
+  "spec": [
+   "P9.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q1c": {
+  "spec": [
+   "P9.4"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q2": {
+  "spec": [
+   "P10.4",
+   "P10.3"
+  ],
+  "needs": [],
+  "note": "Position vectors and scalar multiples"
+ },
+ "9ma0-p2-qp-nov2020-q3": {
+  "spec": [
+   "P6.4",
+   "P6.3"
+  ],
+  "needs": [],
+  "note": "Log laws; log of negative undefined"
+ },
+ "9ma0-p2-qp-nov2020-q4": {
+  "spec": [
+   "P4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q5": {
+  "spec": [
+   "P6.5",
+   "P2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q6": {
+  "spec": [
+   "P2.6",
+   "P8.2",
+   "P8.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q7a": {
+  "spec": [
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q7b": {
+  "spec": [
+   "P7.3",
+   "P2.1"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Stationary point using derivative given in (a); index rearrangement"
+ },
+ "9ma0-p2-qp-nov2020-q7c": {
+  "spec": [
+   "P9.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q8": {
+  "spec": [
+   "P8.2",
+   "P2.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q9a": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q9b": {
+  "spec": [
+   "P6.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q10a": {
+  "spec": [
+   "P5.8",
+   "P5.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q10b": {
+  "spec": [
+   "P5.7",
+   "P5.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2020-q11a": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q11b": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q11c": {
+  "spec": [
+   "P2.7",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q12a": {
+  "spec": [
+   "P8.3",
+   "P5.6",
+   "P8.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q12b": {
+  "spec": [
+   "P3.4",
+   "P5.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q13a": {
+  "spec": [
+   "P2.8",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q13b": {
+  "spec": [
+   "P7.4",
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q13c": {
+  "spec": [
+   "P6.3",
+   "P2.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q14a": {
+  "spec": [
+   "P3.2",
+   "P2.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q14b": {
+  "spec": [
+   "P2.3",
+   "P3.2",
+   "P2.2"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Discriminant for tangency; surd answers"
+ },
+ "9ma0-p2-qp-nov2020-q15a": {
+  "spec": [
+   "P4.5",
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2020-q15b": {
+  "spec": [
+   "P4.5",
+   "P2.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Uses Sn formula from (a); quadratic in r^5"
+ },
+ "9ma0-p2-qp-nov2020-q16": {
+  "spec": [
+   "P1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q1a": {
+  "spec": [
+   "P4.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q1b": {
+  "spec": [
+   "P4.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q2a": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q2b": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q2c": {
+  "spec": [
+   "P2.8"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q3": {
+  "spec": [
+   "P6.4",
+   "P6.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q4": {
+  "spec": [
+   "P5.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q5a": {
+  "spec": [
+   "P7.2",
+   "P7.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q5b": {
+  "spec": [
+   "P7.3",
+   "P7.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q6a": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q6b": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q6c": {
+  "spec": [
+   "P5.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q7a": {
+  "spec": [
+   "P7.3",
+   "P7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q7b": {
+  "spec": [
+   "P2.7"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q7c": {
+  "spec": [
+   "P8.3",
+   "P8.2"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q8a": {
+  "spec": [
+   "P7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q8b": {
+  "spec": [
+   "P7.5",
+   "P3.1"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Implicit gradient from (a) with normal gradient"
+ },
+ "9ma0-p2-qp-nov2021-q9": {
+  "spec": [
+   "P4.5",
+   "P4.3",
+   "P5.3"
+  ],
+  "needs": [],
+  "note": "Sigma sum to infinity; cos 180n alternates sign"
+ },
+ "9ma0-p2-qp-nov2021-q10a": {
+  "spec": [
+   "P6.6",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q10b": {
+  "spec": [
+   "P6.6"
+  ],
+  "needs": [],
+  "note": "Estimate parameters from log-log graph"
+ },
+ "9ma0-p2-qp-nov2021-q10c": {
+  "spec": [
+   "P6.6",
+   "P2.11"
+  ],
+  "needs": [],
+  "note": "Interpret constant a in context of model"
+ },
+ "9ma0-p2-qp-nov2021-q11a": {
+  "spec": [
+   "P2.9",
+   "P2.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q11b": {
+  "spec": [
+   "P2.7",
+   "P2.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q11c": {
+  "spec": [
+   "P2.9"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q12": {
+  "spec": [
+   "P8.5",
+   "P8.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q13a": {
+  "spec": [
+   "P7.5",
+   "P7.4"
+  ],
+  "needs": [],
+  "note": "Parametric derivative with chain rule"
+ },
+ "9ma0-p2-qp-nov2021-q13b": {
+  "spec": [
+   "P7.5",
+   "P5.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q14a": {
+  "spec": [
+   "P7.6",
+   "P7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q14b": {
+  "spec": [
+   "P8.7",
+   "P8.2",
+   "P6.3"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Solve separable DE from (a), rearrange"
+ },
+ "9ma0-p2-qp-nov2021-q14c": {
+  "spec": [
+   "P8.8"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p2-qp-nov2021-q15b": {
+  "spec": [
+   "P5.6",
+   "P5.9"
+  ],
+  "needs": [],
+  "note": "part (a) R-form is in stem"
+ },
+ "9ma0-p2-qp-nov2021-q15c": {
+  "spec": [
+   "P5.9",
+   "P5.7"
+  ],
+  "needs": []
+ },
+ "9ma0-p2-qp-nov2021-q15d": {
+  "spec": [
+   "P5.9"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q1a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q1b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [],
+  "note": "Discrete uniform model probability"
+ },
+ "9ma0-p3-qp-jun2018-q1c": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Compare model probability with observed; LDS context"
+ },
+ "9ma0-p3-qp-jun2018-q1d": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [],
+  "note": "Refine distribution model; LDS knowledge of cloud cover"
+ },
+ "9ma0-p3-qp-jun2018-q2a": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q2b": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q2c": {
+  "spec": [
+   "S5.1",
+   "S2.2"
+  ],
+  "needs": [],
+  "note": "r close to -1 means points near straight line"
+ },
+ "9ma0-p3-qp-jun2018-q2d": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q2e": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": [],
+  "note": "Interpret regression gradient in context"
+ },
+ "9ma0-p3-qp-jun2018-q3a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q3b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q3c": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q3d": {
+  "spec": [
+   "S4.1",
+   "P4.4"
+  ],
+  "needs": [],
+  "note": "Sum of probabilities via arithmetic series"
+ },
+ "9ma0-p3-qp-jun2018-q3e": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "d"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q3f": {
+  "spec": [
+   "S4.1",
+   "S3.3"
+  ],
+  "needs": [
+   "d"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q4a": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q4b": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q4c": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q4d": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": [],
+  "note": "Read IQR from box plot"
+ },
+ "9ma0-p3-qp-jun2018-q4e": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [
+   "d"
+  ],
+  "note": "Mean and sd from summary stats given in (d)"
+ },
+ "9ma0-p3-qp-jun2018-q4f": {
+  "spec": [
+   "S2.4",
+   "S2.3"
+  ],
+  "needs": [
+   "d"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q4g": {
+  "spec": [
+   "S2.1",
+   "S2.3"
+  ],
+  "needs": [
+   "d"
+  ],
+  "note": "Effect of changes on box plot values"
+ },
+ "9ma0-p3-qp-jun2018-q5a": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q5b": {
+  "spec": [
+   "S4.2",
+   "S3.2",
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q5c": {
+  "spec": [
+   "S4.2",
+   "S3.1",
+   "S3.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q5d": {
+  "spec": [
+   "S5.3",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q6": {
+  "spec": [
+   "M7.4",
+   "P10.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q7a": {
+  "spec": [
+   "M8.2",
+   "M8.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q7b": {
+  "spec": [
+   "M8.6",
+   "M8.2"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Pushing increases R and friction, reduces acceleration"
+ },
+ "9ma0-p3-qp-jun2018-q8a": {
+  "spec": [
+   "M7.3",
+   "P10.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q8b": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q9a": {
+  "spec": [
+   "M9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q9b": {
+  "spec": [
+   "M9.1",
+   "M8.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q9c": {
+  "spec": [
+   "M9.1",
+   "M8.4"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q9d": {
+  "spec": [
+   "M9.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q10a": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p3-qp-jun2018-q10b": {
+  "spec": [
+   "M7.5",
+   "P5.7",
+   "P5.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Projectile; quadratic in tan alpha"
+ },
+ "9ma0-p3-qp-jun2018-q10c": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p3-qp-jun2018-q10d": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2019-q1a": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2019-q1b": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Tree diagram probability"
+ },
+ "9ma0-p31-qp-jun2019-q1c": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Tree diagram probability"
+ },
+ "9ma0-p31-qp-jun2019-q1d": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2019-q2a": {
+  "spec": [
+   "S2.4",
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2019-q2b": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-jun2019-q2c": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "SD from summary statistics given in (b)"
+ },
+ "9ma0-p31-qp-jun2019-q2d": {
+  "spec": [
+   "S4.2",
+   "S2.3"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-jun2019-q2e": {
+  "spec": [
+   "S4.3"
+  ],
+  "needs": [],
+  "note": "Variables unsuitable for normal; LDS"
+ },
+ "9ma0-p31-qp-jun2019-q3a": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2019-q3b": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2019-q3c": {
+  "spec": [
+   "P6.6",
+   "P6.4",
+   "S2.2"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Change of variable via logs to y=ax^n"
+ },
+ "9ma0-p31-qp-jun2019-q4a": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": [],
+  "note": "relative frequency from table; S3.1 vs S2.1 unclear"
+ },
+ "9ma0-p31-qp-jun2019-q4b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-jun2019-q4c": {
+  "spec": [
+   "S4.1",
+   "S4.3"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2019-q4d": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "conditional proportion from table"
+ },
+ "9ma0-p31-qp-jun2019-q4e": {
+  "spec": [
+   "S4.3"
+  ],
+  "needs": [
+   "d"
+  ],
+  "note": "Independence fails so binomial unsuitable"
+ },
+ "9ma0-p31-qp-jun2019-q5a": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2019-q5b": {
+  "spec": [
+   "S4.2",
+   "S4.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-jun2019-q5c": {
+  "spec": [
+   "S5.3",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q1a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q1b": {
+  "spec": [
+   "S4.2",
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q2a": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q2b": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q2c": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q2d": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q3a": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q3b": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q3c": {
+  "spec": [
+   "S2.4",
+   "S2.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q3d": {
+  "spec": [
+   "S4.3"
+  ],
+  "needs": [],
+  "note": "Binomial unsuitable: p not constant"
+ },
+ "9ma0-p31-qp-jun2022-q4a": {
+  "spec": [
+   "S5.1",
+   "S5.2"
+  ],
+  "needs": [],
+  "note": "Hypotheses for binomial proportion"
+ },
+ "9ma0-p31-qp-jun2022-q4b": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q4c": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q4d": {
+  "spec": [
+   "S5.2"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Conclusion using critical region from (b)"
+ },
+ "9ma0-p31-qp-jun2022-q5a": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q5b": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q5c": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q5d": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q5e": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q5f": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-jun2022-q6a": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q6b": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2022-q6c": {
+  "spec": [
+   "P6.6",
+   "P6.4",
+   "S2.2"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Coded log line to h=am^k; coding in (b)"
+ },
+ "9ma0-p31-qp-jun2023-q1a": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q1b": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q1c": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2023-q2a": {
+  "spec": [
+   "S4.3"
+  ],
+  "needs": [],
+  "note": "Condition for binomial model"
+ },
+ "9ma0-p31-qp-jun2023-q2b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q2c": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2023-q2d": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q3a": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q3b": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q3c": {
+  "spec": [
+   "S1.1",
+   "S2.3"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "LDS covers May-Oct only; estimate bias; LDS"
+ },
+ "9ma0-p31-qp-jun2023-q4a": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q4b": {
+  "spec": [
+   "S5.3",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q4c": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2023-q5a": {
+  "spec": [
+   "S3.2",
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q5b": {
+  "spec": [
+   "S4.1",
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Find distribution using conditional probabilities"
+ },
+ "9ma0-p31-qp-jun2023-q5c": {
+  "spec": [
+   "S3.3",
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Critique probability model: probability would exceed 1"
+ },
+ "9ma0-p31-qp-jun2023-q6a": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q6b": {
+  "spec": [
+   "S4.3",
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q6c": {
+  "spec": [
+   "P8.5",
+   "P8.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2023-q6d": {
+  "spec": [
+   "P8.3",
+   "S2.1"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-jun2023-q6e": {
+  "spec": [
+   "S4.2",
+   "P8.3"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Normal probability and definite integral from (c)"
+ },
+ "9ma0-p31-qp-jun2023-q6f": {
+  "spec": [
+   "P2.11",
+   "S2.1"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Limitation of curve model introduced in (c)"
+ },
+ "9ma0-p31-qp-jun2024-q1a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q1b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [],
+  "note": "Binomial model for number of days"
+ },
+ "9ma0-p31-qp-jun2024-q1c": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2024-q1d": {
+  "spec": [
+   "S4.2",
+   "S4.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2024-q2a": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q2b": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q2c": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q2d": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Choose k from scatter diagram in (c)"
+ },
+ "9ma0-p31-qp-jun2024-q3a": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [],
+  "note": "LDS knowledge; S2.3 vs S2.4"
+ },
+ "9ma0-p31-qp-jun2024-q3b": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q3c": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [],
+  "note": "Interpret mean/sd to identify month; LDS"
+ },
+ "9ma0-p31-qp-jun2024-q4a": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q4b": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-jun2024-q4c": {
+  "spec": [
+   "S5.2"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Conclusion with reference to critical region in (a)"
+ },
+ "9ma0-p31-qp-jun2024-q5a": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q5b": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q5c": {
+  "spec": [
+   "S4.2",
+   "S3.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2024-q5d": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q6a": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q6b": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2024-q6c": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2024-q6d": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2024-q6e": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": [],
+  "note": "Venn diagram probability with set notation"
+ },
+ "9ma0-p31-qp-jun2024-q6f": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q1a": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Tree diagram conditional probability"
+ },
+ "9ma0-p31-qp-jun2025-q1b": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Tree diagram probability"
+ },
+ "9ma0-p31-qp-jun2025-q1c": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q2a": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q2b": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q2c": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [],
+  "note": "Compare standard deviations to infer"
+ },
+ "9ma0-p31-qp-jun2025-q3a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q3b": {
+  "spec": [
+   "S5.2",
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q4a": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q4b": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q4c": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q4d": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Regression line from (c) shows positive gradient"
+ },
+ "9ma0-p31-qp-jun2025-q4e": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q4f": {
+  "spec": [
+   "S1.1"
+  ],
+  "needs": [
+   "e"
+  ]
+ },
+ "9ma0-p31-qp-jun2025-q5a": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q5b": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q5c": {
+  "spec": [
+   "S4.2",
+   "S3.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-jun2025-q6a": {
+  "spec": [
+   "S4.1",
+   "P4.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-jun2025-q6b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-jun2025-q6c": {
+  "spec": [
+   "S4.1",
+   "P2.3",
+   "P2.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q1a": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q1b": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": [],
+  "note": "Venn diagram probability"
+ },
+ "9ma0-p31-qp-nov2020-q1c": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q1d": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [],
+  "note": "Conditional probability from Venn diagram"
+ },
+ "9ma0-p31-qp-nov2020-q2a": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q2b": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q2c": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q2d": {
+  "spec": [
+   "S2.2",
+   "S5.1"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q3a": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q3b": {
+  "spec": [
+   "S2.1"
+  ],
+  "needs": [],
+  "note": "IQR from box plot"
+ },
+ "9ma0-p31-qp-nov2020-q3c": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q3d": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q3e": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Outlier rule mean+3sd; stats given in (c)"
+ },
+ "9ma0-p31-qp-nov2020-q3f": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q3g": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [
+   "d",
+   "f"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q4a": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q4b": {
+  "spec": [
+   "S4.1",
+   "S3.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q4c": {
+  "spec": [
+   "S4.1",
+   "P4.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p31-qp-nov2020-q5a": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q5b": {
+  "spec": [
+   "S5.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q5c": {
+  "spec": [
+   "S4.2",
+   "S3.2",
+   "S4.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2020-q5d": {
+  "spec": [
+   "S4.2",
+   "S3.2"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-nov2021-q1b": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q1c": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q1d": {
+  "spec": [
+   "S4.1"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-nov2021-q2a": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q2b": {
+  "spec": [
+   "S2.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q2c": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q2d": {
+  "spec": [
+   "S5.1"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p31-qp-nov2021-q3a": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [],
+  "note": "LDS units; no clear spec point"
+ },
+ "9ma0-p31-qp-nov2021-q3b": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q3c": {
+  "spec": [
+   "S2.3"
+  ],
+  "needs": [],
+  "note": "SD with coding"
+ },
+ "9ma0-p31-qp-nov2021-q3d": {
+  "spec": [
+   "S2.4"
+  ],
+  "needs": [],
+  "note": "LDS knowledge: pressure, wind direction, locations; LDS"
+ },
+ "9ma0-p31-qp-nov2021-q4a": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": [],
+  "note": "Venn diagram probability"
+ },
+ "9ma0-p31-qp-nov2021-q4b": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": [],
+  "note": "Venn diagram probability"
+ },
+ "9ma0-p31-qp-nov2021-q4c": {
+  "spec": [
+   "S3.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-nov2021-q4d": {
+  "spec": [
+   "S3.1"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Test independence; uses conditions given in (b)"
+ },
+ "9ma0-p31-qp-nov2021-q5a": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q5b": {
+  "spec": [
+   "S4.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q5c": {
+  "spec": [
+   "S4.2",
+   "S3.2"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p31-qp-nov2021-q5d": {
+  "spec": [
+   "S5.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q6a": {
+  "spec": [
+   "S4.1",
+   "P6.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p31-qp-nov2021-q6b": {
+  "spec": [
+   "S4.1",
+   "S3.1"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-jun2019-q1a": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2019-q1b": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2019-q2a": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2019-q2b": {
+  "spec": [
+   "M7.3",
+   "P10.4"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Vector suvat then distance; B defined after (a)"
+ },
+ "9ma0-p32-qp-jun2019-q3a": {
+  "spec": [
+   "M8.4",
+   "M8.6",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2019-q3b": {
+  "spec": [
+   "M8.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2019-q3c": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": [],
+  "note": "model refinement"
+ },
+ "9ma0-p32-qp-jun2019-q4a": {
+  "spec": [
+   "M9.1",
+   "M8.1"
+  ],
+  "needs": [],
+  "note": "Smooth contact gives perpendicular reaction on rod"
+ },
+ "9ma0-p32-qp-jun2019-q4b": {
+  "spec": [
+   "M9.1",
+   "M8.5",
+   "M8.6"
+  ],
+  "needs": [],
+  "note": "Moments and resolving; resultant of friction and reaction"
+ },
+ "9ma0-p32-qp-jun2019-q4c": {
+  "spec": [
+   "M9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2019-q5a": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2019-q5b": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2019-q5c": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2022-q1a": {
+  "spec": [
+   "M7.1",
+   "P10.2"
+  ],
+  "needs": [],
+  "note": "Speed of given velocity vector, no calculus"
+ },
+ "9ma0-p32-qp-jun2022-q1b": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2022-q1c": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2022-q2a": {
+  "spec": [
+   "M8.4",
+   "M8.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2022-q2b": {
+  "spec": [
+   "M8.6",
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2022-q3a": {
+  "spec": [
+   "M8.5",
+   "P10.3"
+  ],
+  "needs": [],
+  "note": "Resultant force parallel to direction vector"
+ },
+ "9ma0-p32-qp-jun2022-q3b": {
+  "spec": [
+   "M8.2",
+   "M7.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-jun2022-q4a": {
+  "spec": [
+   "M8.6",
+   "M9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2022-q4b": {
+  "spec": [
+   "M9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2022-q4c": {
+  "spec": [
+   "M8.4",
+   "M9.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-jun2022-q4d": {
+  "spec": [
+   "M8.6",
+   "M9.1"
+  ],
+  "needs": [
+   "b",
+   "c"
+  ],
+  "note": "Limiting friction on rod using T and R from (b),(c)"
+ },
+ "9ma0-p32-qp-jun2022-q5a": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2022-q5b": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-jun2022-q5c": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2022-q5d": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q1a": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q1b": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q2a": {
+  "spec": [
+   "M8.1",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q2b": {
+  "spec": [
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q2c": {
+  "spec": [
+   "M8.6"
+  ],
+  "needs": [
+   "a",
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q3a": {
+  "spec": [
+   "M7.1",
+   "P10.2"
+  ],
+  "needs": [],
+  "note": "Speed of given velocity vector"
+ },
+ "9ma0-p32-qp-jun2023-q3b": {
+  "spec": [
+   "M7.1",
+   "P10.3"
+  ],
+  "needs": [],
+  "note": "Direction of given velocity vector; parallel vectors"
+ },
+ "9ma0-p32-qp-jun2023-q3c": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q3d": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q4a": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q4b": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q4c": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q5a": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q5b": {
+  "spec": [
+   "M7.5",
+   "P5.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q5c": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-jun2023-q5d": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q6a": {
+  "spec": [
+   "M8.6",
+   "M9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q6b": {
+  "spec": [
+   "M9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2023-q6c": {
+  "spec": [
+   "M8.6",
+   "M9.1"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Limiting equilibrium of rod using S from (b)"
+ },
+ "9ma0-p32-qp-jun2023-q6d": {
+  "spec": [
+   "M8.5",
+   "M9.1"
+  ],
+  "needs": [
+   "b",
+   "c"
+  ],
+  "note": "Resultant at A of F and R; model and tan given earlier"
+ },
+ "9ma0-p32-qp-jun2023-q6e": {
+  "spec": [
+   "M9.1"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q1a": {
+  "spec": [
+   "M8.1",
+   "M8.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2024-q1b": {
+  "spec": [
+   "M8.6",
+   "M8.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2024-q2a": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2024-q2b": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": [],
+  "note": "Area under speed-time graph"
+ },
+ "9ma0-p32-qp-jun2024-q2c": {
+  "spec": [
+   "M7.2",
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2024-q3a": {
+  "spec": [
+   "M8.5"
+  ],
+  "needs": [],
+  "note": "Resolve perpendicular on inclined plane"
+ },
+ "9ma0-p32-qp-jun2024-q3b": {
+  "spec": [
+   "M8.2",
+   "M8.6",
+   "M8.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2024-q3c": {
+  "spec": [
+   "M8.6"
+  ],
+  "needs": [],
+  "note": "Friction model: particle stays at rest"
+ },
+ "9ma0-p32-qp-jun2024-q4a": {
+  "spec": [
+   "M7.1",
+   "P10.2"
+  ],
+  "needs": [],
+  "note": "Bearing of position vector, no kinematics calculus"
+ },
+ "9ma0-p32-qp-jun2024-q4b": {
+  "spec": [
+   "M7.4",
+   "P10.2"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q4c": {
+  "spec": [
+   "M7.4",
+   "P10.3"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q5a": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2024-q5b": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q5c": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q5d": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q5e": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "d"
+  ]
+ },
+ "9ma0-p32-qp-jun2024-q6a": {
+  "spec": [
+   "M9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2024-q6b": {
+  "spec": [
+   "M9.1",
+   "M8.6",
+   "M8.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-jun2025-q1a": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q1b": {
+  "spec": [
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q2a": {
+  "spec": [
+   "M8.4",
+   "M8.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q2b": {
+  "spec": [
+   "M8.1",
+   "M8.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q2c": {
+  "spec": [
+   "M8.1",
+   "M8.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-jun2025-q2d": {
+  "spec": [
+   "M8.6",
+   "M8.2",
+   "M7.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-jun2025-q2e": {
+  "spec": [
+   "M8.6"
+  ],
+  "needs": [
+   "d"
+  ]
+ },
+ "9ma0-p32-qp-jun2025-q3a": {
+  "spec": [
+   "M8.2"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q3b": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q3c": {
+  "spec": [
+   "P10.2",
+   "M7.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-jun2025-q3d": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-jun2025-q4a": {
+  "spec": [
+   "M7.1",
+   "P10.4"
+  ],
+  "needs": [],
+  "note": "Position vector at given time"
+ },
+ "9ma0-p32-qp-jun2025-q4b": {
+  "spec": [
+   "P10.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q4c": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q4d": {
+  "spec": [
+   "M7.4",
+   "P3.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q5a": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q5b": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [],
+  "note": "Projectile greatest height"
+ },
+ "9ma0-p32-qp-jun2025-q6a": {
+  "spec": [
+   "M8.4",
+   "M9.1"
+  ],
+  "needs": [],
+  "note": "resolving for rigid body"
+ },
+ "9ma0-p32-qp-jun2025-q6b": {
+  "spec": [
+   "M9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q6c": {
+  "spec": [
+   "M9.1",
+   "M8.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-jun2025-q6d": {
+  "spec": [
+   "M9.1",
+   "M8.6",
+   "M8.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2020-q1a": {
+  "spec": [
+   "M8.5",
+   "M8.4"
+  ],
+  "needs": [],
+  "note": "Equilibrium on inclined plane, resolve perpendicular"
+ },
+ "9ma0-p32-qp-nov2020-q1b": {
+  "spec": [
+   "M8.6",
+   "M8.5",
+   "M8.4"
+  ],
+  "needs": [],
+  "note": "Limiting friction equilibrium on incline"
+ },
+ "9ma0-p32-qp-nov2020-q1c": {
+  "spec": [
+   "M8.6",
+   "M8.4"
+  ],
+  "needs": [],
+  "note": "Friction scales with weight; equilibrium persists"
+ },
+ "9ma0-p32-qp-nov2020-q1d": {
+  "spec": [
+   "M8.6",
+   "M8.1"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p32-qp-nov2020-q2a": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2020-q2b": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2020-q2c": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-nov2020-q3": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2020-q4a": {
+  "spec": [
+   "M9.1"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2020-q4b": {
+  "spec": [
+   "M9.1",
+   "M8.6",
+   "M8.4"
+  ],
+  "needs": [
+   "a"
+  ]
+ },
+ "9ma0-p32-qp-nov2020-q5a": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2020-q5b": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Projectile height using U=28 from (a)"
+ },
+ "9ma0-p32-qp-nov2020-q5c": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "a"
+  ],
+  "note": "Refinement air resistance; refers to part (a)"
+ },
+ "9ma0-p32-qp-nov2020-q5d": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": [
+   "c"
+  ]
+ },
+ "9ma0-p32-qp-nov2021-q1a": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q1b": {
+  "spec": [
+   "M7.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q2a": {
+  "spec": [
+   "M8.4",
+   "M8.6",
+   "M8.2"
+  ],
+  "needs": [],
+  "note": "Equation of motion, connected particle with friction"
+ },
+ "9ma0-p32-qp-nov2021-q2b": {
+  "spec": [
+   "M8.4",
+   "M8.6",
+   "M8.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q2c": {
+  "spec": [
+   "M7.2"
+  ],
+  "needs": [
+   "b"
+  ],
+  "note": "Velocity-time graph; constant acceleration from (b)"
+ },
+ "9ma0-p32-qp-nov2021-q2d": {
+  "spec": [
+   "M8.4"
+  ],
+  "needs": [
+   "b"
+  ]
+ },
+ "9ma0-p32-qp-nov2021-q3a": {
+  "spec": [
+   "M9.1",
+   "M8.6"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q3b": {
+  "spec": [
+   "M9.1",
+   "M8.6"
+  ],
+  "needs": [],
+  "note": "Moments with limiting friction"
+ },
+ "9ma0-p32-qp-nov2021-q4a": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q4b": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q4c": {
+  "spec": [
+   "M7.5"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q5a": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q5b": {
+  "spec": [
+   "M7.4",
+   "P10.3"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q5c": {
+  "spec": [
+   "M7.4"
+  ],
+  "needs": []
+ },
+ "9ma0-p32-qp-nov2021-q5d": {
+  "spec": [
+   "M7.4",
+   "P10.4"
+  ],
+  "needs": [
+   "c"
+  ],
+  "note": "Speed from v, position from (c), distance"
+ }
+}
