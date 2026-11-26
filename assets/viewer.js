@@ -116,6 +116,41 @@
   const colorOf = (c, dark) => PALETTE[c] ? PALETTE[c][dark ? "dark" : "light"] : (LEGACY[c] || (/^#[0-9a-f]{6}$/i.test(c || "") ? c : PALETTE.ink[dark ? "dark" : "light"]));
   const RECENT_KEY = "gsh-pv-colors";
   const WIDTH = { pen: 0.0025, highlighter: 0.016 };
+  /* Scribble to rub out, shared by the paper viewer and question cards. P: the pen stroke; items: strokes as point
+     lists ({ p, w }, or null to skip); x and y in the same unit (fractions of the width). Returns the indexes of the
+     strokes the scribble rubs out — none if it isn't a scribble.
+     A scribble swings back and forth at least 4 times, each swing a good part of its own size (35%, and at least
+     0.8% of the width), so the wobble of a hand-drawn line or underline never counts; and it lays down far more ink
+     than the area it covers. It rubs out only strokes that lie mostly inside its box and that it passes over, so
+     an underline, or a line drawn back over once or twice, leaves the writing above it alone. */
+  function scribbleHits(P, items) {
+    if (P.length < 14 || !items.length) return [];
+    let len = 0, b = [Infinity, Infinity, -Infinity, -Infinity];
+    P.forEach(([x, y], k) => {
+      b = [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)];
+      if (k) len += Math.hypot(x - P[k - 1][0], y - P[k - 1][1]);
+    });
+    const turns = ax => {
+      const min = Math.max(0.35 * (b[ax + 2] - b[ax]), 0.008);
+      let dir = 0, hi = P[0][ax], lo = P[0][ax], n = 0;
+      for (const q of P) {
+        const v = q[ax];
+        if (dir >= 0) hi = Math.max(hi, v);
+        if (dir <= 0) lo = Math.min(lo, v);
+        if (dir >= 0 && hi - v >= min) { if (dir) n++; dir = -1; lo = v; }
+        else if (dir <= 0 && v - lo >= min) { if (dir) n++; dir = 1; hi = v; }
+      }
+      return n;
+    };
+    if (Math.max(turns(0), turns(1)) < 4 || len < Math.hypot(b[2] - b[0], b[3] - b[1]) * 2.5) return [];
+    return items.map((it, i) => {
+      if (!it || !it.p || !it.p.length) return -1;
+      const pad = Math.max((it.w || 0) / 2, 0.004), d = Math.max((it.w || 0) / 2 + 0.006, 0.01);
+      const inBox = ([x, y]) => x >= b[0] - pad && x <= b[2] + pad && y >= b[1] - pad && y <= b[3] + pad;
+      return it.p.filter(inBox).length >= it.p.length * 0.6 && it.p.some(q => inBox(q) && P.some(z => (z[0] - q[0]) ** 2 + (z[1] - q[1]) ** 2 < d * d)) ? i : -1;
+    }).filter(i => i >= 0);
+  }
+
   /* thickness choices (times the normal width), remembered separately for the pen and the highlighter */
   const SIZES = [[0.6, "Thin"], [1, "Medium"], [1.6, "Thick"], [2.4, "Extra thick"]];
   const SIZE_KEY = "gsh-pen-size", SIZE_DOT = [3, 5, 8, 12];
@@ -1081,23 +1116,8 @@
     }
     /* a scribble: lots of back-and-forth in a small area. Returns the indexes of the strokes it covers (none if it isn't one). */
     scribbled(pg, i, s) {
-      const items = this.ann[i] || [], k0 = pg.h / pg.w, P = s.p.map(q => [q[0], q[1] * k0]);   /* in page widths, so x and y measure alike */
-      if (P.length < 14 || !items.length) return [];
-      let len = 0, rx = 0, ry = 0, sx = 0, sy = 0, b = [Infinity, Infinity, -Infinity, -Infinity];
-      for (let k = 0; k < P.length; k++) {
-        const [x, y] = P[k]; b = [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)];
-        if (!k) continue;
-        const dx = x - P[k - 1][0], dy = y - P[k - 1][1]; len += Math.hypot(dx, dy);
-        if (Math.abs(dx) > 0.0015) { const v = Math.sign(dx); if (sx && v !== sx) rx++; sx = v; }
-        if (Math.abs(dy) > 0.0015) { const v = Math.sign(dy); if (sy && v !== sy) ry++; sy = v; }
-      }
-      if (Math.max(rx, ry) < 6 || len < Math.hypot(b[2] - b[0], b[3] - b[1]) * 2.5) return [];
-      const pad = 0.012, inBox = ([x, y]) => x >= b[0] - pad && x <= b[2] + pad && y >= b[1] - pad && y <= b[3] + pad;
-      return items.map((it, k) => {
-        if (it.t === "text") return -1;
-        const q = it.p.map(([x, y]) => [x, y * k0]), d = Math.max(it.w / 2 + 0.008, 0.012);
-        return q.filter(inBox).length >= q.length * 0.5 && q.some(pt => inBox(pt) && P.some(z => (z[0] - pt[0]) ** 2 + (z[1] - pt[1]) ** 2 < d * d)) ? k : -1;
-      }).filter(k => k >= 0);
+      const k0 = pg.h / pg.w, wide = q => [q[0], q[1] * k0];   /* in page widths, so x and y measure alike */
+      return scribbleHits(s.p.map(wide), (this.ann[i] || []).map(it => it.t === "text" ? null : { p: it.p.map(wide), w: it.w }));
     }
 
     editText(p, i, idx, x, y) {
@@ -1540,6 +1560,6 @@
   }
 
   /* the ink drawing, for writing on question cards (cardink.js) */
-  const Ink = { draw: (ctx, items, w, h, dark) => Pane.prototype.drawItems.call({ dark }, ctx, items, w, h, dark), colorOf, PALETTE };
+  const Ink = { draw: (ctx, items, w, h, dark) => Pane.prototype.drawItems.call({ dark }, ctx, items, w, h, dark), colorOf, PALETTE, scribbleHits };
   window.Viewer = { Ink, open: info => { const r = open(info); window.dispatchEvent(new Event("gsh-viewer-open")); trimDocs(0); return r; }, close, Bookmarks, isOpen: () => !!active, withDoc, openDocs: () => docs.size, loadPdfLib: () => loadScript(PDFLIB) };
 })();

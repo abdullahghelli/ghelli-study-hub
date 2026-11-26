@@ -355,25 +355,8 @@
     }
     return c;
   };
-  /* a scribble: lots of back-and-forth in a small area. Returns the strokes it covers (none if it isn't one). */
-  function scribbled(items, s) {
-    const p = s.p; if (p.length < 14 || !items.length) return [];
-    let len = 0, rx = 0, ry = 0, sx = 0, sy = 0, b = [Infinity, Infinity, -Infinity, -Infinity];
-    for (let k = 0; k < p.length; k++) {
-      const [x, y] = p[k]; b = [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)];
-      if (!k) continue;
-      const dx = x - p[k - 1][0], dy = y - p[k - 1][1]; len += Math.hypot(dx, dy);
-      if (Math.abs(dx) > 0.0015) { const v = Math.sign(dx); if (sx && v !== sx) rx++; sx = v; }
-      if (Math.abs(dy) > 0.0015) { const v = Math.sign(dy); if (sy && v !== sy) ry++; sy = v; }
-    }
-    const diag = Math.hypot(b[2] - b[0], b[3] - b[1]);
-    /* back and forth (or a tight zigzag): many turns, and far more ink than the area it covers */
-    if (Math.max(rx, ry) < 6 || len < diag * 2.5) return [];
-    /* rubs out strokes it touches that lie mostly under it, so crossing the end of a long line doesn't take the whole line */
-    const pad = 0.012, inBox = ([x, y]) => x >= b[0] - pad && x <= b[2] + pad && y >= b[1] - pad && y <= b[3] + pad;
-    const touches = (it, d) => it.p.some(([x, y]) => inBox([x, y]) && p.some(q => (q[0] - x) ** 2 + (q[1] - y) ** 2 < d * d));
-    return items.map((it, i) => it.p && it.p.filter(inBox).length >= it.p.length * 0.5 && touches(it, Math.max((it.w || 0) / 2 + 0.008, 0.012)) ? i : -1).filter(i => i >= 0);
-  }
+  /* a quick scribble over writing rubs it out (the rule is shared with the paper viewer, viewer.js) */
+  const scribbled = (items, s) => window.Viewer?.Ink?.scribbleHits ? window.Viewer.Ink.scribbleHits(s.p, items) : [];
   function hint(card, msg) {
     const h = card.querySelector(".qb-ihint"); if (!h) return;
     h.textContent = msg; h.classList.add("flash"); clearTimeout(h._t);
