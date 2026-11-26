@@ -41,8 +41,6 @@
   /* fingers write only when "Write with finger" is on (viewer.js keeps the setting); otherwise they scroll */
   const fingerOff = () => !window.GSHPalm?.fingerWrite;
   /* palm rejection is shared with the paper viewer (viewer.js) */
-  const penBusy = () => window.GSHPalm ? window.GSHPalm.busy() : false;
-  const palmy = e => window.GSHPalm ? window.GSHPalm.palmy(e) : false;
 
   function dataFor(id) {
     if (!state[id]) {
@@ -201,7 +199,7 @@
   function bind(card, cv, area) {
     const id = card.dataset.qbCard;
     const pos = e => { const b = cv.getBoundingClientRect(); return [+(((e.clientX - b.left) / b.width)).toFixed(5), +(((e.clientY - b.top) / b.width)).toFixed(5)]; };
-    let cur = null, erasing = null, raf = 0, lraf = 0, fingerScroll = null, lasso = null, moving = null, erSnap = false;
+    let cur = null, erasing = null, raf = 0, lraf = 0, lasso = null, moving = null, erSnap = false;
     /* the pointer doing the writing (others are ignored), and the fingers on the writing area: two fingers are a
        pinch, never writing (their moves used to join up into one stroke and fill the area between them) */
     let owner = null;
@@ -220,17 +218,13 @@
     cv.addEventListener("touchstart", e => { if (card.classList.contains("writing") && !ctx.readOnly && [...e.changedTouches].some(t => t.touchType === "stylus")) e.preventDefault(); }, { passive: false });
     cv.addEventListener("pointerdown", e => {
       if (!card.classList.contains("writing") || ctx.readOnly) return;
-      if (e.pointerType === "touch" && fingers.size > 1) { fingerScroll = null; if (owner != null && owner !== e.pointerId) abandon(); return; }
+      if (e.pointerType === "touch" && fingers.size > 1) { if (owner != null && owner !== e.pointerId) abandon(); return; }
       if (pinch || owner != null) return;
       /* with a stylus, fingers scroll the page. The browser only pinch-zooms on the writing area (touch-action:
          pinch-zoom, or iPad would scroll on the Pencil's up-and-down strokes too), so one finger's scroll is done here */
-      if (fingerOff() && e.pointerType === "touch") {
-        /* a palm (while the pen is busy, or a broad contact), or a second finger: no scrolling */
-        if (palmy(e) || fingerScroll) { fingerScroll = null; return; }
-        fingerScroll = { y: e.clientY, x: e.clientX, top: scrollY, left: scrollX, id: e.pointerId };
-        try { cv.setPointerCapture(e.pointerId); } catch (err) {}
-        return;
-      }
+      /* fingers don't write: the browser scrolls and zooms under them (touch-action in style.css). Scrolling the page
+         from here instead set exact positions that came out wrong on a pinch-zoomed iPad, so the page jumped. */
+      if (fingerOff() && e.pointerType === "touch") return;
       if (e.pointerType === "mouse" && e.button !== 0) return;
       e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (err) {}
       owner = e.pointerId;
@@ -252,13 +246,6 @@
       redrawLive();
     });
     cv.addEventListener("pointermove", e => {
-      if (fingerScroll && e.pointerId === fingerScroll.id) {
-        if (penBusy()) { fingerScroll = null; return; }    /* the pen came down: that "finger" was the hand */
-        const slop = window.GSHPalm ? window.GSHPalm.SLOP : 10;
-        if (!fingerScroll.go && Math.hypot(e.clientX - fingerScroll.x, e.clientY - fingerScroll.y) < slop) return;
-        fingerScroll.go = true;
-        window.scrollTo(fingerScroll.left, fingerScroll.top - (e.clientY - fingerScroll.y)); return;
-      }
       if (e.pointerType === "touch" && fingerOff()) return;    /* other touches (a palm) never draw */
       if (owner != null && e.pointerId !== owner) return;
       if (pinch && e.pointerType === "touch" && owner != null) { abandon(); return; }   /* a second finger came down elsewhere */
@@ -292,7 +279,6 @@
       redrawLive();
     });
     const end = e => {
-      if (fingerScroll && e && e.pointerId === fingerScroll.id) { fingerScroll = null; return; }
       if (e && owner != null && e.pointerId !== owner) return;
       /* the browser took over a finger (a pinch, a scroll): drop what it was writing rather than keep a stray line */
       if (e && e.type === "pointercancel" && e.pointerType === "touch") { abandon(); return; }

@@ -21,7 +21,7 @@
     /* "Write with finger" (off unless chosen): otherwise only a stylus (or a mouse) writes and fingers scroll and
        zoom. Remembered on this device, and shared by the paper viewer and question cards. */
     get fingerWrite() { try { return localStorage.getItem("gsh-finger-write") === "1"; } catch (e) { return false; } },
-    setFingerWrite(on) { try { localStorage.setItem("gsh-finger-write", on ? "1" : "0"); } catch (e) {} },
+    setFingerWrite(on) { try { localStorage.setItem("gsh-finger-write", on ? "1" : "0"); } catch (e) {} document.documentElement.classList.toggle("finger-write", !!on); },
     touchScreen: navigator.maxTouchPoints > 0,
   };
   /* where everything was scrolled to when each touch landed */
@@ -54,10 +54,14 @@
   document.addEventListener("pointerup", up, true);
   document.addEventListener("pointercancel", up, true);
   document.addEventListener("pointermove", e => { if (e.pointerType === "pen") penLast = Date.now(); }, true);
-  /* iPad: stop the browser scrolling the page or the paper under a resting palm while writing
+  /* question cards let the browser scroll and zoom under a finger (see style.css), unless fingers write */
+  document.documentElement.classList.toggle("finger-write", window.GSHPalm.fingerWrite);
+  /* iPad: while writing, the Pencil never scrolls the page, and neither does a resting palm
      (Pencil touches are "stylus", the hand "direct") */
   document.addEventListener("touchmove", e => {
-    if (!window.GSHPalm.seen || !writing()) return;
+    if (!writing()) return;
+    if ([...e.touches].some(t => t.touchType === "stylus")) { e.preventDefault(); return; }
+    if (!window.GSHPalm.seen) return;
     const direct = [...e.touches].some(t => t.touchType !== "stylus");
     if (direct && (busy() || [...e.touches].some(t => t.touchType === "stylus"))) e.preventDefault();
   }, { passive: false, capture: true });
