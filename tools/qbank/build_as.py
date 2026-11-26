@@ -43,7 +43,8 @@ def course(code):
              "units": "Quantities and units in mechanics", "kin": "Kinematics", "forces": "Forces and Newton's laws"}
     topics = [(t, s.NUM[t], tname[t], s.GROUP[t]) for t in order]
     return dict(subject="maths", label="Edexcel AS Level Mathematics 8MA0", topics=topics,
-                groups=[["pure", "Pure"], ["stats", "Statistics"], ["mech", "Mechanics"]], names=s.NAMES, grouped=True)
+                groups=[["pure", "Pure · Paper 1"], ["stats", "Statistics · Paper 21"], ["mech", "Mechanics · Paper 22"]], names=s.NAMES, grouped=True,
+                modular=True)
 
 
 def ms_pages(code, ms_path, nq):
@@ -144,7 +145,7 @@ def main():
         points = {g: {c: n for c, n in names[g].items() if c in used.get(g, ())} for g, _ in C["groups"]}
     else:
         points = {g: {c: n for c, n in names.items() if c in used.get(g, ())} for g, _ in C["groups"]}
-    out_data = dict(spec=code.upper(), label=C["label"], groups=C["groups"],
+    out_data = dict(spec=code.upper(), label=C["label"], groups=C["groups"], **({"modular": True} if C.get("modular") else {}),
                     topics=[dict(id=t[0], num=t[1], name=t[2], group=t[3]) for t in C["topics"]],
                     points=points, pdfs=pdfs, items=items)
     os.makedirs(os.path.dirname(out), exist_ok=True)

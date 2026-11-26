@@ -274,7 +274,10 @@ def main():
         for it in items:
             v = fixes.get(f"{it['ms'].split('/')[-1]}|{it['q']}{it['part'] or ''}") if it.get("ms") else None
             if v: it["msPage"], it["msY"] = v
-    out_data = dict(spec="9MA0", topics=[dict(id=t[0], num=NUM[t[0]], name=t[1], group=t[2]) for t in TOPICS],
+    # pure and Paper 3's statistics and mechanics are separate papers: the bank shows one section at a time
+    out_data = dict(spec="9MA0", modular=True,
+                    groups=[["pure", "Pure · Papers 1 and 2"], ["stats", "Statistics · Paper 31"], ["mech", "Mechanics · Paper 32"]],
+                    topics=[dict(id=t[0], num=NUM[t[0]], name=t[1], group=t[2]) for t in TOPICS],
                     points=NAMES, pdfs=pdfs, items=items)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(out_data, open(out, "w"), separators=(",", ":"))

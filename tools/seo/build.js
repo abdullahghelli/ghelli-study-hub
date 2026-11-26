@@ -73,7 +73,9 @@ add("/past-papers", "Past papers and mark schemes",
 for (const x of subjects) {
   const { L, t, s, key, c, T, sub, papers, data, items, years } = x;
   const name = `${T.full} ${sub.name}`, code = c.code;
-  const topicLinks = c.topics.map((tp, i) => [`/${key}/${i + 1}-${slug(tp)}`, `${i + 1}. ${tp}`]);
+  /* a course split into sections (A Level Maths: Pure, Statistics, Mechanics) numbers topics within each, as the spec does */
+  const sec = n => { const g = (c.topicGroups || []).filter(([f]) => f <= n).pop(); return g ? { sec: g[1].split(" ·")[0], num: g[2] != null ? g[2] + n - g[0] : n } : { sec: "", num: n }; };
+  const topicLinks = c.topics.map((tp, i) => [`/${key}/${i + 1}-${slug(tp)}`, `${sec(i + 1).sec ? sec(i + 1).sec + " " : ""}${sec(i + 1).num}. ${tp}`]);
   add(`/${key}`, `${name} (${code}) · topics, past paper questions and papers`,
     `${name} (${code}): ${data ? `${items.length} past paper questions sorted by topic, ` : ""}past papers and mark schemes, for all ${c.topics.length} topics.`,
     `<h1>${esc(sub.name)} (${esc(code)})</h1><p>${esc(T.full)} · ${c.topics.length} topics</p>
@@ -95,7 +97,7 @@ for (const x of subjects) {
     add(`/${key}/${n}-${slug(tp)}`, `${tp} · ${name} (${code})${k ? ` · ${k} past paper questions` : ""}`,
       k ? `${k} ${name} (${code}) past paper questions on ${tp}${years ? ` from ${years}` : ""}, sorted by spec point, with mark schemes.`
         : `${tp}: ${name} (${code}) topic ${n} of ${c.topics.length}.`,
-      `<h1>${esc(tp)}</h1><p>${esc(name)} (${esc(code)}) · Topic ${n} of ${c.topics.length}</p>
+      `<h1>${esc(tp)}</h1><p>${esc(name)} (${esc(code)}) · ${sec(n).sec ? `${esc(sec(n).sec)} · Topic ${sec(n).num}` : `Topic ${n} of ${c.topics.length}`}</p>
        ${k ? `<p><a href="/${key}/question-bank?topic=${n}">Practise this topic: ${k} past paper questions with mark schemes</a></p>` : ""}
        <p><a href="/${key}">All ${esc(sub.name)} topics</a></p>`, k ? "0.7" : "0.4");
   });

@@ -183,7 +183,7 @@ def main():
                 items.append(pi)
 
     out_data = dict(spec="9FM0", label="Edexcel A Level Further Maths 9FM0",
-                    groups=[list(x) for x in GROUPS],
+                    groups=[list(x) for x in GROUPS], modular=True,
                     topics=[dict(id=t[0], num=t[1], name=t[2], group=t[3]) for t in TOPICS],
                     points=NAMES, pdfs=pdfs, items=items)
     os.makedirs(os.path.dirname(out), exist_ok=True)

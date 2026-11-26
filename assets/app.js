@@ -310,6 +310,12 @@
     return tried ? `<div class="progress s-${subj(s).color}-v"><div class="bar"><i style="width:${(tried / total) * 100}%"></i></div><span><b>${tried}</b> of ${total} questions tried · ${got} got it</span></div>` : "";
   }
 
+  /* where topic n sits in a course split into sections (topicGroups: [first topic, heading, and optionally the
+     number the section's topics start from, as the spec numbers them: A Level Maths Statistics 1–5, Mechanics 7–9]) */
+  function topicSec(c, n) {
+    const g = (c.topicGroups || []).filter(([from]) => from <= n).pop();
+    return g ? { sec: g[1].split(" ·")[0], num: g[2] != null ? g[2] + n - g[0] : n } : { sec: "", num: n };
+  }
   function vSubject({ l, t, s }) {
     const c = course(l, t, s), T = track(l, t), name = `${T.full} ${subj(s).name}`, bank = hasBank(l, t, s);
     crumbs([...trackCrumbs(l, t), { t: subj(s).name }]); setTitle(name);
@@ -323,7 +329,7 @@
         const tbar = ts && ts[0] ? `<span class="row-prog" title="${ts[0]} of ${ts[1]} questions tried, ${ts[2]} got it"><i style="width:${(ts[0] / ts[1]) * 100}%"></i></span>` : "";
         /* a topic opens its questions; one with notes or files of its own opens its page */
         const href = bank && !live ? `${url.qbank(l, t, s)}?topic=${n}` : url.topic(l, t, s, n);
-        return `${head ? `<div class="list-head">${esc(head[1])}</div>` : ""}<a class="row" href="${href}"><span class="num s-${subj(s).color}-t">${String(n).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span>${live ? `<span class="aside hide-sm">${live} file${live > 1 ? "s" : ""}</span>` : ""}${tbar}${icon.arrow}</a>`;
+        return `${head ? `<div class="list-head">${esc(head[1])}</div>` : ""}<a class="row" href="${href}"><span class="num s-${subj(s).color}-t">${String(topicSec(c, n).num).padStart(2, "0")}</span><span class="grow">${esc(tp)}</span>${live ? `<span class="aside hide-sm">${live} file${live > 1 ? "s" : ""}</span>` : ""}${tbar}${icon.arrow}</a>`;
       }).join("") + `</div>`;
   }
 
@@ -331,7 +337,7 @@
     const c = course(l, t, s), T = track(l, t), title = c.topics[n - 1], k = K(l, t, s, n);
     crumbs([...trackCrumbs(l, t), { t: subj(s).name, href: url.subject(l, t, s) }, { t: title }]); setTitle(title);
     recent = [{ l, t, s, n }, ...recent.filter(x => K(x.l, x.t, x.s, x.n) !== k)].slice(0, 8); store.set("recent2", recent);
-    let h = `<div class="eyebrow"><span>${esc(T.full)} ${esc(subj(s).name)} (${c.code}) · Topic ${n} of ${c.topics.length}</span></div>
+    let h = `<div class="eyebrow"><span>${esc(T.full)} ${esc(subj(s).name)} (${c.code}) · ${topicSec(c, n).sec ? `${esc(topicSec(c, n).sec)} · Topic ${topicSec(c, n).num}` : `Topic ${n} of ${c.topics.length}`}</span></div>
       <h1>${esc(title)}</h1>
       ${hasBank(l, t, s) ? `<div class="subj-tiles"><a class="subj-tile primary" href="${url.qbank(l, t, s)}?topic=${n}">${icon.bank}<span><b>Questions</b><small>Past paper questions on ${esc(title)}</small></span>${icon.arrow}</a></div>` : ""}`;
     /* only what's there: items without a file, and sections with none, are left out until they arrive */

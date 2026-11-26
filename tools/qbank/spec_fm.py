@@ -32,7 +32,8 @@ TOPICS = [
     ("fd4", 4, "Critical path analysis", "fd"),
     ("fd5", 5, "Linear programming", "fd"),
 ]
-GROUPS = [("cp", "Core Pure (Papers 1 and 2)"), ("fs", "Further Statistics 1 (Paper 3B)"), ("fm", "Further Mechanics 1 (Paper 3C)"), ("fd", "Decision Mathematics 1 (Paper 3D)")]
+# "Name · papers": the bank shows one at a time, with a button per section labelled by the part before " ·"
+GROUPS = [("cp", "Pure · Core Pure, Papers 1 and 2"), ("fs", "FS1 · Further Statistics 1 · Paper 3B"), ("fm", "FM1 · Further Mechanics 1 · Paper 3C"), ("fd", "D1 · Decision Mathematics 1 · Paper 3D")]
 
 NAMES = {
     "cp": {
