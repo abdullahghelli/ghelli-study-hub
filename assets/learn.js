@@ -125,8 +125,7 @@
     }
     return h;
   }
-  /* a line with coloured terms has its other parts in grey, so every pen colour (white too) stands out */
-  const mathHTML = src => `<span class="m${/@[1-4]/.test(src) ? " m-col" : ""}">${draw(tokens(normal(src)))}</span>`;
+  const mathHTML = src => `<span class="m">${draw(tokens(normal(src)))}</span>`;
   /* text with $maths$, **bold** and line breaks */
   const rich = s => esc(String(s || "")).replace(/\$([^$]+)\$/g, (_, m) => mathHTML(m.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')))
     .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
