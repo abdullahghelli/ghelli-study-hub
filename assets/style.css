@@ -1190,16 +1190,23 @@ canvas.qb-live{position:absolute;left:0;top:0;pointer-events:none!important;touc
 .ln-q-in .ln-ans{margin-left:34px}
 .ln-field{display:flex;align-items:center;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line);background:var(--bg);transition:box-shadow .12s}
 .ln-field:focus-within{box-shadow:inset 0 0 0 2px var(--accent)}
+/* checked: green when right, coral when not (the writing tool's pens) */
+:root{--ok:#11905d;--no:#d2533c}
+:root[data-theme="dark"]{--ok:#6ee7af;--no:#f19d90}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ok:#6ee7af;--no:#f19d90}}
+.ln-field.ok,.ln-field.ok:focus-within{box-shadow:inset 0 0 0 2px var(--ok);background:color-mix(in srgb,var(--ok) 6%,var(--bg))}
+.ln-field.no,.ln-field.no:focus-within{box-shadow:inset 0 0 0 2px var(--no);background:color-mix(in srgb,var(--no) 6%,var(--bg))}
+.ln-field.no{animation:ln-shake .3s ease}
+@keyframes ln-shake{20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@media (prefers-reduced-motion:reduce){.ln-field.no{animation:none}}
 .ln-kb{flex:none;width:40px;height:40px;display:grid;place-items:center;color:var(--muted);border-radius:8px}
 .ln-kb:hover{color:var(--fg);background:var(--hover)}
 .ln-kb svg{width:20px;height:20px}
 .ln-prev{min-height:26px;padding:4px 12px 0;font-size:17px;color:var(--muted);overflow-x:auto}
 .ln-q .ln-acts,.ln-q .ln-msg,.ln-q .ln-hint,.ln-q .ln-sol{margin-left:34px}
 .ln-msg{font-size:14px;margin-top:8px;min-height:0}
-.ln-msg.ok{color:var(--done);font-weight:500}
-.ln-msg.no{color:#c0392b}
-:root[data-theme="dark"] .ln-msg.no{color:#ff8a7a}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ln-msg.no{color:#ff8a7a}}
+.ln-msg.ok{color:var(--ok);font-weight:500}
+.ln-msg.no{color:var(--no)}
 .ln-hint{margin-top:10px;padding:10px 14px;border-radius:10px;background:var(--side);font-size:14px}
 .ln-sol{margin-top:10px;padding:10px 14px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line);font-size:15px}
 .ln-step{padding:3px 0}

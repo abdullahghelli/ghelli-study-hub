@@ -792,7 +792,7 @@
     return allQs(CONTENT[ctx.L.src][C.id].pages[P.id]).find(q => q.id === id);
   }
   function wire(root) {
-    root.addEventListener("input", e => { const inp = e.target.closest("[data-ans]"); if (inp) { const m = inp.closest(".ln-q")?.querySelector(".ln-msg"); if (m) { m.textContent = ""; m.className = "ln-msg"; } } });
+    root.addEventListener("input", e => { const inp = e.target.closest("[data-ans]"); if (inp) { inp.closest(".ln-field")?.classList.remove("ok", "no"); const m = inp.closest(".ln-q")?.querySelector(".ln-msg"); if (m) { m.textContent = ""; m.className = "ln-msg"; } } });
     root.addEventListener("click", e => {
       const kb = e.target.closest("[data-kb]");
       if (kb) { const inp = kb.parentNode.querySelector("[data-ans]"); if (pad && !pad.hidden && field === inp) { hidePad(); } else { inp.focus(); showPad(inp); } return; }
@@ -817,6 +817,8 @@
     const q = findQ(qel.dataset.q), inp = qel.querySelector("[data-ans]"), msg = qel.querySelector(".ln-msg");
     const r = check(q, inp._mf.value);
     msg.className = "ln-msg " + (r.ok ? "ok" : "no");
+    /* the box itself goes green or red (the writing tool's green and coral), until they change the answer */
+    const fld = inp.closest(".ln-field"); fld.classList.remove("ok", "no"); void fld.offsetWidth; fld.classList.add(r.ok ? "ok" : "no");
     msg.innerHTML = r.ok ? (q.right ? rich(q.right) : ["Correct.", "Yes, that's right.", "Spot on."][Math.floor(Math.random() * 3)]) : rich(r.msg);
     if (P) {
       const pp = pageProg(P.id);
