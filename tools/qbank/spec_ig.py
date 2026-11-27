@@ -12,10 +12,10 @@ TOPICS = [
 GROUPS = [("ig", "Higher tier content")]
 
 NAMES = {"ig": {
-    "1.1": "Integers (factors, multiples, primes, HCF, LCM)",
+    "1.1": "Integers (place value, directed numbers, primes, factors)",
     "1.2": "Fractions",
     "1.3": "Decimals and recurring decimals",
-    "1.4": "Powers and roots (indices, surds)",
+    "1.4": "Powers and roots (indices, HCF and LCM, surds)",
     "1.5": "Set language, notation and Venn diagrams",
     "1.6": "Percentages",
     "1.7": "Ratio and proportion",

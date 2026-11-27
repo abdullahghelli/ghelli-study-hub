@@ -15,7 +15,10 @@ In the bank:
     it needs (faded, labelled), as ctx
   - Statistics 2.5 and Mechanics 6.2 (not in the specification) are folded into 2.4 and 6.1
 
-Usage: python3 tools/qbank/apply_parts.py <9ma0|8ma0>
+4MA1 (International GCSE, Higher) uses the specification's lettered outcomes ("F1.6G", "H2.7B": Foundation or
+Higher statement, section 1.6 or 2.7, letter). The bank shows the section ("1.6"); topic is the first number.
+
+Usage: python3 tools/qbank/apply_parts.py <9ma0|8ma0|4ma1>
 """
 import json, os, re, sys
 
@@ -32,6 +35,11 @@ def main(code):
         d["points"].get(g, {}).pop(pt, None)
     order = {t["id"]: k for k, t in enumerate(d["topics"])}
     topic_of = {(t["group"], t["num"]): t["id"] for t in d["topics"]}
+    ig = code == "4ma1"
+    if ig:  # F1.6G -> section 1.6, one group, codes kept in parts_4ma1.json for the notes
+        for t in tags.values():
+            t["spec"] = list(dict.fromkeys("I" + c[1:-1] for c in t["spec"]))
+        GROUP["I"] = "ig"
     tid = lambda c: topic_of.get((GROUP[c[0]], int(c[1:].split(".")[0])))
     wholes = [it for it in d["items"] if not it.get("part")]
     items, missing = [], []

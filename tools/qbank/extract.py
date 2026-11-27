@@ -175,6 +175,9 @@ def parse_paper(pdf_path):
                 mp = PART.match(ws[1]["text"])
             if mp and first["x0"] < 0.16 * W:
                 events.append(("part", mp.group(1), pn, first["top"]))
+            # part (a) on the question number's own line: "6  (a) Write ..." (IGCSE papers)
+            if m and not mp and len(ws) > 1 and PART.match(ws[1]["text"]) and ws[1]["x0"] < 0.2 * W:
+                events.append(("part", PART.match(ws[1]["text"]).group(1), pn, first["top"] + 0.5))
             if STOP and STOP.search(text):
                 events.append(("stop", None, pn, first["top"]))
             mt = TOTAL.search(text)
