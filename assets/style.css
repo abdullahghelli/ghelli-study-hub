@@ -1304,11 +1304,15 @@ canvas.qb-live{position:absolute;left:0;top:0;pointer-events:none!important;touc
 body.mk-on .page{padding-bottom:300px}
 @media (max-width:640px){.ln-ans,.ln-q .ln-acts,.ln-q .ln-msg,.ln-q .ln-hint,.ln-q .ln-sol,.ln-q-in .ln-ans{margin-left:0}.ln-idea,.ln-ex,.ln-tool,.ln-watch,.ln-start{padding:14px 14px;margin-left:-4px;margin-right:-4px}.mk-k{height:42px;font-size:16px}.gr-s input{width:130px}}
 .ln-prev:empty{min-height:0;padding:0}
-/* colour marks in worked examples: which terms are being multiplied (@1..@4), like terms to collect (@5, @6) */
-:root{--mk1:#1f5fd1;--mk2:#c2362f;--mk3:#23824a;--mk4:#8b3fc9;--mk5:#fde7a8;--mk6:#cfe8ff}
-:root[data-theme="dark"]{--mk1:#7fb0ff;--mk2:#ff8a80;--mk3:#6fd69a;--mk4:#c9a2ff;--mk5:#5c4a14;--mk6:#173a5c}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mk1:#7fb0ff;--mk2:#ff8a80;--mk3:#6fd69a;--mk4:#c9a2ff;--mk5:#5c4a14;--mk6:#173a5c}}
+/* colour marks in worked examples: which terms are being multiplied (@1..@4), like terms to collect (@5, @6).
+   The writing tool's pen colours (viewer.js PALETTE): green, yellow, purple and white, chalk-bright on dark pages
+   and the deeper versions on white. */
+:root{--mk1:#11905d;--mk2:#9a8a00;--mk3:#7a4fd0;--mk4:#1b1f1e;--mk5:rgba(17,144,93,.13);--mk6:rgba(122,79,208,.12)}
+:root[data-theme="dark"]{--mk1:#6ee7af;--mk2:#e0e582;--mk3:#c3a4e6;--mk4:#f3f3ef;--mk5:rgba(110,231,175,.16);--mk6:rgba(195,164,230,.16)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mk1:#6ee7af;--mk2:#e0e582;--mk3:#c3a4e6;--mk4:#f3f3ef;--mk5:rgba(110,231,175,.16);--mk6:rgba(195,164,230,.16)}}
 .mk1{color:var(--mk1)}.mk2{color:var(--mk2)}.mk3{color:var(--mk3)}.mk4{color:var(--mk4)}
+.m-col{color:var(--faint)}
+.m-col .mk5,.m-col .mk6{color:var(--fg)}
 .m .mk1,.m .mk2,.m .mk3,.m .mk4{font-weight:400}
 .mk5,.mk6{border-radius:4px;padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .mk5{background:var(--mk5)}.mk6{background:var(--mk6)}
