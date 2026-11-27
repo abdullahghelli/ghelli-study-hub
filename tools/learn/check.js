@@ -20,9 +20,9 @@ for (const f of fs.readdirSync(path.join(ROOT, "assets/learn"))) {
     for (const [pid, pg] of Object.entries(ch.pages)) {
       const qs = [];
       for (const b of pg.blocks) {
-        if (b.type === "fade") qs.push(b.ask);
+        if (b.type === "fade") qs.push({ ...b.ask, _q: b.q });
         if (["practice", "exam", "recall"].includes(b.type)) qs.push(...b.qs);
-        for (const m of [].concat(b.math || [])) if (!/[a-z]{3,}|\bor\b|\band\b|:/i.test(m.replace(/sqrt|frac/g, ""))) try { T.parse(m.split("=").pop()); } catch (e) { fail(pid, "maths line", m); }
+        for (const m of [].concat(b.math || [])) if (!/[a-z]{3,}|\bor\b|\band\b|:|±/i.test(m.replace(/sqrt|frac/g, ""))) try { T.parse(m.split("=").pop()); } catch (e) { fail(pid, "maths line", m); }
       }
       groups.push([pid, qs]);
     }
@@ -39,6 +39,11 @@ for (const f of fs.readdirSync(path.join(ROOT, "assets/learn"))) {
           let roots = 0; for (let x = -50; x < 50; x += 0.001) { const a = T.evalT(L, { x }) - T.evalT(R, { x }), b = T.evalT(L, { x: x + 0.001 }) - T.evalT(R, { x: x + 0.001 }); if (a === 0 || a * b < 0) roots++; }
           if (roots !== vals.length && !q.wrong) fail(pid, q.id, `has ${roots} solutions, answer gives ${vals.length}`);
         }
+      }
+      if (q.form === "square") {
+        const ms = [...(q._q || q.q).matchAll(/\$([^$]+)\$/g)].map(m => m[1]).filter(m => !/[abpqc]\b|\(x [+-] [a-z]\)/.test(m.replace(/x/g, "")));
+        if (ms.length === 1) { const a = T.poly(T.parse(ms[0])), b = T.poly(T.parse(q.a)); if (JSON.stringify(Object.entries(a).sort()) !== JSON.stringify(Object.entries(b).sort())) fail(pid, q.id, "completed square isn't equal to", ms[0]); }
+        else fail(pid, q.id, "square: couldn't find the one expression to compare", JSON.stringify(ms));
       }
       if (q.form === "factorise") {
         const ms = [...q.q.matchAll(/\$([^$]+)\$/g)].map(m => m[1]);

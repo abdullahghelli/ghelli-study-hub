@@ -282,6 +282,7 @@
     const form = q.form || "any";
     try {
       if (form === "solve" || form === "number") return checkValues(q, raw);
+      if (form === "point") return checkPoint(q, raw);
       let lhs = raw.replace(/^\s*[a-zA-Z]\s*\(\s*[a-zA-Z]\s*\)\s*=|^\s*y\s*=/, "");
       if (/=/.test(lhs)) lhs = lhs.split("=").pop();
       const e = parse(lhs), want = parse(q.a);
@@ -331,6 +332,17 @@
       if (/±|\+-/.test(r)) return ["+", "-"].map(sg => evalT(parse(r.replace(/±|\+-/, sg)), {}));
       return [evalT(parse(r), {})];
     }).flat();
+  }
+  /* coordinates: (x, y), in that order */
+  function checkPoint(q, raw) {
+    const nums = s => { const m = normal(s).replace(/^[^(]*\(/, "").replace(/\)[^)]*$/, "").split(","); if (m.length !== 2) throw 0; return m.map(t => evalT(parse(t), {})); };
+    let got, want = nums(q.a);
+    try { got = nums(raw); } catch (e) { return { ok: false, msg: "Write it as coordinates, like (3, −7)." }; }
+    const tol = q.dp != null ? 0.5 * Math.pow(10, -q.dp) + 1e-9 : 1e-6, eq = (u, v) => Math.abs(u - v) <= tol;
+    if (eq(got[0], want[0]) && eq(got[1], want[1])) return { ok: true };
+    if (eq(got[0], want[1]) && eq(got[1], want[0])) return { ok: false, msg: "Right numbers, wrong order: x comes first, then y." };
+    if (eq(got[0], -want[0]) && eq(got[1], want[1])) return { ok: false, msg: "Check the sign of x. From (x + p)² + q the turning point is at x = −p." };
+    return { ok: false, msg: q.wrong || "Not quite. Check your working." };
   }
   function checkValues(q, raw) {
     let got;
@@ -722,6 +734,40 @@
     inp.addEventListener("input", run); run();
   }
 
+  /* ================= The square builder =================
+     Type a quadratic: it halves the x coefficient, writes the square, takes off what the square adds, and gives the
+     completed square and the turning point (x² with a number in front: that number is taken out of the x terms first). */
+  const frac = (n, d) => {   /* a fraction n/d written our way: 3, -frac{9}{4} */
+    if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; n /= g; d /= g;
+    return d === 1 ? String(n) : `${n < 0 ? "-" : ""}frac{${Math.abs(n)}}{${d}}`;
+  };
+  const signed = t => t.startsWith("-") ? ` - ${t.slice(1)}` : ` + ${t}`;
+  function squareTool(box, start) {
+    box.innerHTML = `<div class="gd-in"><span>Complete the square</span>${answerBox("square", "e.g. x^2 + 6x + 1")}</div><div class="pf-out"></div>`;
+    const inp = box.querySelector("[data-ans]"), out = box.querySelector(".pf-out");
+    const F = mathField(inp, { value: start, placeholder: inp.dataset.ph, label: "Quadratic" });
+    const run = () => {
+      try {
+        const p = poly(parse(F.value));
+        if (Object.keys(p).some(k => k && k !== "x1" && k !== "x2") || !p.x2) throw 0;
+        const a = p.x2, b = p.x1 || 0, c = p[""] || 0;
+        if (![a, b, c].every(Number.isInteger)) throw 0;
+        const h = frac(b, 2 * a), h2 = frac(b * b, 4 * a * a), q = frac(4 * a * c - b * b, 4 * a);
+        const sq = b ? `(x${signed(h)})^2` : "x^2", A = a === 1 ? "" : a === -1 ? "-" : String(a);
+        if (!b) { out.innerHTML = `<p class="pf-step">There's no ${mathHTML("x")} term, so it's already a square plus a number:</p><p class="pf-res">${mathHTML(`${A}x^2${c ? signed(String(c)) : ""}`)}</p><p class="pf-step">Its ${a > 0 ? "minimum" : "maximum"} point is ${mathHTML(`(0, ${c})`)}.</p>`; return; }
+        let out_ = "";
+        if (a !== 1) out_ += `<p class="pf-step">Take ${mathHTML(String(a))} out of the ${mathHTML("x")} terms: ${mathHTML(`${a}(x^2${b ? signed(frac(b, a)) + "x" : ""})${c ? signed(String(c)) : ""}`)}</p>`;
+        out_ += `<p class="pf-step">Halve the number in front of ${mathHTML("x")}${a !== 1 ? " (inside the bracket)" : ""}: ${mathHTML(`@1{${h}}`)}</p>`;
+        out_ += `<p class="pf-step">The square ${mathHTML(`(x @1{${signed(h).trim()}})^2`)} gives ${mathHTML(`x^2${b ? signed(frac(b, a)) + "x" : ""} @5{+ ${h2}}`)}, so take ${mathHTML(`@5{${h2}}`)} away:</p>`;
+        out_ += `<p class="pf-step">${mathHTML(`${A}${a !== 1 ? "[" : ""}(x @1{${signed(h).trim()}})^2 @5{- ${h2}}${a !== 1 ? "]" : ""}${c ? signed(String(c)) : ""}`)}</p>`;
+        out_ += `<p class="pf-res">= ${mathHTML(`${A}${sq}${q !== "0" ? signed(q) : ""}`)}</p>`;
+        out_ += `<p class="pf-step">So ${mathHTML(`y = ${A}${sq}${q !== "0" ? signed(q) : ""}`)} has its ${a > 0 ? "minimum" : "maximum"} point at ${mathHTML(`(${frac(-b, 2 * a)}, ${q})`)}.</p>`;
+        out.innerHTML = out_;
+      } catch (e) { out.innerHTML = `<p class="muted">Type a quadratic with whole numbers, like x^2 + 6x + 1 or 2x^2 − 12x + 5.</p>`; }
+    };
+    inp.addEventListener("input", run); run();
+  }
+
   /* ================= Pages ================= */
   let C = null, P = null, ctx = null, prog = null, saveKey = "";
   const saveProg = () => store.set(saveKey, prog);
@@ -749,6 +795,7 @@
       <ol class="ln-steps">${b.steps.map(s => `<li><div class="ln-sm">${s.m ? mathHTML(s.m) : rich(s.t)}</div>${s.why ? `<div class="ln-why">${rich(s.why)}</div>` : ""}</li>`).join("")}</ol>
       ${questionHTML({ ...b.ask, id: b.ask.id }, 0, "fade").replace('class="ln-q', 'class="ln-q ln-q-in')}</section>`,
     grid: b => `<section class="ln-b ln-tool"><div class="ln-tag">Try it</div>${b.text ? `<p class="ln-txt">${rich(b.text)}</p>` : ""}<div class="gd-box" data-grid="${esc(b.start)}"></div></section>`,
+    square: b => `<section class="ln-b ln-tool"><div class="ln-tag">${esc(b.tag || "Try it")}</div>${b.text ? `<p class="ln-txt">${rich(b.text)}</p>` : ""}<div class="pf-box" data-square="${esc(b.start)}"></div></section>`,
     pairs: b => `<section class="ln-b ln-tool"><div class="ln-tag">${esc(b.tag || "Try it")}</div>${b.text ? `<p class="ln-txt">${rich(b.text)}</p>` : ""}<div class="pf-box" data-pairs="${esc(b.start)}"></div></section>`,
     graph: b => `<section class="ln-b ln-tool"><div class="ln-tag">${esc(b.tag || "Explore")}</div>${b.text ? `<p class="ln-txt">${rich(b.text)}</p>` : ""}<div class="gr" data-graph="${esc(JSON.stringify({ exprs: b.exprs, sliders: b.sliders, view: b.view }))}"></div>${b.ask ? `<p class="ln-note">${rich(b.ask)}</p>` : ""}</section>`,
     watch: b => `<section class="ln-b ln-watch"><h3>Exam watch</h3><p class="ln-note">Mistakes examiners see most often on this.</p><ul>${b.items.map(x => `<li>${x.wrong ? `<span class="ln-wr">${mathHTML(x.wrong)}</span><span class="ln-ar">→</span><span class="ln-rt">${mathHTML(x.right)}</span>` : ""}<div>${rich(x.note)}</div></li>`).join("")}</ul></section>`,
@@ -780,6 +827,7 @@
     root.querySelectorAll("[data-graph]").forEach(el => grapher(el, JSON.parse(el.dataset.graph)));
     root.querySelectorAll("[data-grid]").forEach(el => gridTool(el, el.dataset.grid));
     root.querySelectorAll("[data-pairs]").forEach(el => pairTool(el, el.dataset.pairs));
+    root.querySelectorAll("[data-square]").forEach(el => squareTool(el, el.dataset.square));
     score(root);
   }
   function score(root) {
