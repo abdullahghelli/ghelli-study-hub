@@ -36,6 +36,8 @@
       const c = s[i];
       if (/\s/.test(c)) { i++; continue; }
       if (c === CARET) { out.push({ t: "caret", s: i, e: i + 1 }); i++; continue; }
+      /* @1{x} colours a term (in our notes, so a student can follow which terms are multiplied) */
+      if (c === "@" && /\d/.test(s[i + 1] || "")) { out.push({ t: "col", v: s[i + 1], s: i, e: i + 2 }); i += 2; continue; }
       let m;
       if ((m = /^\d+(\.\d*)?|^\.\d+/.exec(s.slice(i)))) { out.push({ t: "num", v: m[0], s: i, e: i + m[0].length }); i += m[0].length; continue; }
       if (/[a-zA-Z]/.test(c)) {
@@ -74,12 +76,13 @@
     if (real.length) return draw(g.inner);
     return `${g.inner.length ? `<span class="mf-c"></span>` : ""}<span class="mph" data-b="${g.at}" data-o="${g.at}">&#9633;</span>`;
   }
-  function draw(tk) {
+  function draw(tk, lead) {
     let h = "", i = 0;
-    const prevIsValue = () => { let j = i - 1; while (tk[j] && tk[j].t === "caret") j--; const p = tk[j]; return p && (p.t === "num" || p.t === "var" || (p.t === "word" && ["pi", "theta"].includes(p.v)) || (p.t === "op" && [")", "}", "]", "!", "|", "°"].includes(p.v))); };
+    const prevIsValue = () => { if (i === 0 && lead) return true; let j = i - 1; while (tk[j] && tk[j].t === "caret") j--; const p = tk[j]; return p && (p.t === "num" || p.t === "var" || (p.t === "word" && ["pi", "theta"].includes(p.v)) || (p.t === "op" && [")", "}", "]", "!", "|", "°"].includes(p.v))); };
     while (i < tk.length) {
       const k = tk[i];
       if (k.t === "caret") { h += `<span class="mf-c"></span>`; i++; }
+      else if (k.t === "col") { const g = group(tk, i + 1); if (g) { h += `<span class="mk${k.v}">${draw(g.inner, prevIsValue())}</span>`; i = g.end; } else i++; }
       else if (k.t === "num") { h += leaf(k, "mn", k.v); i++; }
       else if (k.t === "var") { h += leaf(k, "mv", esc(k.v), "i"); i++; }
       else if (k.t === "word" && (k.v === "or" || k.v === "and")) { h += leaf(k, "mw", k.v); i++; }
@@ -129,7 +132,7 @@
 
   /* ================= Maths: parsing to a tree ================= */
   function parse(src) {
-    const tk = tokens(normal(src)).filter(k => k.t !== "caret"); let i = 0;
+    const tk = tokens(normal(src)).filter(k => k.t !== "caret" && k.t !== "col"); let i = 0;
     if (tk.some(k => k.t === "bad")) throw new Error("bad");
     const peek = () => tk[i], isOp = v => tk[i] && tk[i].t === "op" && tk[i].v === v;
     const startsAtom = k => k && (k.t === "num" || k.t === "var" || (k.t === "word" && k.v !== "or" && k.v !== "and") || (k.t === "op" && (k.v === "(" || k.v === "{" || k.v === "[" || k.v === "|")));
@@ -666,10 +669,13 @@
         if (fs.length !== 2) throw 0;
         const A = termsOf(fs[0]), B = termsOf(fs[1]);
         if (A.length > 3 || B.length > 3) throw 0;
-        const cells = A.map(a => B.map(b => polyStr(pmul(poly(a), poly(b)))));
+        const cp = A.map(a => B.map(b => pmul(poly(a), poly(b)))), kOf = p => Object.keys(p).join("|"), n = {};
+        cp.flat().forEach(p => { n[kOf(p)] = (n[kOf(p)] || 0) + 1; });
+        /* like terms (the same power of x in more than one box) are highlighted, so you can see what to collect */
+        const like = p => n[kOf(p)] > 1, cells = cp.map(r => r.map(polyStr));
         const total = polyStr(pmul(poly(fs[0]), poly(fs[1])));
-        out.innerHTML = `<table class="gd"><tr><th>×</th>${B.map(b => `<th>${mathHTML(polyStr(poly(b)))}</th>`).join("")}</tr>${A.map((a, i) => `<tr><th>${mathHTML(polyStr(poly(a)))}</th>${cells[i].map(c => `<td>${mathHTML(c)}</td>`).join("")}</tr>`).join("")}</table>
-          <p class="gd-sum">Add the boxes: ${mathHTML(cells.flat().join(" + ").replace(/\+ -/g, "- "))}</p><p class="gd-res">= ${mathHTML(total)}</p>`;
+        out.innerHTML = `<table class="gd"><tr><th>×</th>${B.map((b, j) => `<th class="mk${3 + j}">${mathHTML(polyStr(poly(b)))}</th>`).join("")}</tr>${A.map((a, i) => `<tr><th class="mk${1 + i}">${mathHTML(polyStr(poly(a)))}</th>${cells[i].map((c, j) => `<td>${like(cp[i][j]) ? `<span class="mk5">${mathHTML(c)}</span>` : mathHTML(c)}</td>`).join("")}</tr>`).join("")}</table>
+          <p class="gd-sum">Add the boxes: ${mathHTML(cp.flat().map((p, j) => { const t = (j && !polyStr(p).startsWith("-") ? "+ " : "") + polyStr(p); return like(p) ? `@5{${t}}` : t; }).join(" ").replace(/\+ -/g, "- "))}</p><p class="gd-res">= ${mathHTML(total)}</p>`;
       } catch (e) { out.innerHTML = `<p class="muted">Type two brackets multiplied together, like (x + 3)(x − 5).</p>`; }
     };
     inp.addEventListener("input", run); run();
