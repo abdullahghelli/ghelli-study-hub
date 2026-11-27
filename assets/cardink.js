@@ -93,11 +93,19 @@
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flush(); });
 
   /* ---------- drawing ---------- */
+  /* iPad Safari can keep showing a canvas blurry after its size changes, until it is taken off the page and put back
+     (WebKit bugs 242847, 256260): after a resize, hide and show it at once */
+  const unblur = cv => { cv.style.display = "none"; void cv.offsetHeight; cv.style.display = ""; };
   function sizeCanvas(cv, w, h) {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
-    if (cv.width !== cw || cv.height !== ch) { cv.width = cw; cv.height = ch; }
+    const resized = cv.width !== cw || cv.height !== ch;
+    if (resized) { cv.width = cw; cv.height = ch; }
     cv.style.width = w + "px"; cv.style.height = h + "px";
+    /* the layer for the stroke being written gets the same size now, not when the first stroke starts */
+    const lv = cv._live;
+    if (lv && (lv.width !== cw || lv.height !== ch)) { lv.width = cw; lv.height = ch; lv.style.width = w + "px"; lv.style.height = h + "px"; lv._box = null; unblur(lv); }
+    if (resized) unblur(cv);
     const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
     return c;
   }
@@ -149,7 +157,7 @@
     const lv = cv._live; if (!lv) return;
     const w = cv.clientWidth, h = cv.clientHeight, dpr = Math.min(window.devicePixelRatio || 1, 2);
     const W = Math.round(w * dpr), H = Math.round(h * dpr);
-    if (lv.width !== W || lv.height !== H) { lv.width = W; lv.height = H; lv.style.width = w + "px"; lv.style.height = h + "px"; lv._box = null; }
+    if (lv.width !== W || lv.height !== H) { lv.width = W; lv.height = H; lv.style.width = w + "px"; lv.style.height = h + "px"; lv._box = null; unblur(lv); }
     const c = lv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
     const bb = lv._box; if (bb) c.clearRect(bb[0], bb[1], bb[2] - bb[0], bb[3] - bb[1]); else c.clearRect(0, 0, w, h);
     lv._box = null;

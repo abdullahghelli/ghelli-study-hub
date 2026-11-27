@@ -863,7 +863,9 @@
       /* only the page being written on keeps a full-size stroke layer */
       for (const q of this.pages) if (q !== p && q.live?.width) { q.live.width = 0; q.live.height = 0; q.liveBox = null; }
       const c = p.live, dpr = p.px, W = Math.round(p.w * dpr), H = Math.round(p.h * dpr);
-      if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.width = p.w + "px"; c.style.height = p.h + "px"; }
+      /* after a resize iPad Safari can show the canvas blurry until it is taken off the page and put back
+         (WebKit bugs 242847, 256260): hide and show it at once */
+      if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.width = p.w + "px"; c.style.height = p.h + "px"; c.style.display = "none"; void c.offsetHeight; c.style.display = ""; }
       const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (it && it.t === "pen" && it.p.length > 2 && it.p[0].length > 2) return this.drawLivePencil(p, it, ctx, dpr);
       /* wiping a whole full-resolution page on every Pencil move is slow on iPad: only clear where the stroke was */
