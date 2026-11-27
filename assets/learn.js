@@ -83,7 +83,7 @@
       else if (k.t === "num") { h += leaf(k, "mn", k.v); i++; }
       else if (k.t === "var") { h += leaf(k, "mv", esc(k.v), "i"); i++; }
       else if (k.t === "word" && (k.v === "or" || k.v === "and")) { h += leaf(k, "mw", k.v); i++; }
-      else if (k.t === "word" && (k.v === "pi" || k.v === "theta")) { h += leaf(k, "mv", WORD_HTML[k.v], k.v === "pi" ? "span" : "span"); i++; }
+      else if (k.t === "word" && (k.v === "pi" || k.v === "theta")) { h += leaf(k, "mv", WORD_HTML[k.v].replace(/<\/?i>/g, ""), "i"); i++; }
       else if (k.t === "word" && FUNCS.includes(k.v)) { h += leaf(k, "mfn", WORD_HTML[k.v] || k.v); i++; }
       else if (k.t === "word" && k.v === "sqrt") {
         const g = group(tk, i + 1);

@@ -1125,6 +1125,11 @@ canvas.qb-live{position:absolute;left:0;top:0;pointer-events:none!important;touc
 .qb-ctx-label{margin:6px 0 2px;font-size:12px;color:var(--muted);font-style:italic}
 
 /* ---------- Chapters (assets/learn.js) ---------- */
+/* maths in the font LaTeX uses (Computer Modern, from KaTeX: assets/vendor/katex-fonts) */
+@font-face{font-family:CMMain;src:url(/assets/vendor/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:CMMain;src:url(/assets/vendor/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:CMMain;src:url(/assets/vendor/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:CMMath;src:url(/assets/vendor/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
 .ln-blurb{display:block;font-size:12.5px;color:var(--faint);margin-top:1px}
 .ln h1{margin-bottom:6px}
 .ln .eyebrow a{color:var(--accent)}
@@ -1132,11 +1137,11 @@ canvas.qb-live{position:absolute;left:0;top:0;pointer-events:none!important;touc
 .ln-spec{font:500 11px var(--mono);color:var(--faint);padding:2px 6px;border-radius:5px;background:var(--side);margin-left:auto}
 .ln-h2{font-size:17px;margin:34px 0 10px}
 /* maths */
-.m{font-family:"Cambria Math","STIX Two Math","Latin Modern Math",Cambria,"Times New Roman",serif;font-size:1.12em;white-space:nowrap;letter-spacing:.01em}
-.m i.mv{font-style:italic;padding:0 .02em}
+.m{font-family:CMMain,"Latin Modern Roman","Times New Roman",serif;font-size:1.18em;white-space:nowrap;font-weight:400}
+.m i.mv,.m i{font-family:CMMath,CMMain,"Latin Modern Math",serif;font-style:italic;padding:0 .02em}
 .m .mo{padding:0 .28em}
 .m .mu{padding-right:.04em}
-.m .mw{font-family:var(--sans);font-size:.86em;padding:0 .45em;color:var(--muted)}
+.m .mw{font-family:CMMain,serif;font-style:normal;padding:0 .4em}
 .m .mc{padding-right:.3em}
 .m sup{font-size:.7em;line-height:0;vertical-align:.62em;padding-left:.04em}
 .msq{display:inline-flex;align-items:stretch;white-space:nowrap;vertical-align:-.12em}
@@ -1269,7 +1274,7 @@ canvas.qb-live{position:absolute;left:0;top:0;pointer-events:none!important;touc
 @keyframes mf-blink{50%{opacity:0}}
 .mf:not(.on) .mf-ph{color:var(--faint)}
 .mph{display:inline-block;color:var(--faint);font-family:var(--sans);font-size:.9em;line-height:1}
-.m .mfn{font-family:var(--sans);font-size:.92em;padding:0 .1em 0 .05em;font-style:normal}
+.m .mfn{font-family:CMMain,serif;font-style:normal;padding:0 .14em 0 .05em}
 .mrt{font-size:.6em;vertical-align:.9em;margin-right:-.35em}
 .mab{padding:0 .08em}
 /* maths keyboard */
@@ -1284,8 +1289,9 @@ canvas.qb-live{position:absolute;left:0;top:0;pointer-events:none!important;touc
 .mk-tabs{width:88px}
 .mk-k{flex:1;min-width:0;height:46px;border-radius:9px;background:var(--bg);box-shadow:0 1px 0 var(--line),inset 0 0 0 1px var(--line);font:500 17px var(--sans);color:var(--fg);touch-action:manipulation;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 2px}
 .mk-nav .mk-k,.mk-tabs .mk-k{flex:1}
-.mk-k.num{font-family:"Cambria Math","STIX Two Math",Cambria,"Times New Roman",serif;font-size:19px}
-.mk-k.let,.mk-k i{font-family:"Cambria Math","STIX Two Math",Cambria,"Times New Roman",serif;font-style:italic;font-size:20px}
+.mk-k.num{font-family:CMMain,serif;font-size:20px}
+.mk-k.let,.mk-k i{font-family:CMMath,CMMain,serif;font-style:italic;font-size:21px;font-weight:400}
+.mk-k:not(.tab):not(.go){font-family:CMMain,var(--sans);font-weight:400}
 .mk-k>span{line-height:1}
 .mk-k sup{font-size:.62em;vertical-align:.75em;line-height:0}
 .mk-k .mph{font-style:normal;font-size:.85em}
