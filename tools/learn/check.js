@@ -22,7 +22,7 @@ for (const f of fs.readdirSync(path.join(ROOT, "assets/learn"))) {
       for (const b of pg.blocks) {
         if (b.type === "fade") qs.push(b.ask);
         if (["practice", "exam", "recall"].includes(b.type)) qs.push(...b.qs);
-        for (const m of [].concat(b.math || [])) if (!/[a-z]{3,}/i.test(m.replace(/sqrt|frac/g, ""))) try { T.parse(m.split("=").pop()); } catch (e) { fail(pid, "maths line", m); }
+        for (const m of [].concat(b.math || [])) if (!/[a-z]{3,}|\bor\b|\band\b|:/i.test(m.replace(/sqrt|frac/g, ""))) try { T.parse(m.split("=").pop()); } catch (e) { fail(pid, "maths line", m); }
       }
       groups.push([pid, qs]);
     }
@@ -30,6 +30,16 @@ for (const f of fs.readdirSync(path.join(ROOT, "assets/learn"))) {
       n++;
       if (ids.has(q.id)) fail(cid, pid, "duplicate id", q.id); ids.add(q.id);
       const r = T.check(q, q.a); if (!r.ok) fail(cid, q.id, "own answer rejected:", r.msg);
+      /* solve: each answer makes the equation true, and every solution is there */
+      if (q.form === "solve" && q.dp == null) {
+        const ms = [...q.q.matchAll(/\$([^$]+)\$/g)].map(m => m[1]).filter(m => m.includes("=") && /x/.test(m));
+        if (ms.length === 1 && !/[a-wyz]/.test(ms[0].replace(/sqrt|frac/g, ""))) {
+          const [l, r] = ms[0].split("="), L = T.parse(l), R = T.parse(r), vals = T.values(q.a);
+          for (const v of vals) { const d = Math.abs(T.evalT(L, { x: v }) - T.evalT(R, { x: v })); if (d > 1e-9) fail(pid, q.id, "x =", v, "doesn't satisfy", ms[0]); }
+          let roots = 0; for (let x = -50; x < 50; x += 0.001) { const a = T.evalT(L, { x }) - T.evalT(R, { x }), b = T.evalT(L, { x: x + 0.001 }) - T.evalT(R, { x: x + 0.001 }); if (a === 0 || a * b < 0) roots++; }
+          if (roots !== vals.length && !q.wrong) fail(pid, q.id, `has ${roots} solutions, answer gives ${vals.length}`);
+        }
+      }
       if (q.form === "factorise") {
         const ms = [...q.q.matchAll(/\$([^$]+)\$/g)].map(m => m[1]);
         if (ms.length === 1) { try { const a = T.poly(T.parse(ms[0])), b = T.poly(T.parse(q.a)); if (JSON.stringify(Object.entries(a).sort()) !== JSON.stringify(Object.entries(b).sort())) fail(pid, q.id, "brackets don't expand to", ms[0]); } catch (e) { fail(pid, q.id, "can't parse", ms[0]); } }

@@ -145,7 +145,7 @@
     let top = card.querySelector(".qb-xtop"), bot = card.querySelector(".qb-xbot");
     if (show && (!top || !bot)) {
       top?.remove(); bot?.remove();
-      xs.insertAdjacentHTML("beforebegin", `<div class="qb-xtop"><span>Your answer</span><button type="button" class="qb-btn qb-write" data-qb-write="${esc(id)}"></button></div>`);
+      xs.insertAdjacentHTML("beforebegin", `<div class="qb-xtop"><span>${esc(card.dataset.qbLabel || "Your answer")}</span><button type="button" class="qb-btn qb-write" data-qb-write="${esc(id)}"></button></div>`);
       xs.insertAdjacentHTML("afterend", `<div class="qb-xbot"></div>`);
       onChange(card);
     } else if (!show) { top?.remove(); bot?.remove(); }

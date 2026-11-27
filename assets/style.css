@@ -1325,3 +1325,12 @@ body.mk-on .page{padding-bottom:300px}
 .pf-p.hit small{color:var(--fg);font-weight:600}
 .pf-res{margin:12px 0 0;font-size:18px}
 .pf-res.no{font-size:14.5px;color:var(--muted)}
+/* working space under chapter questions (the question bank's writing tool) */
+.ln-q.qb-card{border-radius:0;box-shadow:none;margin:0;overflow:visible;background:none}
+.ln-q.qb-card.writing .qb-inkwrap{box-shadow:none}
+.ln-inkwrap{position:relative;height:0}
+.ln-q .qb-inkbar,.ln-q .qb-xtop,.ln-q .qb-xspace,.ln-q .qb-xbot{margin-left:34px}
+.ln-q .qb-inkbar{margin-top:10px;border-radius:10px}
+.ln-q .qb-xspace{border-radius:10px;border:1px solid var(--line);overflow:hidden}
+.ln-q.has-space .ln-workbtn{display:none}
+@media (max-width:640px){.ln-q .qb-inkbar,.ln-q .qb-xtop,.ln-q .qb-xspace,.ln-q .qb-xbot{margin-left:0}}

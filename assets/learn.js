@@ -338,7 +338,9 @@
     const want = values(q.a), tol = q.dp != null ? 0.5 * Math.pow(10, -q.dp) + 1e-9 : 1e-6;
     if (got.length < want.length) return { ok: false, msg: want.length > 1 ? `There ${want.length === 2 ? "are two answers" : `are ${want.length} answers`}.` : "Not quite." };
     const left = [...want];
-    for (const g of got) { const j = left.findIndex(w => Math.abs(w - g) <= tol); if (j < 0) return { ok: false, msg: q.wrong || "Not quite. Check your working." }; left.splice(j, 1); }
+    /* the right numbers with the signs flipped: the usual slip when reading answers off brackets */
+    const flipped = got.length === want.length && want.some(w => w) && want.every(w => got.some(g => Math.abs(g + w) <= tol));
+    for (const g of got) { const j = left.findIndex(w => Math.abs(w - g) <= tol); if (j < 0) return { ok: false, msg: flipped ? "Check the signs: each answer has the opposite sign to the number in its bracket." : q.wrong || "Not quite. Check your working." }; left.splice(j, 1); }
     if (left.length) return { ok: false, msg: "Not quite." };
     if (q.dp != null && !/sqrt|frac|\//.test(raw)) {
       const dps = (raw.match(/\d+\.(\d+)/g) || []).map(x => x.split(".")[1].length);
@@ -726,10 +728,13 @@
   const pageProg = id => (prog[id] = prog[id] || { q: {} });
   function questionHTML(q, i, kind) {
     const st = P ? (pageProg(P.id).q || {})[q.id] : null;
-    return `<div class="ln-q${st === "got" ? " got" : ""}" data-q="${esc(q.id)}">
+    /* working space: the question bank's writing tool (cardink.js), opened by "Working" (adds the space) */
+    const wid = P && kind !== "check" ? `${ctx.key}/${C.id}/${P.id}/${q.id}` : "";
+    return `<div class="ln-q${st === "got" ? " got" : ""}${wid ? " qb-card ln-qcard" : ""}" data-q="${esc(q.id)}"${wid ? ` data-qb-card="${esc(wid)}" data-qb-label="Your working"` : ""}>
       <div class="ln-qh"><span class="ln-qn">${kind === "exam" ? `Q${i + 1}` : i + 1}</span><div class="ln-qt">${rich(q.q)}${q.marks ? `<span class="ln-mk">(${q.marks} mark${q.marks > 1 ? "s" : ""})</span>` : ""}</div><span class="ln-tick" aria-label="Correct">${st === "got" ? "✓" : ""}</span></div>
       ${answerBox(q.id, q.ph)}
-      <div class="ln-acts"><button type="button" class="ln-btn pri" data-check>Check</button>${q.hint ? `<button type="button" class="ln-btn" data-hint>Hint</button>` : ""}<button type="button" class="ln-btn" data-sol>Show solution</button></div>
+      <div class="ln-acts"><button type="button" class="ln-btn pri" data-check>Check</button>${q.hint ? `<button type="button" class="ln-btn" data-hint>Hint</button>` : ""}<button type="button" class="ln-btn" data-sol>Show solution</button>${wid ? `<button type="button" class="ln-btn ln-workbtn" data-ink-more>✎ Working</button>` : ""}</div>
+      ${wid ? `<div class="qb-inkwrap ln-inkwrap"></div>` : ""}
       <div class="ln-msg" role="status"></div>
       ${q.hint ? `<div class="ln-hint" hidden>${rich(q.hint)}</div>` : ""}
       <div class="ln-sol" hidden>${(q.sol || []).map(l => `<div class="ln-step">${rich(l)}</div>`).join("")}<div class="ln-step ans">${rich(q.show || `$${q.a}$`)}</div></div>
@@ -835,11 +840,13 @@
     mount(root, c) {
       ctx = c; C = c.C; P = c.P; saveKey = "learn:" + c.key + "/" + C.id; prog = store.get(saveKey, {});
       hidePad();
+      if (P) window.CardInk?.setContext({ key: "learn" });
       if (P) renderPage(root); else renderOverview(root);
+      if (P) window.CardInk?.mount(root);
       fieldsIn(root, el => { const q = el.closest(".ln-q"); if (q) doCheck(q); });
       if (!root.dataset.wired) { wire(root); root.dataset.wired = "1"; }
     },
     /* for checking content and tests */
-    _: { tokens, parse, poly, check, mathHTML, values },
+    _: { tokens, parse, poly, check, mathHTML, values, evalT },
   };
 })();
