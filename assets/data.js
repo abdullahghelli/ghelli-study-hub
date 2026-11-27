@@ -1491,6 +1491,26 @@ window.SITE = {
   years: [2025, 2024, 2023, 2022, 2021, 2020, 2019],
 
   /* Question banks: questions snipped from the past papers, grouped by spec topic. Key: "level/track/subject" */
+  /* Chapters: notes that walk a student through a topic, page by page (assets/learn.js draws them; each course's
+     pages are in its own file, loaded when a chapter opens). ready: false shows a page as coming soon. */
+  learn: {
+    "gcse/edexcel-igcse/maths": {
+      src: "/assets/learn/4ma1.js",
+      chapters: [
+        { id: "quadratics", title: "Quadratics", blurb: "Expanding, factorising, solving and graphing quadratics, step by step.", pages: [
+          { id: "expanding-brackets", title: "Expanding brackets", spec: "F2.2E · H2.2A", ready: true },
+          { id: "factorising", title: "Factorising quadratics", spec: "F2.2F · H2.2B" },
+          { id: "solving-by-factorising", title: "Solving by factorising", spec: "F2.7A · H2.7A" },
+          { id: "completing-the-square", title: "Completing the square", spec: "H2.2D" },
+          { id: "quadratic-formula", title: "The quadratic formula", spec: "H2.7B" },
+          { id: "quadratic-graphs", title: "Quadratic graphs", spec: "F3.3I · H3.3E" },
+          { id: "quadratic-inequalities", title: "Quadratic inequalities", spec: "H2.8A" },
+          { id: "simultaneous-equations", title: "Linear and quadratic simultaneous equations", spec: "H2.7D" },
+          { id: "forming-quadratics", title: "Forming quadratics from a context", spec: "H2.7C" },
+        ] },
+      ],
+    },
+  },
   qbanks: {
     "a-level/edexcel/maths": "/assets/qbank/9ma0.json",
     "a-level/edexcel/chemistry": "/assets/qbank/9ch0.json",

@@ -26,6 +26,7 @@
     topic: (l, t, s, n) => `/${l}/${t}/${s}/${n}-${slug(course(l, t, s).topics[n - 1])}`,
     papers: (l, t, s) => `/${l}/${t}/${s}/past-papers`,
     qbank: (l, t, s) => `/${l}/${t}/${s}/question-bank`,
+    learn: (l, t, s, ch, pg) => `/${l}/${t}/${s}/chapters${ch ? "/" + ch : ""}${pg ? "/" + pg : ""}`,
     ppLevel: l => `/past-papers/${l}`,
     ppTrack: (l, t) => `/past-papers/${l}/${t}`,
   };
@@ -91,6 +92,11 @@
     if (p.length === 3) return { kind: "subject", l, t, s };
     if (rest === "past-papers") return { kind: "papers", l, t, s };
     if (rest === "question-bank" && (S.qbanks || {})[K(l, t, s)]) return { kind: "qbank", l, t, s };
+    if (rest === "chapters" && hasLearn(l, t, s) && p.length <= 6) {
+      const L = S.learn[K(l, t, s)], ch = p[4] && L.chapters.find(c => c.id === p[4]), pg = ch && p[5] && ch.pages.find(x => x.id === p[5] && x.ready);
+      if ((p[4] && !ch) || (p[5] && !pg)) return { kind: "notfound" };
+      return { kind: "learn", l, t, s, ch: ch && ch.id, pg: pg && pg.id };
+    }
     const n = parseInt(rest, 10);
     if (n >= 1 && n <= course(l, t, s).topics.length) return { kind: "topic", l, t, s, n };
     return { kind: "notfound" };
@@ -169,6 +175,7 @@
   /* only what has something in it is shown: a subject with papers, a question bank or files; the boards and levels
      holding one. The rest stay in data.js and appear by themselves once they get content. */
   const hasBank = (l, t, s) => !!(S.qbanks || {})[K(l, t, s)];
+  const hasLearn = (l, t, s) => !!(S.learn || {})[K(l, t, s)];
   const isLive = (l, t, s) => !!course(l, t, s) && (hasBank(l, t, s) || paperCount(l, t, s) > 0 || (S.formulaSheets || {})[K(l, t, s)] || course(l, t, s).topics.some((_, i) => liveCount(l, t, s, i + 1)));
   const liveSubjects = (l, t) => Object.keys(track(l, t).subjects).filter(s => isLive(l, t, s));
   const liveTracks = L => L.groups.flatMap(g => g.tracks).filter(t => liveSubjects(L.id, t).length);
@@ -190,7 +197,7 @@
   /* the strip of tabs on every subject page */
   function subjHead(l, t, s, tab) {
     const c = course(l, t, s), T = track(l, t), k = K(l, t, s); noteSubject(k);
-    const tabs = [["topics", "Topics", url.subject(l, t, s)], hasBank(l, t, s) && ["questions", "Questions", url.qbank(l, t, s)],
+    const tabs = [["topics", "Topics", url.subject(l, t, s)], hasLearn(l, t, s) && ["learn", "Chapters", url.learn(l, t, s)], hasBank(l, t, s) && ["questions", "Questions", url.qbank(l, t, s)],
       paperCount(l, t, s) && ["papers", "Past papers", url.papers(l, t, s)], hasBank(l, t, s) && ["quiz", "Quiz", url.qbank(l, t, s) + "?mix=1"]].filter(Boolean);
     return `<h1>${esc(subj(s).name)} <span class="h-code s-${subj(s).color}-t">(${c.code})</span></h1>
       <div class="facts"><span>${esc(T.full)}</span>${tab === "questions" || tab === "quiz" ? `<span data-qb-count>Loading questions…</span>` : `<span><b>${c.topics.length}</b> topics</span>`}</div>
@@ -1559,6 +1566,28 @@
     return `<h1>Page not found</h1><p class="lede">That page doesn't exist. Try searching, or <a href="/" class="link">go home</a>.</p>`;
   }
 
+  /* ---------- Chapters (notes) ----------
+     The list of chapters and pages is in data.js (S.learn); the pages themselves, and assets/learn.js that draws
+     them (with its maths keyboard, answer checking and grapher), load when a chapter is first opened. */
+  let learnLoad = null;
+  const loadScript = src => new Promise((ok, no) => { const el = document.createElement("script"); el.src = src; el.onload = ok; el.onerror = no; document.head.appendChild(el); });
+  function vLearn({ l, t, s, ch, pg }) {
+    const L = S.learn[K(l, t, s)], C = ch && L.chapters.find(c => c.id === ch), P = C && pg && C.pages.find(x => x.id === pg);
+    const base = [...trackCrumbs(l, t), { t: subj(s).name, href: url.subject(l, t, s) }];
+    crumbs(P ? [...base, { t: "Chapters", href: url.learn(l, t, s) }, { t: C.title, href: url.learn(l, t, s, ch) }, { t: P.title }]
+      : C ? [...base, { t: "Chapters", href: url.learn(l, t, s) }, { t: C.title }] : [...base, { t: "Chapters" }]);
+    setTitle(P ? `${P.title} · ${C.title}` : C ? `${C.title} · ${course(l, t, s).code}` : `${subj(s).name} chapters`);
+    if (!C) {
+      const prog = c => { const st = store.get("learn:" + K(l, t, s, c.id), {}); return c.pages.filter(x => x.ready && (st[x.id] || {}).done).length; };
+      return subjHead(l, t, s, "learn") + `<div class="list topic-list">` + L.chapters.map((c, i) => `<a class="row" href="${url.learn(l, t, s, c.id)}"><span class="num s-${subj(s).color}-t">${String(i + 1).padStart(2, "0")}</span><span class="grow">${esc(c.title)}<small class="ln-blurb">${esc(c.blurb || "")}</small></span><span class="aside hide-sm">${prog(c)} of ${c.pages.filter(x => x.ready).length} done</span>${icon.arrow}</a>`).join("") + `</div>`;
+    }
+    const ctx = { key: K(l, t, s), course: course(l, t, s), L, C, P, url: (c2, p2) => url.learn(l, t, s, c2, p2), color: subj(s).color, subject: subj(s).name };
+    learnLoad = learnLoad || Promise.all([window.GSHLearn ? 0 : loadScript(`/assets/learn.js?v=${VERSION}`)]).then(() => window.GSHLearn.content(L.src) ? 0 : loadScript(`${L.src}?v=${VERSION}`));
+    learnLoad.then(() => { const root = $("#learn-root"); if (root && root.dataset.path === location.pathname) window.GSHLearn.mount(root, ctx); })
+      .catch(err => { console.error(err); learnLoad = null; const root = $("#learn-root"); if (root) root.innerHTML = `<p class="muted">This page didn't load. Check your connection and try again.</p>`; });
+    return `<div id="learn-root" class="ln" data-path="${esc(location.pathname)}"><p class="muted">Loading…</p></div>`;
+  }
+
   function render() {
     const r = parse(location.pathname);
     $("#app").classList.remove("nav-open");
@@ -1573,7 +1602,7 @@
       if (q.get("src")) window.Viewer?.open({ src: q.get("src"), title: q.get("title") || "Paper", ms: q.get("ms") || "" });
       return;
     }
-    const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers, qbank: vQbank };
+    const views = { home: vHome, level: vLevel, subject: vSubject, topic: vTopic, papers: vPapers, qbank: vQbank, learn: vLearn };
     /* fade the page in only when it's a different page, not when this one redraws (ticking a spec, say) */
     if (page.dataset.path !== location.pathname) { page.style.animation = "none"; void page.offsetWidth; page.style.animation = ""; }
     page.dataset.path = location.pathname;

@@ -103,6 +103,29 @@ for (const x of subjects) {
   });
 }
 
+/* chapters: notes that walk through a topic (S.learn, pages in assets/learn/<code>.js) */
+for (const [key, L] of Object.entries(S.learn || {})) {
+  const x = subjects.find(y => y.key === key); if (!x) continue;
+  const name = `${x.T.full} ${x.sub.name}`, code = x.c.code, G = {};
+  vm.runInNewContext(fs.readFileSync(path.join(ROOT, L.src), "utf8"), { GSHLearn: { add: (src, c) => Object.assign(G, c) } });
+  const plain = t => String(t || "").replace(/\$([^$]+)\$/g, "$1").replace(/\*\*/g, "");
+  add(`/${key}/chapters`, `${name} (${code}) chapters · notes, worked examples and practice`,
+    `Step-by-step ${name} (${code}) notes: short explanations, worked examples and questions that mark themselves.`,
+    `<h1>${esc(x.sub.name)} (${esc(code)}) chapters</h1>${nav(L.chapters.map(c => [`/${key}/chapters/${c.id}`, c.title]))}`, "0.8");
+  for (const c of L.chapters) {
+    const ready = c.pages.filter(pg => pg.ready);
+    add(`/${key}/chapters/${c.id}`, `${c.title} · ${name} (${code}) notes and practice`, `${c.blurb} ${name} (${code}).`,
+      `<h1>${esc(c.title)}</h1><p>${esc(c.blurb)}</p>${nav(ready.map(pg => [`/${key}/chapters/${c.id}/${pg.id}`, pg.title]))}`, "0.8");
+    for (const pg of ready) {
+      const P = (G[c.id] || {}).pages?.[pg.id] || { blocks: [] };
+      const heads = P.blocks.filter(b => b.title).map(b => plain(b.title));
+      add(`/${key}/chapters/${c.id}/${pg.id}`, `${pg.title} · ${c.title} · ${name} (${code})`,
+        `${plain(P.intro)} Worked examples, practice questions that mark themselves and exam-style questions. ${name} (${code}).`,
+        `<h1>${esc(pg.title)}</h1><p>${esc(plain(P.intro))}</p>${heads.length ? `<ul>${heads.map(h => `<li>${esc(h)}</li>`).join("")}</ul>` : ""}<p><a href="/${key}/chapters/${c.id}">${esc(c.title)}: all pages</a></p>`, "0.8");
+    }
+  }
+}
+
 /* the privacy policy: the same text the site shows (assets/privacy.html) */
 add("/privacy", "Privacy policy", "What Ghelli Study Hub records when you use it or sign in, why, and how to have it deleted.",
   fs.readFileSync(path.join(ROOT, "assets/privacy.html"), "utf8"), "0.3");
