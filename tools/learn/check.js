@@ -47,6 +47,10 @@ const cases = [
   [{ a: "x = 0.30 or x = -3.30", form: "solve", dp: 2 }, "x = (-3 ± sqrt(13))/2", true], [{ a: "x = 0.30 or x = -3.30", form: "solve", dp: 2 }, "0.31, -3.31", false],
   [{ a: "2x^3 + 3x^2 - 11x - 6", form: "expand" }, "2x^3+3x^2-11x-6", true], [{ a: "x^2 + 5x - 7", form: "expand" }, "x^2+5x-7", true],
   [{ a: "y^2 - 13y + 36", form: "expand" }, "y^2-13y+36", true], [{ a: "y^2 - 13y + 36", form: "expand" }, "x^2-13x+36", false],
+  [{ a: "x = 0.30 or x = -3.30", form: "solve", dp: 2 }, "x = frac{-3 + sqrt{13}}{2} or x = frac{-3 - sqrt{13}}{2}", true],
+  [{ a: "x^2 + 10x + 21", form: "expand" }, "x^{2}+10x+21", true], [{ a: "(x + 3)^2 - 8", form: "square" }, "(x+3)^{2}-8", true],
+  [{ a: "0.5", form: "number" }, "sin(30)", true], [{ a: "3", form: "number" }, "root{3}{27}", true], [{ a: "6", form: "number" }, "3!", true],
+  [{ a: "2", form: "number" }, "log(100)", true], [{ a: "x = 4 or x = -4", form: "solve" }, "x = ±4", true], [{ a: "x = 4 or x = -4", form: "solve" }, "x=+-sqrt{16}", true],
 ];
 for (const [q, inp, want] of cases) { n++; const r = T.check(q, inp); if (r.ok !== want) fail("checker", JSON.stringify(q), JSON.stringify(inp), "gave", r.ok, r.msg); }
 console.log(`${n} checks, ${bad} failed`);

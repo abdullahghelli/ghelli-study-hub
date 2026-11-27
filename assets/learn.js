@@ -21,91 +21,118 @@
   const CONTENT = {};
   const touchy = () => matchMedia("(pointer: coarse)").matches;
 
-  /* ================= Maths: tokens ================= */
-  const WORDS = ["sqrt", "frac", "or", "and"];
+  /* ================= Maths: tokens =================
+     Each token knows where it sits in the text (s, e), so the maths field can put the cursor where a student taps.
+     ‸ (U+2038) marks the cursor while a field is being drawn. */
+  const CARET = "‸";
+  const FUNCS = ["asin", "acos", "atan", "sin", "cos", "tan", "log", "ln"];
+  const WORDS = ["sqrt", "frac", "root", "abs", ...FUNCS, "pi", "theta", "or", "and"];
+  /* what students might type or paste, in the form the field keeps */
+  const normal = s => String(s).replace(/−/g, "-").replace(/×/g, "*").replace(/÷/g, "/").replace(/≤/g, "<=").replace(/≥/g, ">=")
+    .replace(/²/g, "^2").replace(/³/g, "^3").replace(/π/g, "pi").replace(/θ/g, "theta");
   function tokens(src) {
-    const out = []; let i = 0; const s = String(src).replace(/−/g, "-").replace(/×/g, "*").replace(/÷/g, "/").replace(/≤/g, "<=").replace(/≥/g, ">=").replace(/√/g, "sqrt").replace(/²/g, "^2").replace(/³/g, "^3");
+    const out = [], s = String(src).replace(/√/g, "sqrt"); let i = 0;
     while (i < s.length) {
       const c = s[i];
       if (/\s/.test(c)) { i++; continue; }
+      if (c === CARET) { out.push({ t: "caret", s: i, e: i + 1 }); i++; continue; }
       let m;
-      if ((m = /^\d+(\.\d+)?|^\.\d+/.exec(s.slice(i)))) { out.push({ t: "num", v: m[0] }); i += m[0].length; continue; }
-      if ((m = /^[a-zA-Z]+/.exec(s.slice(i)))) {
-        let w = m[0];
-        /* a word we know, else single letters (2xy is 2·x·y) */
-        const kw = WORDS.find(k => w.toLowerCase().startsWith(k));
-        if (kw) { out.push({ t: "word", v: kw }); i += kw.length; continue; }
-        out.push({ t: "var", v: w[0] }); i += 1; continue;
+      if ((m = /^\d+(\.\d*)?|^\.\d+/.exec(s.slice(i)))) { out.push({ t: "num", v: m[0], s: i, e: i + m[0].length }); i += m[0].length; continue; }
+      if (/[a-zA-Z]/.test(c)) {
+        /* a word we know, else one letter (2xy is 2·x·y) */
+        const kw = WORDS.find(k => s.startsWith(k, i));
+        if (kw) { out.push({ t: "word", v: kw, s: i, e: i + kw.length }); i += kw.length; continue; }
+        out.push({ t: "var", v: c, s: i, e: i + 1 }); i++; continue;
       }
-      if (s.startsWith("<=", i) || s.startsWith(">=", i)) { out.push({ t: "op", v: s.substr(i, 2) }); i += 2; continue; }
-      if (s.startsWith("+-", i) || c === "±") { out.push({ t: "op", v: "±" }); i += c === "±" ? 1 : 2; continue; }
-      if ("+-*/^=<>,(){}[]".includes(c)) { out.push({ t: "op", v: c }); i++; continue; }
-      out.push({ t: "bad", v: c }); i++;
+      if (s.startsWith("<=", i) || s.startsWith(">=", i)) { out.push({ t: "op", v: s.substr(i, 2), s: i, e: i + 2 }); i += 2; continue; }
+      if (s.startsWith("+-", i)) { out.push({ t: "op", v: "±", s: i, e: i + 2 }); i += 2; continue; }
+      if ("±+-*/^=<>,(){}[]!|°".includes(c)) { out.push({ t: "op", v: c, s: i, e: i + 1 }); i++; continue; }
+      out.push({ t: "bad", v: c, s: i, e: i + 1 }); i++;
     }
     return out;
   }
 
-  /* ================= Maths: drawing ================= */
-  /* the group after ^, sqrt or frac: (...) or {...} drawn without its brackets for {}, and for () after ^ and sqrt */
+  /* ================= Maths: drawing =================
+     Leaves carry data-o (the place in the text just after them) and data-b (just before), so a tap can place the
+     cursor. An empty box (√□, □/□, a^□) shows a placeholder. */
   function group(tk, i) {
     const open = tk[i] && tk[i].v;
     if (open !== "(" && open !== "{") return null;
     const close = open === "(" ? ")" : "}"; let d = 0;
     for (let j = i; j < tk.length; j++) {
       if (tk[j].t === "op" && tk[j].v === open) d++;
-      if (tk[j].t === "op" && tk[j].v === close && !--d) return { inner: tk.slice(i + 1, j), end: j + 1 };
+      if (tk[j].t === "op" && tk[j].v === close && !--d) return { inner: tk.slice(i + 1, j), end: j + 1, at: tk[i].e, close: tk[j] };
     }
-    return { inner: tk.slice(i + 1), end: tk.length };   /* still being typed */
+    return { inner: tk.slice(i + 1), end: tk.length, at: tk[i].e };   /* still being typed */
+  }
+  const leaf = (k, cls, html, tag = "span") => `<${tag} class="${cls}" data-b="${k.s}" data-o="${k.e}">${html}</${tag}>`;
+  /* the root sign is drawn, so it reaches up to its bar in any font */
+  const ROOT = `<svg viewBox="0 0 10 20" preserveAspectRatio="none" aria-hidden="true"><path d="M0.5 12.5 3 11 6.2 19 9.6 0.6H10" fill="none" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+  const WORD_HTML = { pi: "π", theta: "<i>θ</i>", asin: "sin<sup>−1</sup>", acos: "cos<sup>−1</sup>", atan: "tan<sup>−1</sup>" };
+  function box(g) {
+    const real = g.inner.filter(k => k.t !== "caret");
+    if (real.length) return draw(g.inner);
+    return `${g.inner.length ? `<span class="mf-c"></span>` : ""}<span class="mph" data-b="${g.at}" data-o="${g.at}">&#9633;</span>`;
   }
   function draw(tk) {
     let h = "", i = 0;
-    const prevIsValue = () => { const p = tk[i - 1]; return p && (p.t === "num" || p.t === "var" || (p.t === "op" && [")", "}", "]"].includes(p.v))); };
+    const prevIsValue = () => { let j = i - 1; while (tk[j] && tk[j].t === "caret") j--; const p = tk[j]; return p && (p.t === "num" || p.t === "var" || (p.t === "word" && ["pi", "theta"].includes(p.v)) || (p.t === "op" && [")", "}", "]", "!", "|", "°"].includes(p.v))); };
     while (i < tk.length) {
       const k = tk[i];
-      if (k.t === "num") { h += `<span class="mn">${k.v}</span>`; i++; }
-      else if (k.t === "var") { h += `<i class="mv">${esc(k.v)}</i>`; i++; }
-      else if (k.t === "word" && (k.v === "or" || k.v === "and")) { h += `<span class="mw">${k.v}</span>`; i++; }
+      if (k.t === "caret") { h += `<span class="mf-c"></span>`; i++; }
+      else if (k.t === "num") { h += leaf(k, "mn", k.v); i++; }
+      else if (k.t === "var") { h += leaf(k, "mv", esc(k.v), "i"); i++; }
+      else if (k.t === "word" && (k.v === "or" || k.v === "and")) { h += leaf(k, "mw", k.v); i++; }
+      else if (k.t === "word" && (k.v === "pi" || k.v === "theta")) { h += leaf(k, "mv", WORD_HTML[k.v], k.v === "pi" ? "span" : "span"); i++; }
+      else if (k.t === "word" && FUNCS.includes(k.v)) { h += leaf(k, "mfn", WORD_HTML[k.v] || k.v); i++; }
       else if (k.t === "word" && k.v === "sqrt") {
         const g = group(tk, i + 1);
-        if (g) { h += `<span class="msq"><span class="msq-s">√</span><span class="msq-in">${draw(g.inner) || "&#8203;"}</span></span>`; i = g.end; }
-        else { h += `<span class="msq-s">√</span>`; i++; }
+        if (g) { h += `<span class="msq">${leaf(k, "msq-s", ROOT + '<span class="sr">√</span>')}<span class="msq-in">${box(g)}</span></span>`; i = g.end; }
+        else { h += leaf(k, "msq-s", "√"); i++; }
+      }
+      else if (k.t === "word" && k.v === "root") {
+        const n = group(tk, i + 1), g = n && group(tk, n.end);
+        if (n && g) { h += `<span class="msq"><sup class="mrt">${box(n)}</sup>${leaf(k, "msq-s", ROOT + '<span class="sr">√</span>')}<span class="msq-in">${box(g)}</span></span>`; i = g.end; }
+        else { h += leaf(k, "msq-s", "√"); i++; }
+      }
+      else if (k.t === "word" && k.v === "abs") {
+        const g = group(tk, i + 1);
+        if (g) { h += `${leaf(k, "mab", "|")}${box(g)}<span class="mab">|</span>`; i = g.end; } else { h += leaf(k, "mab", "|"); i++; }
       }
       else if (k.t === "word" && k.v === "frac") {
         const a = group(tk, i + 1), b = a && group(tk, a.end);
-        if (a && b) { h += `<span class="mfr"><span>${draw(a.inner)}</span><span>${draw(b.inner)}</span></span>`; i = b.end; }
-        else { h += "frac"; i++; }
+        if (a && b) { h += `<span class="mfr" data-b="${k.s}" data-o="${k.e}"><span>${box(a)}</span><span>${box(b)}</span></span>`; i = b.end; }
+        else { h += leaf(k, "mw", "frac"); i++; }
       }
       else if (k.v === "^") {
         const g = group(tk, i + 1);
-        if (g) { h += `<sup>${draw(g.inner)}</sup>`; i = g.end; }
+        if (g && tk[i + 1].v === "{") { h += `<sup>${box(g)}</sup>`; i = g.end; }
+        else if (g) { h += `<sup>(${draw(g.inner)})</sup>`; i = g.end; }
         else if (tk[i + 1] && tk[i + 1].v === "-" && tk[i + 2]) { h += `<sup>−${draw([tk[i + 2]])}</sup>`; i += 3; }
-        else if (tk[i + 1]) { h += `<sup>${draw([tk[i + 1]])}</sup>`; i += 2; }
-        else { h += `<sup>&#9633;</sup>`; i++; }
+        else if (tk[i + 1] && tk[i + 1].t !== "caret") { h += `<sup>${draw([tk[i + 1]])}</sup>`; i += 2; }
+        else { h += `<sup><span class="mph" data-b="${k.e}" data-o="${k.e}">&#9633;</span></sup>`; i++; }
       }
       else if (k.v === "{" || k.v === "}") { i++; }
-      else if (k.v === "-" || k.v === "+" || k.v === "±") {
-        const sym = k.v === "-" ? "−" : k.v;
-        h += prevIsValue() ? `<span class="mo">${sym}</span>` : `<span class="mu">${sym}</span>`; i++;
-      }
-      else if (k.v === "*") { h += `<span class="mo">×</span>`; i++; }
-      else if (k.v === "/") { h += `<span class="ms">/</span>`; i++; }
-      else if (["=", "<", ">", "<=", ">="].includes(k.v)) { h += `<span class="mo">${{ "<=": "≤", ">=": "≥", "<": "&lt;", ">": "&gt;" }[k.v] || k.v}</span>`; i++; }
-      else if (k.v === ",") { h += `<span class="mc">,</span>`; i++; }
-      else { h += esc(k.v); i++; }
+      else if (k.v === "-" || k.v === "+" || k.v === "±") { h += leaf(k, prevIsValue() ? "mo" : "mu", k.v === "-" ? "−" : k.v); i++; }
+      else if (k.v === "*") { h += leaf(k, "mo", "×"); i++; }
+      else if (k.v === "/") { h += leaf(k, "ms", "/"); i++; }
+      else if (["=", "<", ">", "<=", ">="].includes(k.v)) { h += leaf(k, "mo", { "<=": "≤", ">=": "≥", "<": "&lt;", ">": "&gt;" }[k.v] || k.v); i++; }
+      else if (k.v === ",") { h += leaf(k, "mc", ","); i++; }
+      else { h += leaf(k, "mp", esc(k.v)); i++; }
     }
     return h;
   }
-  const mathHTML = src => `<span class="m">${draw(tokens(src))}</span>`;
+  const mathHTML = src => `<span class="m">${draw(tokens(normal(src)))}</span>`;
   /* text with $maths$, **bold** and line breaks */
   const rich = s => esc(String(s || "")).replace(/\$([^$]+)\$/g, (_, m) => mathHTML(m.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')))
     .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
 
   /* ================= Maths: parsing to a tree ================= */
   function parse(src) {
-    const tk = tokens(src); let i = 0;
+    const tk = tokens(normal(src)).filter(k => k.t !== "caret"); let i = 0;
     if (tk.some(k => k.t === "bad")) throw new Error("bad");
     const peek = () => tk[i], isOp = v => tk[i] && tk[i].t === "op" && tk[i].v === v;
-    const startsAtom = k => k && (k.t === "num" || k.t === "var" || (k.t === "word" && (k.v === "sqrt" || k.v === "frac")) || (k.t === "op" && (k.v === "(" || k.v === "{" || k.v === "[")));
+    const startsAtom = k => k && (k.t === "num" || k.t === "var" || (k.t === "word" && k.v !== "or" && k.v !== "and") || (k.t === "op" && (k.v === "(" || k.v === "{" || k.v === "[" || k.v === "|")));
     function sum() {
       const terms = []; let sign = 1;
       if (isOp("+")) i++; else if (isOp("-")) { sign = -1; i++; }
@@ -125,6 +152,7 @@
     }
     function power() {
       let b = atom();
+      while (isOp("!") || isOp("°")) { b = isOp("!") ? { k: "fn", f: "fact", a: b } : b; i++; }
       if (isOp("^")) { i++; let neg = false; if (isOp("-")) { neg = true; i++; } const ex = atom(); b = { k: "pow", b, ex: neg ? { k: "add", terms: [{ sign: -1, e: ex }] } : ex }; }
       return b;
     }
@@ -134,6 +162,12 @@
       if (k.t === "num") { i++; return { k: "num", v: parseFloat(k.v), raw: k.v }; }
       if (k.t === "var") { i++; return { k: "var", v: k.v }; }
       if (k.t === "word" && k.v === "sqrt") { i++; const a = atom(); return { k: "sqrt", a }; }
+      if (k.t === "word" && k.v === "root") { i++; const n = atom(), a = atom(); return { k: "root", n, a }; }
+      if (k.t === "word" && k.v === "abs") { i++; return { k: "fn", f: "abs", a: atom() }; }
+      if (k.t === "word" && k.v === "pi") { i++; return { k: "num", v: Math.PI, raw: "pi" }; }
+      if (k.t === "word" && k.v === "theta") { i++; return { k: "var", v: "θ" }; }
+      if (k.t === "word" && FUNCS.includes(k.v)) { i++; const a = isOp("(") || isOp("{") ? atom() : power(); return { k: "fn", f: k.v, a }; }
+      if (k.t === "op" && k.v === "|") { i++; const e = sum(); if (!isOp("|")) throw new Error("bar"); i++; return { k: "fn", f: "abs", a: e }; }
       if (k.t === "word" && k.v === "frac") { i++; const a = atom(), b = atom(); return { k: "mul", fs: [{ e: a, div: false }, { e: b, div: true }] }; }
       if (k.t === "op" && (k.v === "(" || k.v === "{" || k.v === "[")) {
         const close = { "(": ")", "{": "}", "[": "]" }[k.v]; i++;
@@ -151,7 +185,19 @@
   function evalT(e, env) {
     switch (e.k) {
       case "num": return e.v;
-      case "var": if (!(e.v in env)) throw new Error("var " + e.v); return env[e.v];
+      case "var": if (!(e.v in env)) { if (e.v === "e") return Math.E; throw new Error("var " + e.v); } return env[e.v];
+      case "root": { const n = evalT(e.n, env), a = evalT(e.a, env); return a < 0 && n % 2 === 1 ? -Math.pow(-a, 1 / n) : Math.pow(a, 1 / n); }
+      case "fn": {
+        /* angles in degrees, as in the IGCSE */
+        const a = evalT(e.a, env), D = Math.PI / 180;
+        switch (e.f) {
+          case "sin": return Math.sin(a * D); case "cos": return Math.cos(a * D); case "tan": return Math.tan(a * D);
+          case "asin": return Math.asin(a) / D; case "acos": return Math.acos(a) / D; case "atan": return Math.atan(a) / D;
+          case "log": return Math.log10(a); case "ln": return Math.log(a); case "abs": return Math.abs(a);
+          case "fact": { if (!(a >= 0 && Number.isInteger(a) && a < 171)) return NaN; let r = 1; for (let j = 2; j <= a; j++) r *= j; return r; }
+        }
+        throw new Error("fn");
+      }
       case "par": return evalT(e.e, env);
       case "sqrt": return Math.sqrt(evalT(e.a, env));
       case "pow": return Math.pow(evalT(e.b, env), evalT(e.ex, env));
@@ -163,7 +209,7 @@
   const varsOf = (e, set = new Set()) => {
     if (!e) return set;
     if (e.k === "var") set.add(e.v);
-    for (const c of [e.e, e.a, e.b, e.ex]) if (c) varsOf(c, set);
+    for (const c of [e.e, e.a, e.b, e.ex, e.n]) if (c) varsOf(c, set);
     for (const t of e.terms || []) varsOf(t.e, set);
     for (const f of e.fs || []) varsOf(f.e, set);
     return set;
@@ -215,7 +261,8 @@
     return [e];
   }
   const topTerms = e => { e = e.k === "par" ? e : e; return e.k === "add" ? e.terms.length : 1; };
-  const hasBrackets = src => /[()[\]{}]/.test(String(src).replace(/sqrt\s*\(/g, ""));
+  /* brackets the student wrote: {} only mark out boxes (powers, roots, fractions), and a function's own () don't count */
+  const hasBrackets = src => /[()[\]]/.test(normal(src).replace(/[{}]/g, "").replace(/(a?sin|a?cos|a?tan|log|ln|sqrt)\s*\(/g, "").replace(/\)/g, m => m));
 
   /* ================= Checking an answer =================
      q.a is the answer as we'd write it; q.form says what's being asked:
@@ -297,43 +344,139 @@
     return { ok: true };
   }
 
-  /* ================= Answer box and keypad ================= */
-  const KEYS = [
-    ["x", "y", "(", ")", "x²|^2", "^", "√|sqrt()"],
-    ["7", "8", "9", "+", "−|-", "×|*", "÷|/"],
-    ["4", "5", "6", "=", "±", ",", "or| or "],
-    ["1", "2", "3", "0", ".", "←|L", "→|R"],
-  ];
-  let pad = null, padFor = null;
+  /* ================= Maths field and keyboard =================
+     A field holds the answer as text ("sqrt{13}", "frac{1}{2}", "x^{2}") and shows it as maths with a cursor.
+     Typing works on a computer keyboard; on a touch screen (or from the keyboard button) the maths keyboard opens,
+     with tabs: Main, ABC, Funcs and Symbs. Templates (√□, □/□, a^□) put the cursor in the box; → moves on. */
+  const T = (ins, back) => ({ ins, back });
+  const TEMPLATES = { "√": T("sqrt{}", 1), "∛": T("root{3}{}", 1), "ⁿ√": T("root{}{}", 3), "a²": T("^2", 0), "aⁿ": T("^{}", 1), "□/□": T("frac{}{}", 3), "|□|": T("abs{}", 1), "eˣ": T("e^{}", 1), "10ˣ": T("10^{}", 1) };
+  const PADS = {
+    Main: [["x", "y", "e", "π", "|", "7", "8", "9", "□/□"], ["√", "∛", "a²", "aⁿ", "|", "4", "5", "6", "×"], ["<", ">", "≤", "≥", "|", "1", "2", "3", "−"], ["(", ")", ",", "θ", "|", "0", ".", "=", "+"]],
+    ABC: [["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"], ["a", "s", "d", "f", "g", "h", "j", "k", "l", "or"], ["z", "x", "c", "v", "b", "n", "m", "(", ")", ","]],
+    Funcs: [["sin", "cos", "tan", "ln", "|", "7", "8", "9", "□/□"], ["sin⁻¹", "cos⁻¹", "tan⁻¹", "log", "|", "4", "5", "6", "×"], ["eˣ", "10ˣ", "ⁿ√", "|□|", "|", "1", "2", "3", "−"], ["(", ")", "°", "!", "|", "0", ".", "=", "+"]],
+    Symbs: [["π", "θ", "°", "!", "|", "7", "8", "9", "÷"], ["±", ":", "%", "or", "|", "4", "5", "6", "×"], ["≠", "∞", "[", "]", "|", "1", "2", "3", "−"], ["(", ")", ",", ";", "|", "0", ".", "=", "+"]],
+  };
+  const KEYTEXT = { "π": "pi", "θ": "theta", "−": "-", "×": "*", "÷": "/", "≤": "<=", "≥": ">=", "sin": "sin()", "cos": "cos()", "tan": "tan()", "ln": "ln()", "log": "log()", "sin⁻¹": "asin()", "cos⁻¹": "acos()", "tan⁻¹": "atan()", "or": " or ", "≠": "!=", "∞": "∞" };
+  const KEYFACE = { "√": "√<span class=\"mph\">□</span>", "∛": "<sup class=\"mrt\">3</sup>√<span class=\"mph\">□</span>", "ⁿ√": "<sup class=\"mrt\">n</sup>√<span class=\"mph\">□</span>", "a²": "<i>a</i><sup>2</sup>", "aⁿ": "<i>a</i><sup><span class=\"mph\">□</span></sup>", "□/□": "<span class=\"mph\">□</span>/<span class=\"mph\">□</span>", "|□|": "|<span class=\"mph\">□</span>|", "eˣ": "<i>e</i><sup><span class=\"mph\">□</span></sup>", "10ˣ": "10<sup><span class=\"mph\">□</span></sup>", "sin⁻¹": "sin<sup>−1</sup>", "cos⁻¹": "cos<sup>−1</sup>", "tan⁻¹": "tan<sup>−1</sup>", "θ": "<i>θ</i>", "−": "−" };
+  let pad = null, field = null, tab = "Main";
   function makePad() {
     pad = document.createElement("div");
     pad.className = "mk-pad"; pad.hidden = true; pad.setAttribute("role", "group"); pad.setAttribute("aria-label", "Maths keyboard");
-    pad.innerHTML = `<div class="mk-rows">${KEYS.map(r => `<div class="mk-row">${r.map(k => { const [label, val] = k.split("|"); return `<button type="button" class="mk-k${/^[0-9.]$/.test(label) ? " num" : ""}" data-k="${esc(val ?? label)}" aria-label="${esc(label)}">${esc(label)}</button>`; }).join("")}</div>`).join("")}
-      <div class="mk-row"><button type="button" class="mk-k wide" data-k="ABC">abc</button><button type="button" class="mk-k wide" data-k="BS" aria-label="Delete">⌫</button><button type="button" class="mk-k wide" data-k="HIDE" aria-label="Hide keyboard">▾</button><button type="button" class="mk-k go" data-k="GO">Check</button></div></div>`;
-    document.body.appendChild(pad);
-    /* keep focus in the answer box: keys act on pointerdown and never take focus */
-    pad.addEventListener("pointerdown", e => { const b = e.target.closest("[data-k]"); e.preventDefault(); if (b) press(b.dataset.k); });
+    document.body.appendChild(pad); drawPad();
+    /* keys act on pointerdown and never take focus away from the field */
+    pad.addEventListener("pointerdown", e => { e.preventDefault(); const b = e.target.closest("[data-k]"); if (b) press(b.dataset.k); });
     pad.addEventListener("click", e => e.preventDefault());
   }
-  function press(k) {
-    const inp = padFor; if (!inp) return;
-    const s = inp.selectionStart ?? inp.value.length, e2 = inp.selectionEnd ?? s, v = inp.value;
-    const put = (txt, back = 0) => { inp.value = v.slice(0, s) + txt + v.slice(e2); const c = s + txt.length - back; inp.setSelectionRange(c, c); inp.dispatchEvent(new Event("input", { bubbles: true })); };
-    if (k === "L") { const c = Math.max(0, s - 1); inp.setSelectionRange(c, c); }
-    else if (k === "R") { const c = Math.min(v.length, e2 + 1); inp.setSelectionRange(c, c); }
-    else if (k === "BS") { if (s !== e2) put(""); else if (s > 0) { inp.value = v.slice(0, s - 1) + v.slice(s); inp.setSelectionRange(s - 1, s - 1); inp.dispatchEvent(new Event("input", { bubbles: true })); } }
-    else if (k === "ABC") { inp.setAttribute("inputmode", "text"); hidePad(); inp.blur(); setTimeout(() => inp.focus(), 30); }
-    else if (k === "HIDE") { hidePad(); inp.blur(); }
-    else if (k === "GO") { inp.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })); }
-    else if (k === "sqrt()") put("sqrt()", 1);
-    else put(k);
+  function drawPad() {
+    const key = k => {
+      if (k === "|") return `<span class="mk-gap"></span>`;
+      const letter = /^[a-zA-Z]$/.test(k) || ["π", "θ", "e"].includes(k);
+      return `<button type="button" class="mk-k${/^[0-9.]$/.test(k) ? " num" : ""}${letter ? " let" : ""}" data-k="${esc(k)}" aria-label="${esc(k)}"><span>${KEYFACE[k] || esc(k)}</span></button>`;
+    };
+    pad.innerHTML = `<div class="mk-in"><div class="mk-main">${PADS[tab].map(r => `<div class="mk-row">${r.map(key).join("")}</div>`).join("")}</div>
+      <div class="mk-nav"><button type="button" class="mk-k" data-k="BS" aria-label="Delete"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M7 4h9.5A1.5 1.5 0 0 1 18 5.5v9a1.5 1.5 0 0 1-1.5 1.5H7l-5-6Zm3.2 3.1-.9.9 2 2-2 2 .9.9 2-2 2 2 .9-.9-2-2 2-2-.9-.9-2 2Z"/></svg></button><button type="button" class="mk-k" data-k="L" aria-label="Left">←</button><button type="button" class="mk-k" data-k="R" aria-label="Right">→</button><button type="button" class="mk-k go" data-k="GO" aria-label="Check">↵</button></div>
+      <div class="mk-tabs">${Object.keys(PADS).map(t => `<button type="button" class="mk-k tab${t === tab ? " on" : ""}" data-k="TAB:${t}">${t}</button>`).join("")}<button type="button" class="mk-k tab" data-k="HIDE" aria-label="Hide keyboard">▾</button></div></div>`;
   }
-  function showPad(inp) { if (!pad) makePad(); padFor = inp; pad.hidden = false; document.body.classList.add("mk-on"); requestAnimationFrame(() => inp.scrollIntoView({ block: "nearest", behavior: "smooth" })); }
+  function press(k) {
+    if (k.startsWith("TAB:")) { tab = k.slice(4); drawPad(); return; }
+    if (k === "HIDE") { hidePad(); field?.blur(); return; }
+    if (!field) return;
+    const F = field._mf;
+    if (k === "L") F.move(-1); else if (k === "R") F.move(1); else if (k === "BS") F.back(); else if (k === "GO") F.enter();
+    else if (TEMPLATES[k]) F.insert(TEMPLATES[k].ins, TEMPLATES[k].back);
+    else { const t = KEYTEXT[k] ?? k; F.insert(t, t.endsWith("()") ? 1 : 0); }
+  }
+  function showPad(el) { if (!pad) makePad(); field = el; pad.hidden = false; document.body.classList.add("mk-on"); requestAnimationFrame(() => el.scrollIntoView({ block: "nearest", behavior: "smooth" })); }
   function hidePad() { if (pad) pad.hidden = true; document.body.classList.remove("mk-on"); }
-  /* an answer box: what they type, drawn as maths underneath */
-  const answerBox = (id, ph) => `<div class="ln-ans"><div class="ln-field"><input class="ln-in" data-ans="${esc(id)}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(ph || "Type your answer")}" ${touchy() ? 'inputmode="none"' : ""}>
-      <button type="button" class="ln-kb" data-kb title="Maths keyboard" aria-label="Maths keyboard"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="5" width="15" height="10" rx="2"/><path d="M5.5 8h1M9.5 8h1M13.5 8h1M6 12h8"/></svg></button></div>
-      <div class="ln-prev" aria-hidden="true"></div></div>`;
+
+  /* the field: el._mf = { value, set, insert, back, move, enter }; it sends "input" events like a text box */
+  const OPENERS = ["sqrt{", "root{", "frac{", "abs{", "^{", ...FUNCS.map(f => f + "(")];
+  function mathField(el, opts = {}) {
+    let v = normal(opts.value || ""), c = v.length;
+    el.classList.add("mf"); el.tabIndex = 0; el.setAttribute("role", "textbox"); el.setAttribute("aria-label", opts.label || "Answer");
+    const render = () => {
+      el.innerHTML = v ? `<span class="m">${draw(tokens(v.slice(0, c) + CARET + v.slice(c)))}</span>` : `<span class="mf-c"></span><span class="mf-ph">${esc(opts.placeholder || "")}</span>`;
+    };
+    const changed = () => { render(); el.dispatchEvent(new Event("input", { bubbles: true })); };
+    /* one step left or right: a word (sqrt, sin) and runs of braces count as one step, so the cursor never stops
+       anywhere that doesn't show */
+    const step = (d) => {
+      if (d > 0) {
+        if (c >= v.length) return;
+        const w = WORDS.find(x => v.startsWith(x, c)); if (w) { c += w.length; }
+        else c++;
+        while (c < v.length && (v[c] === "{" || (v[c] === "}" && v[c - 1] !== "{" ? false : v[c] === "}"))) { if (v[c] === "{") c++; else break; }
+        while (c < v.length && v[c - 1] === "}" && v[c] === "{") c++;
+      } else {
+        if (c <= 0) return;
+        c--;
+        while (c > 0 && (v[c] === "{" || v[c] === "}") && (v[c - 1] === "}" || v[c - 1] === "{")) c--;
+        if (v[c] === "{" ) { const w = WORDS.find(x => v.slice(0, c).endsWith(x)); c -= w ? w.length : v[c - 1] === "^" ? 1 : 0; }
+        else { const w = WORDS.find(x => v.slice(0, c + 1).endsWith(x) && c + 1 - x.length >= 0); if (w && v.slice(c + 1 - w.length, c + 1) === w) c = c + 1 - w.length; }
+      }
+    };
+    const api = el._mf = {
+      get value() { return v; },
+      set(s) { v = normal(s || ""); c = v.length; render(); },
+      insert(t, back = 0) { v = v.slice(0, c) + t + v.slice(c); c += t.length - back; changed(); },
+      move(d) { step(d); render(); },
+      back() {
+        if (c <= 0) return;
+        /* the cursor is just inside an empty box: take the whole template away; inside a box with something in it,
+           just step out to the left */
+        const before = v.slice(0, c), after = v.slice(c);
+        const op = OPENERS.find(o => before.endsWith(o));
+        if (op) {
+          const start = c - op.length; let end = c, d = 1;
+          if (op.endsWith("(")) { if (after[0] === ")") end = c + 1; else { c = start; render(); return; } }
+          else {
+            let j = c, empty = true;
+            for (; j < v.length; j++) { if (v[j] === "{") d++; else if (v[j] === "}") { d--; if (!d) { if (v[j + 1] === "{") { d = 1; j++; continue; } break; } } else empty = false; }
+            if (!empty) { c = start; render(); return; }
+            end = j + 1;
+          }
+          const s0 = op === "^{" ? start : start; v = v.slice(0, s0) + v.slice(end); c = s0; changed(); return;
+        }
+        if (before.endsWith("}") || before.endsWith("{")) { step(-1); render(); return; }
+        const w = WORDS.find(x => before.endsWith(x));
+        const n = w && !/[a-z]/i.test(before[c - w.length - 1] || "") ? w.length : before.endsWith(" or ") ? 4 : 1;
+        v = v.slice(0, c - n) + after; c -= n; changed();
+      },
+      enter() { opts.onEnter?.(); },
+    };
+    render();
+    el.addEventListener("keydown", e => {
+      if (e.metaKey || e.ctrlKey) { if (e.key === "a") { e.preventDefault(); c = v.length; render(); } return; }
+      const k = e.key;
+      if (k === "Enter") { e.preventDefault(); api.enter(); }
+      else if (k === "Backspace") { e.preventDefault(); api.back(); }
+      else if (k === "Delete") { e.preventDefault(); if (c < v.length) { step(1); api.back(); } }
+      else if (k === "ArrowLeft") { e.preventDefault(); api.move(-1); }
+      else if (k === "ArrowRight") { e.preventDefault(); api.move(1); }
+      else if (k === "Home") { e.preventDefault(); c = 0; render(); }
+      else if (k === "End") { e.preventDefault(); c = v.length; render(); }
+      else if (k === "^") { e.preventDefault(); api.insert("^{}", 1); }
+      else if (k.length === 1 && !e.altKey) { e.preventDefault(); const t = normal(k); api.insert(t === "√" ? "sqrt{}" : t, t === "√" ? 1 : 0); }
+    });
+    el.addEventListener("paste", e => { e.preventDefault(); api.insert(normal(e.clipboardData.getData("text")).replace(/\s+/g, " ")); });
+    /* tap to place the cursor */
+    el.addEventListener("pointerdown", e => {
+      const t = e.target.closest("[data-o]");
+      if (t && el.contains(t)) {
+        const r = t.getBoundingClientRect(); let o = e.clientX < r.left + r.width / 2 ? +t.dataset.b : +t.dataset.o;
+        if (o > c) o--;   /* positions were counted with the cursor mark in the text */
+        c = Math.max(0, Math.min(v.length, o)); render();
+      } else if (e.target === el || e.target.classList?.contains("m")) { c = v.length; render(); }
+      if (touchy() || (pad && !pad.hidden)) { e.preventDefault(); el.focus({ preventScroll: true }); showPad(el); }
+    });
+    el.addEventListener("focus", () => { el.classList.add("on"); if (touchy()) showPad(el); });
+    el.addEventListener("blur", () => { el.classList.remove("on"); setTimeout(() => { if (!document.activeElement?.closest?.(".mf")) hidePad(); }, 150); });
+    return api;
+  }
+  /* an answer box: the field and a keyboard button */
+  const answerBox = (id, ph) => `<div class="ln-ans"><div class="ln-field"><div class="ln-in" data-ans="${esc(id)}" data-ph="${esc(ph || "Type your answer")}"></div>
+      <button type="button" class="ln-kb" data-kb title="Maths keyboard" aria-label="Maths keyboard"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="5" width="15" height="10" rx="2"/><path d="M5.5 8h1M9.5 8h1M13.5 8h1M6 12h8"/></svg></button></div></div>`;
+  const fieldsIn = (root, onEnter) => root.querySelectorAll("[data-ans]").forEach(el => { if (!el._mf) mathField(el, { placeholder: el.dataset.ph, onEnter: () => onEnter(el) }); });
 
   /* ================= Grapher ================= */
   const COLORS = ["#2f6fd6", "#d0453a", "#2c8a4c", "#8a4cc2", "#c47a12"];
@@ -366,8 +509,9 @@
     const env = x => { const o = { x }; for (const [k, s] of Object.entries(st.sliders)) o[k] = s.v; return o; };
     const f = (F, x) => { try { return evalT(F.t, env(x)); } catch (e) { return NaN; } };
     const drawList = () => {
-      list.innerHTML = st.rows.map((r, i) => `<div class="gr-row"><i style="background:${r.c}"></i><input data-row="${i}" value="${esc(r.s)}" autocomplete="off" spellcheck="false" ${touchy() ? 'inputmode="none"' : ""} aria-label="Equation ${i + 1}"><span class="gr-m">${mathHTML(r.s)}</span>${r.err ? `<em>${r.err}</em>` : ""}<button type="button" data-del="${i}" aria-label="Remove">×</button></div>`).join("")
+      list.innerHTML = st.rows.map((r, i) => `<div class="gr-row${r.err ? " err" : ""}"><i style="background:${r.c}"></i><div class="gr-in" data-row="${i}"></div><em>Check this line</em><button type="button" data-del="${i}" aria-label="Remove">×</button></div>`).join("")
         + (st.rows.length < 5 ? `<button type="button" class="gr-add" data-g="add">+ Add a graph</button>` : "");
+      list.querySelectorAll("[data-row]").forEach(el => mathField(el, { value: st.rows[+el.dataset.row].s, placeholder: "y = ", label: "Equation", onEnter: () => el.blur() }));
     };
     const drawSliders = () => {
       sl.innerHTML = Object.entries(st.sliders).map(([k, s]) => `<label class="gr-s"><span>${mathHTML(k)} = <b>${s.v}</b></span><input type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.v}" data-sl="${k}"></label>`).join("");
@@ -450,10 +594,10 @@
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", paint);
     new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     /* typing */
-    list.addEventListener("input", e => { const i = e.target.dataset.row; if (i == null) return; st.rows[i].s = e.target.value; compile(); const row = e.target.parentNode; row.querySelector(".gr-m").innerHTML = mathHTML(e.target.value); const em = row.querySelector("em"); if (em) em.remove(); drawSliders(); paint(); });
-    list.addEventListener("focusout", () => { compile(); drawList(); drawSliders(); paint(); });
-    list.addEventListener("focusin", e => { if (e.target.matches("input[data-row]") && touchy()) showPad(e.target); });
-    list.addEventListener("keydown", e => { if (e.key === "Enter") e.target.blur(); });
+    const marks = () => list.querySelectorAll(".gr-row").forEach((row, i) => row.classList.toggle("err", !!(st.rows[i] && st.rows[i].err)));
+    list.addEventListener("input", e => { const el = e.target.closest("[data-row]"); if (!el) return; st.rows[+el.dataset.row].s = el._mf.value; compile(); row0(el).classList.remove("err"); drawSliders(); paint(); });
+    const row0 = el => el.closest(".gr-row");
+    list.addEventListener("focusout", () => { compile(); marks(); drawSliders(); paint(); });
     box.addEventListener("click", e => {
       const g = e.target.closest("[data-g]"), d = e.target.closest("[data-del]");
       if (d) { st.rows.splice(+d.dataset.del, 1); redraw(true); return; }
@@ -461,7 +605,7 @@
       const k = g.dataset.g, v = st.view, cx = (v.x0 + v.x1) / 2, cy = (v.y0 + v.y1) / 2;
       const zoom = r => { const hw = (v.x1 - v.x0) / 2 * r, hh = (v.y1 - v.y0) / 2 * r; Object.assign(v, { x0: cx - hw, x1: cx + hw, y0: cy - hh, y1: cy + hh }); };
       if (k === "in") zoom(0.7); else if (k === "out") zoom(1 / 0.7); else if (k === "home") Object.assign(v, home);
-      else if (k === "add") { st.rows.push({ s: "", c: COLORS[st.rows.length % COLORS.length] }); drawList(); list.querySelector(`[data-row="${st.rows.length - 1}"]`)?.focus(); return; }
+      else if (k === "add") { st.rows.push({ s: "", c: COLORS[st.rows.length % COLORS.length] }); drawList(); const el = list.querySelector(`[data-row="${st.rows.length - 1}"]`); el?.focus(); if (el && touchy()) showPad(el); return; }
       else if (k === "keys") { st.keys = g.checked; }
       paint();
     });
@@ -504,8 +648,8 @@
   /* ================= The grid method, live ================= */
   function gridTool(box, start) {
     box.innerHTML = `<div class="gd-in"><span>Expand</span>${answerBox("grid", "e.g. (2x - 3)(x + 4)")}</div><div class="gd-out"></div>`;
-    const inp = box.querySelector("input"), out = box.querySelector(".gd-out");
-    inp.value = start;
+    const inp = box.querySelector("[data-ans]"), out = box.querySelector(".gd-out");
+    const F = mathField(inp, { value: start, placeholder: inp.dataset.ph, label: "Brackets to expand" });
     const termsOf = e => { e = unpar(e); return e.k === "add" ? e.terms.map(t => t.sign < 0 ? { k: "mul", fs: [{ e: { k: "num", v: -1 } }, { e: t.e }] } : t.e) : [e]; };
     const polyStr = p => {
       const ks = Object.keys(p).sort((a, b) => { const da = Object.values(monoOf(a)).reduce((x, y) => x + y, 0), db = Object.values(monoOf(b)).reduce((x, y) => x + y, 0); return db - da || (a < b ? -1 : 1); });
@@ -518,7 +662,7 @@
     };
     const run = () => {
       try {
-        const fs = factors(parse(inp.value)).filter(f => f.k !== "num" || f.v !== 1);
+        const fs = factors(parse(F.value)).filter(f => f.k !== "num" || f.v !== 1);
         if (fs.length !== 2) throw 0;
         const A = termsOf(fs[0]), B = termsOf(fs[1]);
         if (A.length > 3 || B.length > 3) throw 0;
@@ -596,13 +740,10 @@
     return allQs(CONTENT[ctx.L.src][C.id].pages[P.id]).find(q => q.id === id);
   }
   function wire(root) {
-    root.addEventListener("input", e => { const inp = e.target.closest("[data-ans]"); if (inp) { inp.closest(".ln-ans").querySelector(".ln-prev").innerHTML = inp.value.trim() ? mathHTML(inp.value) : ""; const m = inp.closest(".ln-q")?.querySelector(".ln-msg"); if (m) { m.textContent = ""; m.className = "ln-msg"; } } });
-    root.addEventListener("focusin", e => { const inp = e.target.closest("[data-ans]"); if (inp && touchy() && inp.getAttribute("inputmode") === "none") showPad(inp); });
-    root.addEventListener("focusout", e => { if (e.target.closest("[data-ans]")) setTimeout(() => { if (!document.activeElement || !document.activeElement.closest?.("[data-ans],[data-row]")) hidePad(); }, 120); });
-    root.addEventListener("keydown", e => { if (e.key === "Enter") { const q = e.target.closest(".ln-q"); if (q) { e.preventDefault(); doCheck(q); } } });
+    root.addEventListener("input", e => { const inp = e.target.closest("[data-ans]"); if (inp) { const m = inp.closest(".ln-q")?.querySelector(".ln-msg"); if (m) { m.textContent = ""; m.className = "ln-msg"; } } });
     root.addEventListener("click", e => {
       const kb = e.target.closest("[data-kb]");
-      if (kb) { const inp = kb.parentNode.querySelector("input"); if (pad && !pad.hidden && padFor === inp) { hidePad(); } else { inp.setAttribute("inputmode", "none"); inp.focus(); showPad(inp); } return; }
+      if (kb) { const inp = kb.parentNode.querySelector("[data-ans]"); if (pad && !pad.hidden && field === inp) { hidePad(); } else { inp.focus(); showPad(inp); } return; }
       const ex = e.target.closest("[data-ex]");
       if (ex && e.target.closest("[data-next],[data-all]")) {
         const hid = [...ex.querySelectorAll(".ln-steps li[hidden]")];
@@ -622,7 +763,7 @@
   }
   function doCheck(qel) {
     const q = findQ(qel.dataset.q), inp = qel.querySelector("[data-ans]"), msg = qel.querySelector(".ln-msg");
-    const r = check(q, inp.value);
+    const r = check(q, inp._mf.value);
     msg.className = "ln-msg " + (r.ok ? "ok" : "no");
     msg.innerHTML = r.ok ? (q.right ? rich(q.right) : ["Correct.", "Yes, that's right.", "Spot on."][Math.floor(Math.random() * 3)]) : rich(r.msg);
     if (P) {
@@ -648,6 +789,7 @@
       ctx = c; C = c.C; P = c.P; saveKey = "learn:" + c.key + "/" + C.id; prog = store.get(saveKey, {});
       hidePad();
       if (P) renderPage(root); else renderOverview(root);
+      fieldsIn(root, el => { const q = el.closest(".ln-q"); if (q) doCheck(q); });
       if (!root.dataset.wired) { wire(root); root.dataset.wired = "1"; }
     },
     /* for checking content and tests */
