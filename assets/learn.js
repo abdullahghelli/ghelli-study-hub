@@ -758,10 +758,12 @@
   };
   const allQs = page => page.blocks.flatMap(b => b.type === "fade" ? [b.ask] : ["practice", "exam", "recall"].includes(b.type) ? b.qs : []);
 
+  const SHOW_CHECK = false;
   function renderOverview(root) {
     const pages = C.pages, built = id => CONTENT[ctx.L.src]?.[C.id]?.pages?.[id];
     const st = id => { const p = prog[id] || { q: {} }, n = built(id) ? allQs(built(id)).length : 0, got = Object.values(p.q || {}).filter(v => v === "got").length; return { n, got, done: p.done }; };
-    const chk = CONTENT[ctx.L.src]?.[C.id]?.check || [];
+    /* the chapter's "Where should I start?" check is kept in the content (check: [...]) but not shown for now */
+    const chk = SHOW_CHECK ? CONTENT[ctx.L.src]?.[C.id]?.check || [] : [];
     root.innerHTML = `<div class="eyebrow"><span>${esc(ctx.subject)} (${esc(ctx.course.code)}) · Chapter</span></div><h1>${esc(C.title)}</h1><p class="ln-lead">${esc(C.blurb || "")}</p>
       ${chk.length ? `<section class="ln-b ln-start"><h3>Where should I start?</h3><p class="ln-note">Try these ${chk.length} questions. We'll suggest the page to start on.</p>${chk.map((q, i) => questionHTML(q, i, "check")).join("")}<div class="ln-reco" hidden></div></section>` : ""}
       <h2 class="ln-h2">Pages</h2>
