@@ -52,14 +52,34 @@
     if (t) { touches.delete(e.pointerId); t.end = Date.now(); lifted.push(t); if (lifted.length > 8) lifted.shift(); }
   };
   document.addEventListener("pointerup", up, true);
+  /* and if a Pencil tap on a button still doesn't arrive as a click, click it (once) */
+  let penTap = null;
+  document.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "pen") return;
+    const b = e.target.nodeType === 1 && e.target.closest("button, [role=button], a[href], label");
+    penTap = b && !b.disabled ? { b, x: e.clientX, y: e.clientY, clicked: false } : null;
+  }, true);
+  document.addEventListener("click", e => { if (penTap && e.target.nodeType === 1 && penTap.b.contains(e.target)) penTap.clicked = true; }, true);
+  document.addEventListener("pointerup", e => {
+    if (e.pointerType !== "pen" || !penTap) return;
+    const tap = penTap; penTap = null;
+    const b = e.target.nodeType === 1 && e.target.closest("button, [role=button], a[href], label");
+    if (b !== tap.b || Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 12) return;
+    setTimeout(() => { if (!tap.clicked && tap.b.isConnected && !tap.b.disabled) tap.b.click(); }, 350);
+  }, true);
   document.addEventListener("pointercancel", up, true);
   document.addEventListener("pointermove", e => { if (e.pointerType === "pen") penLast = Date.now(); }, true);
   /* question cards let the browser scroll and zoom under a finger (see style.css), unless fingers write */
   document.documentElement.classList.toggle("finger-write", window.GSHPalm.fingerWrite);
   /* iPad: while writing, the Pencil never scrolls the page, and neither does a resting palm
      (Pencil touches are "stylus", the hand "direct") */
+  /* buttons and other controls: a Pencil tap there is a tap, never writing. Stopping its small drift (touchmove)
+     would stop iPad Safari turning it into a click, so controls are left alone */
+  const CONTROL = "button, a, input, select, textarea, label, summary, [role=button], [data-k], .qb-inkbar, .qb-xbot, .vw-bar";
+  const onControl = t => t && t.nodeType === 1 && !!t.closest(CONTROL);
   document.addEventListener("touchmove", e => {
     if (!writing()) return;
+    if (onControl(e.target)) return;
     if ([...e.touches].some(t => t.touchType === "stylus")) { e.preventDefault(); return; }
     if (!window.GSHPalm.seen) return;
     const direct = [...e.touches].some(t => t.touchType !== "stylus");
