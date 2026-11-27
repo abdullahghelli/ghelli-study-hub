@@ -1499,7 +1499,7 @@ window.SITE = {
       chapters: [
         { id: "quadratics", title: "Quadratics", blurb: "Expanding, factorising, solving and graphing quadratics, step by step.", pages: [
           { id: "expanding-brackets", title: "Expanding brackets", spec: "F2.2E · H2.2A", ready: true },
-          { id: "factorising", title: "Factorising quadratics", spec: "F2.2F · H2.2B" },
+          { id: "factorising", title: "Factorising quadratics", spec: "F2.2D · F2.2F · H2.2B", ready: true },
           { id: "solving-by-factorising", title: "Solving by factorising", spec: "F2.7A · H2.7A" },
           { id: "completing-the-square", title: "Completing the square", spec: "H2.2D" },
           { id: "quadratic-formula", title: "The quadratic formula", spec: "H2.7B" },

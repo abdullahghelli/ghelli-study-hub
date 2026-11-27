@@ -15,22 +15,30 @@ for (const f of fs.readdirSync(path.join(ROOT, "assets/learn"))) {
   vm.runInContext(fs.readFileSync(path.join(ROOT, "assets/learn", f), "utf8"), sb);
   const src = "/assets/learn/" + f, C = L.content(src);
   for (const [cid, ch] of Object.entries(C)) {
-    const qs = [...(ch.check || [])];
-    for (const [pid, pg] of Object.entries(ch.pages)) for (const b of pg.blocks) {
-      if (b.type === "fade") qs.push(b.ask);
-      if (["practice", "exam", "recall"].includes(b.type)) qs.push(...b.qs);
-      for (const m of [].concat(b.math || [])) try { T.parse(m.split("=").pop()); } catch (e) { fail(pid, "maths line", m); }
+    /* question ids are kept per page (and for the chapter's start check) */
+    const groups = [["check", [...(ch.check || [])]]];
+    for (const [pid, pg] of Object.entries(ch.pages)) {
+      const qs = [];
+      for (const b of pg.blocks) {
+        if (b.type === "fade") qs.push(b.ask);
+        if (["practice", "exam", "recall"].includes(b.type)) qs.push(...b.qs);
+        for (const m of [].concat(b.math || [])) if (!/[a-z]{3,}/i.test(m.replace(/sqrt|frac/g, ""))) try { T.parse(m.split("=").pop()); } catch (e) { fail(pid, "maths line", m); }
+      }
+      groups.push([pid, qs]);
     }
-    const ids = new Set();
-    for (const q of qs) {
+    for (const [pid, qs] of groups) { const ids = new Set(); for (const q of qs) {
       n++;
-      if (ids.has(q.id)) fail(cid, "duplicate id", q.id); ids.add(q.id);
+      if (ids.has(q.id)) fail(cid, pid, "duplicate id", q.id); ids.add(q.id);
       const r = T.check(q, q.a); if (!r.ok) fail(cid, q.id, "own answer rejected:", r.msg);
+      if (q.form === "factorise") {
+        const ms = [...q.q.matchAll(/\$([^$]+)\$/g)].map(m => m[1]);
+        if (ms.length === 1) { try { const a = T.poly(T.parse(ms[0])), b = T.poly(T.parse(q.a)); if (JSON.stringify(Object.entries(a).sort()) !== JSON.stringify(Object.entries(b).sort())) fail(pid, q.id, "brackets don't expand to", ms[0]); } catch (e) { fail(pid, q.id, "can't parse", ms[0]); } }
+      }
       if (q.form === "expand") {
         const ms = [...q.q.matchAll(/\$([^$]+)\$/g)].map(m => m[1]);
         if (ms.length === 1) { try { const a = T.poly(T.parse(ms[0])), b = T.poly(T.parse(q.a)); if (JSON.stringify(Object.entries(a).sort()) !== JSON.stringify(Object.entries(b).sort())) fail(cid, q.id, "answer is not the expansion of", ms[0]); } catch (e) { fail(cid, q.id, "can't parse", ms[0]); } }
       }
-    }
+    } }
   }
 }
 /* the checker itself */
@@ -47,6 +55,9 @@ const cases = [
   [{ a: "x = 0.30 or x = -3.30", form: "solve", dp: 2 }, "x = (-3 ± sqrt(13))/2", true], [{ a: "x = 0.30 or x = -3.30", form: "solve", dp: 2 }, "0.31, -3.31", false],
   [{ a: "2x^3 + 3x^2 - 11x - 6", form: "expand" }, "2x^3+3x^2-11x-6", true], [{ a: "x^2 + 5x - 7", form: "expand" }, "x^2+5x-7", true],
   [{ a: "y^2 - 13y + 36", form: "expand" }, "y^2-13y+36", true], [{ a: "y^2 - 13y + 36", form: "expand" }, "x^2-13x+36", false],
+  [{ a: "5x(x - 4)", form: "factorise" }, "x(5x-20)", false], [{ a: "5x(x - 4)", form: "factorise" }, "5(x^2-4x)", false], [{ a: "5x(x - 4)", form: "factorise" }, "5x(x-4)", true],
+  [{ a: "2(5g + 3)(5g - 3)", form: "factorise" }, "2(25g^2-9)", false], [{ a: "2(5g + 3)(5g - 3)", form: "factorise" }, "2(5g-3)(5g+3)", true],
+  [{ a: "(y + 6)(y - 8)", form: "factorise" }, "(y-6)(y+8)", false], [{ a: "(2x + 3y)(2x - 3y)", form: "factorise" }, "(2x-3y)(2x+3y)", true],
   [{ a: "x = 0.30 or x = -3.30", form: "solve", dp: 2 }, "x = frac{-3 + sqrt{13}}{2} or x = frac{-3 - sqrt{13}}{2}", true],
   [{ a: "x^2 + 10x + 21", form: "expand" }, "x^{2}+10x+21", true], [{ a: "(x + 3)^2 - 8", form: "square" }, "(x+3)^{2}-8", true],
   [{ a: "0.5", form: "number" }, "sin(30)", true], [{ a: "3", form: "number" }, "root{3}{27}", true], [{ a: "6", form: "number" }, "3!", true],

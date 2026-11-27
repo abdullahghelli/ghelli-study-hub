@@ -296,12 +296,12 @@
       }
       if (form === "factorise") {
         const fs = factors(e).filter(f => !(f.k === "num"));
-        if (fs.length < (q.minFactors || 2) && !(fs.length === 1 && q.minFactors === 1)) return { ok: false, msg: "Right value, but write it as a product of brackets." };
         for (const f of fs) {
           const p = poly(f);
-          if (degree(p) >= 1 && Math.abs(content(p)) > 1) return { ok: false, msg: "Not fully factorised: a bracket still has a common factor." };
-          if (degree(p) === 2 && splits(p)) return { ok: false, msg: "Not fully factorised: a bracket can be factorised again." };
+          if (degree(p) >= 1 && Math.abs(content(p)) > 1) return { ok: false, msg: "Not fully factorised: a bracket still has a common factor. Take it out." };
+          if (degree(p) === 2 && splits(p)) return { ok: false, msg: fs.length === 1 && factors(e).length === 1 ? "Right value, but write it as a product of two brackets." : "Not fully factorised: a bracket can be factorised again." };
         }
+        if (fs.length < (q.minFactors || 2) && !(fs.length === 1 && q.minFactors === 1)) return { ok: false, msg: "Right value, but write it as a product of brackets." };
         return { ok: true };
       }
       if (form === "square") {
@@ -681,6 +681,45 @@
     inp.addEventListener("input", run); run();
   }
 
+  /* ================= The pair finder =================
+     Type a quadratic: it lists the pairs of numbers that multiply to c (or to ac, when x² has a number in front),
+     with their sums, picks out the pair that adds to b, and builds the brackets from it. */
+  function pairTool(box, start) {
+    box.innerHTML = `<div class="gd-in"><span>Factorise</span>${answerBox("pairs", "e.g. x^2 + 7x + 12")}</div><div class="pf-out"></div>`;
+    const inp = box.querySelector("[data-ans]"), out = box.querySelector(".pf-out");
+    const F = mathField(inp, { value: start, placeholder: inp.dataset.ph, label: "Quadratic to factorise" });
+    const sgn = n => n < 0 ? ` - ${-n}` : ` + ${n}`, lin = (a, b) => `${a === 1 ? "" : a === -1 ? "-" : a}x${b ? sgn(b) : ""}`;
+    const xt = n => `${n < 0 ? "-" : "+"} ${Math.abs(n) === 1 ? "" : Math.abs(n)}x`;   /* a middle term: + 6x, - x */
+    const run = () => {
+      try {
+        const p = poly(parse(F.value)), keys = Object.keys(p);
+        if (keys.some(k => k && k !== "x1" && k !== "x2") || !p.x2) throw 0;
+        let a = p.x2, b = p.x1 || 0, c = p[""] || 0;
+        if (![a, b, c].every(Number.isInteger) || !c) throw 0;
+        let k = gcd(gcd(a, b), c); if (a < 0) k = -k;
+        let h = "";
+        if (Math.abs(k) > 1) { h += `<p class="pf-step">First take out the common factor ${mathHTML(String(k))}: ${mathHTML(`${k}(${lin(a / k, 0).replace(/x$/, "x^2")}${b / k ? sgn(b / k) + "x" : ""}${sgn(c / k)})`)}</p>`; a /= k; b /= k; c /= k; }
+        const N = a * c, pairs = [];
+        for (let d = 1; d * d <= Math.abs(N); d++) if (N % d === 0) { const e = N / d; pairs.push([d, e], [-d, -e]); }
+        const ok = pairs.find(([u, v]) => u + v === b);
+        const what = a === 1 ? `multiply to ${mathHTML(String(c))} and add to ${mathHTML(String(b))}` : `multiply to ${mathHTML(`a * c = ${a} * ${c < 0 ? `(${c})` : c} = ${N}`)} and add to ${mathHTML(String(b))}`;
+        h += `<p class="pf-step">Find two numbers that ${what}:</p><div class="pf-pairs">${pairs.map(([u, v]) => { const hit = ok && u === ok[0] && v === ok[1]; return `<span class="pf-p${hit ? " hit" : ""}">${mathHTML(`${hit ? `@1{${u}}` : u}, ${hit ? `@3{${v}}` : v}`)}<small>sum ${String(u + v).replace("-", "−")}</small></span>`; }).join("")}</div>`;
+        if (!ok) { h += `<p class="pf-res no">No pair works, so this quadratic doesn't factorise with whole numbers. (The quadratic formula still solves it.)</p>`; out.innerHTML = h; return; }
+        const [u, v] = ok, K = Math.abs(k) > 1 ? String(k) : "";
+        if (a === 1) h += `<p class="pf-res">= ${mathHTML(`${K}(x @1{${sgn(u).trim()}})(x @3{${sgn(v).trim()}})`)}</p>`;
+        else {
+          /* ac method: split the middle term, then take out a common factor from each half */
+          const g = gcd(a, u) * (a < 0 ? -1 : 1), A2 = a / g, B2 = u / g, h2 = v / A2;
+          h += `<p class="pf-step">Split the middle term: ${mathHTML(`${a}x^2 @1{${xt(u)}} @3{${xt(v)}}${sgn(c)}`)}</p>`;
+          h += `<p class="pf-step">Factorise each half: ${mathHTML(`${g === 1 ? "" : g}x@6{(${lin(A2, B2)})}${sgn(h2)}@6{(${lin(A2, B2)})}`)}</p>`;
+          h += `<p class="pf-res">= ${mathHTML(`${K}(${lin(g, h2)})@6{(${lin(A2, B2)})}`)}</p>`;
+        }
+        out.innerHTML = h;
+      } catch (e) { out.innerHTML = `<p class="muted">Type a quadratic with whole numbers, like x^2 − 2x − 15 or 2x^2 + 7x + 3.</p>`; }
+    };
+    inp.addEventListener("input", run); run();
+  }
+
   /* ================= Pages ================= */
   let C = null, P = null, ctx = null, prog = null, saveKey = "";
   const saveProg = () => store.set(saveKey, prog);
@@ -705,6 +744,7 @@
       <ol class="ln-steps">${b.steps.map(s => `<li><div class="ln-sm">${s.m ? mathHTML(s.m) : rich(s.t)}</div>${s.why ? `<div class="ln-why">${rich(s.why)}</div>` : ""}</li>`).join("")}</ol>
       ${questionHTML({ ...b.ask, id: b.ask.id }, 0, "fade").replace('class="ln-q', 'class="ln-q ln-q-in')}</section>`,
     grid: b => `<section class="ln-b ln-tool"><div class="ln-tag">Try it</div>${b.text ? `<p class="ln-txt">${rich(b.text)}</p>` : ""}<div class="gd-box" data-grid="${esc(b.start)}"></div></section>`,
+    pairs: b => `<section class="ln-b ln-tool"><div class="ln-tag">${esc(b.tag || "Try it")}</div>${b.text ? `<p class="ln-txt">${rich(b.text)}</p>` : ""}<div class="pf-box" data-pairs="${esc(b.start)}"></div></section>`,
     graph: b => `<section class="ln-b ln-tool"><div class="ln-tag">${esc(b.tag || "Explore")}</div>${b.text ? `<p class="ln-txt">${rich(b.text)}</p>` : ""}<div class="gr" data-graph="${esc(JSON.stringify({ exprs: b.exprs, sliders: b.sliders, view: b.view }))}"></div>${b.ask ? `<p class="ln-note">${rich(b.ask)}</p>` : ""}</section>`,
     watch: b => `<section class="ln-b ln-watch"><h3>Exam watch</h3><p class="ln-note">Mistakes examiners see most often on this.</p><ul>${b.items.map(x => `<li>${x.wrong ? `<span class="ln-wr">${mathHTML(x.wrong)}</span><span class="ln-ar">→</span><span class="ln-rt">${mathHTML(x.right)}</span>` : ""}<div>${rich(x.note)}</div></li>`).join("")}</ul></section>`,
     practice: b => `<section class="ln-b ln-prac"><h3>${esc(b.title || "Test yourself")}</h3>${b.text ? `<p class="ln-note">${rich(b.text)}</p>` : ""}${b.qs.map((q, i) => questionHTML(q, i, "practice")).join("")}</section>`,
@@ -732,6 +772,7 @@
         <nav class="ln-nav">${prev ? `<a class="ln-btn" href="${ctx.url(C.id, prev.id)}">← ${esc(prev.title)}</a>` : `<a class="ln-btn" href="${ctx.url(C.id)}">← ${esc(C.title)}</a>`}${next ? `<a class="ln-btn pri" href="${ctx.url(C.id, next.id)}">${esc(next.title)} →</a>` : `<a class="ln-btn pri" href="${ctx.url(C.id)}">Back to ${esc(C.title)} →</a>`}</nav></div>`;
     root.querySelectorAll("[data-graph]").forEach(el => grapher(el, JSON.parse(el.dataset.graph)));
     root.querySelectorAll("[data-grid]").forEach(el => gridTool(el, el.dataset.grid));
+    root.querySelectorAll("[data-pairs]").forEach(el => pairTool(el, el.dataset.pairs));
     score(root);
   }
   function score(root) {

@@ -1316,3 +1316,12 @@ body.mk-on .page{padding-bottom:300px}
 .mk5{background:var(--mk5)}.mk6{background:var(--mk6)}
 .gd th.mk1{color:var(--mk1)}.gd th.mk2{color:var(--mk2)}.gd th.mk3{color:var(--mk3)}.gd th.mk4{color:var(--mk4)}.gd th.mk5{color:var(--fg)}
 .gd th.mk1,.gd th.mk2,.gd th.mk3,.gd th.mk4{font-size:17px}
+/* pair finder */
+.pf-step{margin:12px 0 6px;font-size:14.5px}
+.pf-pairs{display:flex;flex-wrap:wrap;gap:6px}
+.pf-p{display:inline-flex;flex-direction:column;align-items:center;padding:5px 10px 4px;border-radius:9px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);font-size:15px;line-height:1.3}
+.pf-p small{font-size:11px;color:var(--faint)}
+.pf-p.hit{box-shadow:inset 0 0 0 2px var(--mk1);background:var(--mk5)}
+.pf-p.hit small{color:var(--fg);font-weight:600}
+.pf-res{margin:12px 0 0;font-size:18px}
+.pf-res.no{font-size:14.5px;color:var(--muted)}
