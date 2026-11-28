@@ -89,8 +89,20 @@ def content_rows(img, W, H, xl, xr, scanned=False):
     h, w = img.shape
     x0, x1 = int(xl * K), int(xr * K)
     band = img[:, x0:x1] < 150
+    # "DO NOT WRITE IN THIS AREA" printed sideways in the margin: when the crop's left edge sits inside the margin
+    # (older Pearson layouts), its columns are inked down much of the page; question numbers there ink only a few rows
+    edge = int(15 * K)
+    tall = band[:, :edge].sum(axis=0) > 0.12 * h
+    if tall.any():
+        band = band.copy()
+        band[:, :np.flatnonzero(tall).max() + int(2 * K)] = False   # the whole strip, up to its last tall column
     ink = band.sum(axis=1)
     rows = ink > 0
+    # older papers print the marks "(5)" in grey, too light for the test above: count grey ink in the marks column
+    # (the right fifth of the crop) as content when it is short, unlike an answer line or shading running across it
+    mc = int(0.8 * (x1 - x0))
+    grey = (img[:, x0 + mc:x1] < 200).sum(axis=1)
+    rows |= (grey > 0) & (grey < 0.5 * (x1 - x0 - mc)) & ((img[:, x0:x0 + mc] < 200).sum(axis=1) < 0.3 * mc)
     if scanned:
         # scans: keep everything with ink (answer-line removal cuts through scanned text)
         return ink > 2
