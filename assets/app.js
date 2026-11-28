@@ -659,7 +659,7 @@
       box.innerHTML = `
         <aside class="qb-topics" aria-label="Topics">
           ${filters("")}
-          ${data.modular ? `<div class="qb-units" role="group" aria-label="Unit" style="--n:${groups.length}">${groups.map(([g, name]) => `<button class="qb-unit ${g === unitOf(st.topic) ? "on" : ""}" data-qb-unit="${g}" title="${esc(name)}" aria-pressed="${g === unitOf(st.topic)}">${esc(name.split(" ·")[0])}</button>`).join("")}</div>` : ""}
+          ${data.modular ? `<div class="qb-units" role="group" aria-label="Unit" style="--n:${groups.length > 6 ? Math.ceil(groups.length / 2) : groups.length}">${groups.map(([g, name]) => `<button class="qb-unit ${g === unitOf(st.topic) ? "on" : ""}" data-qb-unit="${g}" title="${esc(name)}" aria-pressed="${g === unitOf(st.topic)}">${esc(name.split(" ·")[0])}</button>`).join("")}</div>` : ""}
           ${shown().map(([g, name]) => `<div class="qb-group"><div class="qb-gname">${name}</div>${data.topics.filter(t => t.group === g).map(t => {
             const n = filtered(t.id).length;
             return `<button class="qb-topic ${t.id === st.topic ? "on" : ""}" data-qb-topic="${t.id}" ${n ? "" : "disabled"}><span>${t.num ? `<i class="qb-num">${t.num}</i>` : ""}${esc(t.name)}</span><small>${n}</small><i class="qb-tbar" data-qb-tprog="${t.id}">${qbBar(filtered(t.id))}</i></button>`;
@@ -1261,7 +1261,9 @@
     /* a point from another section keeps its letter ("P10.2" in a mechanics question): named from that section */
     const SECT = { P: ["pure", "Pure"], S: ["stats", "Statistics"], M: ["mech", "Mechanics"] };
     const spec = (i.spec || []).map(c => {
-      const x = /^[PSM]\d/.test(c) && SECT[c[0]], g = x ? x[0] : GROUP_OF(i, data), k = x ? c.slice(1) : c;
+      /* a point from another section: "P10.2" (maths), or "cp:4.1" (8FM0: section id, then the point) */
+      const sx = /^([a-z][a-z0-9]*):(\d.*)$/.exec(c), sg = sx && (data.groups || []).find(([gid]) => gid === sx[1]);
+      const x = sx ? [sx[1], sg ? sg[1].split(" ·")[0] : sx[1].toUpperCase()] : /^[PSM]\d/.test(c) && SECT[c[0]], g = x ? x[0] : GROUP_OF(i, data), k = sx ? sx[2] : x ? c.slice(1) : c;
       return `<span class="qb-spec"><b>${k}</b> ${esc(((data.points || {})[g] || {})[k] || "")}${x ? ` <small>(${x[1]})</small>` : ""}</span>`;
     }).join("");
     return `<article class="qb-card ${qbProg.map[i.id] ? "st-" + qbProg.map[i.id] : ""}" data-qb-card="${i.id}">

@@ -1,4 +1,4 @@
-"""Build the Edexcel AS Level question banks: 8PH0 (physics), 8CH0 (chemistry) and 8MA0 (maths).
+"""Build the Edexcel AS Level question banks: 8PH0 (physics), 8CH0 (chemistry), 8MA0 (maths) and 8FM0 (further maths).
 
 Every question is hand-checked (overrides_8xx0.json, keyed by question id):
   - topic: where the whole question goes (the latest topic, in spec order, that any part covers)
@@ -8,7 +8,9 @@ Every question is hand-checked (overrides_8xx0.json, keyed by question id):
 The AS papers use the A level specs' topic and point numbering (the AS content is the first part of each A level spec),
 so the topics and spec point names come from spec_ph.py, spec_ch.py and spec.py.
 
-Usage: python3 tools/qbank/build_as.py <8ph0|8ch0|8ma0> ext_dir out.json
+8FM0 has its own spec (spec_fm8.py): Core Pure (Paper 1) and the eight option papers (21 to 28), each its own section.
+
+Usage: python3 tools/qbank/build_as.py <8ph0|8ch0|8ma0|8fm0> ext_dir out.json
   ext_dir holds the ext-<code>-*.json files from extract.py run over that course's question papers.
 """
 import json, os, re, sys
@@ -33,6 +35,10 @@ def course(code):
         topics = [t for t in s.TOPICS if t[3] == "as"]
         return dict(subject="chemistry", label="Edexcel AS Level Chemistry 8CH0", topics=topics,
                     groups=[["as", "Topics 1–10"]], names=s.NAMES["as"])
+    if code == "8fm0":
+        import spec_fm8 as f
+        return dict(subject="further-maths", label="Edexcel AS Level Further Mathematics 8FM0", topics=f.TOPICS,
+                    groups=[list(g) for g in f.GROUPS], names=f.NAMES, grouped=True, modular=True)
     import spec as s
     order = ["proof", "algebra", "coord", "sequences", "trig", "explog", "diff", "integ", "vectors",
              "sampling", "data", "prob", "dist", "hyp", "kin", "forces"]
@@ -64,6 +70,9 @@ def ms_pages(code, ms_path, nq):
 def paper_name(code, pnum):
     if code == "8ma0":
         return {"1": ("Paper 1", "pure"), "2": ("Paper 2", "sm"), "21": ("Paper 21", "stats"), "22": ("Paper 22", "mech")}[pnum]
+    if code == "8fm0":
+        import spec_fm8 as f
+        return f"Paper {pnum}", f.PAPER_GROUP[pnum]
     return f"Paper {pnum}", f"p{pnum}"
 
 
