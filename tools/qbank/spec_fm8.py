@@ -28,6 +28,14 @@ GROUPS = [("cp", "CP · Core Pure · Paper 1"), ("fp1", "FP1 · Further Pure 1 �
           ("d1", "D1 · Decision Mathematics 1 · Paper 27"), ("d2", "D2 · Decision Mathematics 2 · Paper 28")]
 PAPER_GROUP = {"1": "cp", "21": "fp1", "22": "fp2", "23": "fs1", "24": "fs2", "25": "fm1", "26": "fm2", "27": "d1", "28": "d2"}
 
+# The site offers the same options as for 9FM0: Further Statistics 1, Further Mechanics 1 and Decision Mathematics 1
+# (Papers 23, 25 and 27). The other sections stay listed above, so adding one back is a one-word change here.
+OFFERED = ("cp", "fs1", "fm1", "d1")
+ALL_TOPICS, ALL_GROUPS = TOPICS, GROUPS
+TOPICS = [t for t in ALL_TOPICS if t[3] in OFFERED]
+GROUPS = [g for g in ALL_GROUPS if g[0] in OFFERED]
+PAPER_GROUP = {p: g for p, g in PAPER_GROUP.items() if g in OFFERED}
+
 NAMES = {
     "cp": {"1.1": "Proof by induction", "2.1": "Solving quadratics, cubics and quartics", "2.2": "Arithmetic of complex numbers",
            "2.3": "Complex conjugates and conjugate pairs of roots", "2.4": "Argand diagrams", "2.5": "Modulus-argument form",

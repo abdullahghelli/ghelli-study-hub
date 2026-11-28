@@ -8,7 +8,7 @@ Every question is hand-checked (overrides_8xx0.json, keyed by question id):
 The AS papers use the A level specs' topic and point numbering (the AS content is the first part of each A level spec),
 so the topics and spec point names come from spec_ph.py, spec_ch.py and spec.py.
 
-8FM0 has its own spec (spec_fm8.py): Core Pure (Paper 1) and the eight option papers (21 to 28), each its own section.
+8FM0 has its own spec (spec_fm8.py): Core Pure (Paper 1) and the options offered (spec_fm8.OFFERED: Papers 23, 25 and 27), each its own section.
 
 Usage: python3 tools/qbank/build_as.py <8ph0|8ch0|8ma0|8fm0> ext_dir out.json
   ext_dir holds the ext-<code>-*.json files from extract.py run over that course's question papers.
@@ -94,6 +94,8 @@ def main():
     for f, r in sorted(data.items()):
         m = re.match(code + r"-p(\d+)-qp-(jun|nov)(\d{4})\.pdf", f)
         pnum, mon, yr = m.groups()
+        if code == "8fm0" and pnum not in __import__("spec_fm8").PAPER_GROUP:
+            continue   # an option the site doesn't offer (spec_fm8.OFFERED)
         src = web + f
         msf = f.replace("-qp-", "-ms-")
         has_ms = os.path.exists(os.path.join(papers_dir, msf))
