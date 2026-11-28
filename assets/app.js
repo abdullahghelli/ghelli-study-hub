@@ -550,8 +550,10 @@
       </section>`;
     };
     const QZ_L = { ...QB_ST, skip: "Skipped" };
-    const qzBar = () => qz.ids.map((id, k) => `<i class="${qz.res[id] ? "b-" + qz.res[id] : k === qz.k ? "now" : ""}"></i>`).join("");
-    const qzDone = () => qz.ids.slice(0, qz.k + (qz.k < qz.ids.length && qz.res[qz.ids[qz.k]] ? 1 : 0));
+    /* the bar: one button per question, so any question can be gone back to or jumped to */
+    const qzBar = () => qz.ids.map((id, k) => `<button type="button" class="${k === qz.k ? "cur" : ""}" data-qz-go="${k}" aria-label="Question ${k + 1}${qz.res[id] ? ", " + QZ_L[qz.res[id]] : ""}"${k === qz.k ? ' aria-current="step"' : ""}><i class="${qz.res[id] ? "b-" + qz.res[id] : k === qz.k ? "now" : ""}"></i></button>`).join("");
+    /* done: every question marked, and any passed over on the way to the furthest one reached (they count as skipped) */
+    const qzDone = () => qz.ids.filter((id, k) => qz.res[id] || k < Math.max(qz.far || 0, qz.k));
     /* the Next button and the bar follow the marking without redrawing the question */
     const qzNav = () => {
       const b = box.querySelector("[data-qz-next]"); if (!b) return;
@@ -571,7 +573,7 @@
           <div class="qz-bar" data-qz-bar style="--n:${n}">${qzBar()}</div>
           ${qz.work?.review ? `<p class="qz-work">Their mark: <b>${{ got: "Got it", part: "Partly", miss: "Missed it", skip: "Skipped" }[qz.res[it.id]] || "not marked"}</b>${wp ? ` · set just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")}` : ""}. Their answer is written on the question and in the space below it.</p>` : qz.work ? `<p class="qz-work">${wp ? `Do just part${wp.length > 1 ? "s" : ""} ${wp.map(l => `(${l})`).join(", ")} of this question. ` : ""}Tap <b>✎ Write</b> and answer in the space below the question (or on its answer lines). Your teacher sees what you write. Then show the answer and mark how it went.</p>` : `<p class="qz-work">Answer in the space below the question (tap it to write), then show the answer and mark how it went.</p>`}
           ${qbCard(it, data)}
-          <div class="qz-nav"><button type="button" class="qb-btn qz-next" data-qz-next></button></div>
+          <div class="qz-nav">${qz.k ? `<button type="button" class="qb-btn qz-prev" data-qz-prev>← Previous</button>` : ""}<button type="button" class="qb-btn qz-next" data-qz-next></button></div>
         </section>`;
       }
       const done = qzDone(), c = { got: 0, part: 0, miss: 0, skip: 0 };
@@ -700,9 +702,16 @@
         const tl = e.target.closest("[data-qz-topic]");
         if (tl) { st.topic = tl.dataset.qzTopic; st.specs = st.specs || {}; st.specs[st.topic] = []; qz = null; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
         if (e.target.closest("[data-qz-end]")) { if (qzDone().length) qz.end = true; else qz = null; render(); return; }
+        const go = e.target.closest("[data-qz-go]"), prev = e.target.closest("[data-qz-prev]");
+        if (go || prev) {
+          const k = go ? +go.dataset.qzGo : qz.k - 1;
+          if (k === qz.k || k < 0 || k >= qz.ids.length) return;
+          qz.far = Math.max(qz.far || 0, qz.k); qz.k = k;
+          render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return;
+        }
         if (e.target.closest("[data-qz-next]")) {
           const id = qz.ids[qz.k]; if (!qz.res[id]) { qz.res[id] = "skip"; if (qz.work) window.GSHAccount.mark(qz.work.id, id, "skip"); }
-          qz.k++;
+          qz.far = Math.max(qz.far || 0, qz.k); qz.k++;
           render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return;
         }
         if (e.target.closest("[data-qz-redo]")) { qz.end = false; qz.k = 0; qz.work.sent = !!qz.work.review; render(); box.scrollIntoView({ block: "start", behavior: "smooth" }); return; }

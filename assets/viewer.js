@@ -52,20 +52,42 @@
     if (t) { touches.delete(e.pointerId); t.end = Date.now(); lifted.push(t); if (lifted.length > 8) lifted.shift(); }
   };
   document.addEventListener("pointerup", up, true);
-  /* and if a Pencil tap on a button still doesn't arrive as a click, click it (once) */
-  let penTap = null;
+  /* and if a Pencil tap on a button still doesn't arrive as a click, click it (once). Every control on the site:
+     buttons, links, labels, summaries. Safari can deliver the real click late (after its double-tap wait), so a late
+     real click after ours is dropped: otherwise toggles (Show answer, Write) opened and shut again, and Next skipped
+     two questions. A tap Safari cancels (it read the Pencil's small drift as the start of a scroll) still counts. */
+  const TAPPABLE = "button, [role=button], a[href], label, summary";
+  /* the real click comes after pointerup, so the tap is watched (watch) until then: it used to be forgotten at
+     pointerup, its click went unseen, and every Pencil tap was clicked twice */
+  let penTap = null, ours = null, watch = null;
+  const fire = tap => setTimeout(() => {
+    if (watch === tap) watch = null;
+    if (tap.clicked || !tap.b.isConnected || tap.b.disabled) return;
+    ours = { b: tap.b, t: Date.now() }; tap.b.click();
+  }, 350);
   document.addEventListener("pointerdown", e => {
     if (e.pointerType !== "pen") return;
-    const b = e.target.nodeType === 1 && e.target.closest("button, [role=button], a[href], label");
-    penTap = b && !b.disabled ? { b, x: e.clientX, y: e.clientY, clicked: false } : null;
+    const b = e.target.nodeType === 1 && e.target.closest(TAPPABLE);
+    penTap = b && !b.disabled ? { b, x: e.clientX, y: e.clientY, mx: e.clientX, my: e.clientY, t: Date.now(), clicked: false } : null;
   }, true);
-  document.addEventListener("click", e => { if (penTap && e.target.nodeType === 1 && penTap.b.contains(e.target)) penTap.clicked = true; }, true);
+  document.addEventListener("click", e => {
+    if (ours && e.isTrusted && Date.now() - ours.t < 1200 && e.target.nodeType === 1 && ours.b.contains(e.target)) {
+      ours = null; e.preventDefault(); e.stopImmediatePropagation(); return;
+    }
+    for (const t of [penTap, watch]) if (t && e.target.nodeType === 1 && t.b.contains(e.target)) t.clicked = true;
+  }, true);
+  document.addEventListener("pointermove", e => { if (e.pointerType === "pen" && penTap) { penTap.mx = e.clientX; penTap.my = e.clientY; } }, true);
   document.addEventListener("pointerup", e => {
     if (e.pointerType !== "pen" || !penTap) return;
     const tap = penTap; penTap = null;
-    const b = e.target.nodeType === 1 && e.target.closest("button, [role=button], a[href], label");
+    const b = e.target.nodeType === 1 && e.target.closest(TAPPABLE);
     if (b !== tap.b || Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 12) return;
-    setTimeout(() => { if (!tap.clicked && tap.b.isConnected && !tap.b.disabled) tap.b.click(); }, 350);
+    watch = tap; fire(tap);
+  }, true);
+  document.addEventListener("pointercancel", e => {
+    if (e.pointerType !== "pen" || !penTap) return;
+    const tap = penTap; penTap = null;
+    if (Date.now() - tap.t < 600 && Math.hypot(tap.mx - tap.x, tap.my - tap.y) <= 12) { watch = tap; fire(tap); }
   }, true);
   document.addEventListener("pointercancel", up, true);
   document.addEventListener("pointermove", e => { if (e.pointerType === "pen") penLast = Date.now(); }, true);
