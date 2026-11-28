@@ -97,6 +97,9 @@ def main(code):
 
 def main_fm8(d, tags, path):
     """8FM0: every section is its own group; codes are "<group>:<point>". Same placement as main()."""
+    # papers with no published mark scheme yet (June 2024 Papers 21 to 28) stay out of the bank for now;
+    # their tags are kept in parts_8fm0.json, so rebuilding brings them back once the mark schemes are out
+    d["items"] = [it for it in d["items"] if it.get("ms")]
     order = {t["id"]: k for k, t in enumerate(d["topics"])}
     topic_of = {(t["group"], t["num"]): t["id"] for t in d["topics"]}
     grp = lambda c: c.split(":")[0]
